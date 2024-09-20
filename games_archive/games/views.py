@@ -1,7 +1,7 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
-from .models import Game, Screenshots, GameReview
+from .models import Game, Screenshot, GameReview
 from .forms import GameForm, ScreenshotForm, GameReviewForm
 
 
@@ -45,7 +45,7 @@ class GameDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 
 class AddScreenshotView(LoginRequiredMixin, CreateView):
-    model = Screenshots
+    model = Screenshot
     form_class = ScreenshotForm
     template_name = 'screenshot_form.html'
 

@@ -19,7 +19,7 @@ class Game(models.Model):
         return self.title
 
 
-class Screenshots(models.Model):
+class Screenshot(models.Model):
     to_game = models.ForeignKey(Game, on_delete=models.CASCADE)
     from_user = models.ForeignKey(GamesArchiveUser, on_delete=models.CASCADE)
     picture = models.ImageField(upload_to='game_screenshots/')

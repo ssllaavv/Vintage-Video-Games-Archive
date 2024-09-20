@@ -1,5 +1,5 @@
 from django import forms
-from .models import Game, Screenshots, GameReview
+from .models import Game, Screenshot, GameReview
 
 
 class GameForm(forms.ModelForm):
@@ -10,7 +10,7 @@ class GameForm(forms.ModelForm):
 
 class ScreenshotForm(forms.ModelForm):
     class Meta:
-        model = Screenshots
+        model = Screenshot
         fields = ['picture']
 
 
