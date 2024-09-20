@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<header>
+    <div class="inner">
+        <h2>Welcome to Video Games Archive</h2>
+        <p>Explore the history of gaming through our extensive collection of vintage games and consoles.</p>
+    </div>
+</header>
+
+<div class="wrapper">
+    <section id="one" class="wrapper spotlight style1">
+        <div class="inner">
+            <a href="{% url 'game_list' %}" class="image"><img src="{% static 'images/pic01.jpg' %}" alt="" /></a>
+            <div class="content">
+                <h2 class="major">Latest Games</h2>
+                <ul>
+                    {% for game in latest_games %}
+                        <li><a href="{% url 'game_detail' game.id %}">{{ game.title }}</a></li>
+                    {% endfor %}
+                </ul>
+                <a href="{% url 'game_list' %}" class="special">View All Games</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="two" class="wrapper alt spotlight style2">
+        <div class="inner">
+            <a href="{% url 'console_list' %}" class="image"><img src="{% static 'images/pic02.jpg' %}" alt="" /></a>
+            <div class="content">
+                <h2 class="major">Latest Consoles</h2>
+                <ul>
+                    {% for console in latest_consoles %}
+                        <li><a href="{% url 'console_detail' console.id %}">{{ console.name }}</a></li>
+                    {% endfor %}
+                </ul>
+                <a href="{% url 'console_list' %}" class="special">View All Consoles</a>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

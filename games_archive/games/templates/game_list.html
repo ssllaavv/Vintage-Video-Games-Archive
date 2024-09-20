@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<header>
+    <div class="inner">
+        <h2>Game Library</h2>
+        <p>Explore our collection of vintage video games</p>
+    </div>
+</header>
+
+<div class="wrapper">
+    <section class="wrapper alt style1">
+        <div class="inner">
+            <h2 class="major">Games</h2>
+            <section class="features">
+                {% for game in games %}
+                    <article>
+                        <a href="{% url 'game_detail' game.id %}" class="image"><img src="{{ game.cover_image.url }}" alt="{{ game.title }}" /></a>
+                        <h3 class="major">{{ game.title }}</h3>
+                        <p>{{ game.description|truncatewords:20 }}</p>
+                        <a href="{% url 'game_detail' game.id %}" class="special">Learn more</a>
+                    </article>
+                {% endfor %}
+            </section>
+            {% if is_paginated %}
+                <ul class="actions">
+                    {% if page_obj.has_previous %}
+                        <li><a href="?page={{ page_obj.previous_page_number }}" class="button">Previous</a></li>
+                    {% endif %}
+                    {% if page_obj.has_next %}
+                        <li><a href="?page={{ page_obj.next_page_number }}" class="button">Next</a></li>
+                    {% endif %}
+                </ul>
+            {% endif %}
+        </div>
+    </section>
+</div>
+{% endblock %}
