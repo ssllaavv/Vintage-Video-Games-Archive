@@ -6,5 +6,10 @@
 </head>
 <body>
     <H1>profile_edit</H1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button>Submit</button>
+    </form>
 </body>
 </html>

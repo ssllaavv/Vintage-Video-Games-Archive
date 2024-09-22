@@ -1,4 +1,5 @@
 from django.db import models
+from django.core import validators
 
 from games_archive.accounts.models import GamesArchiveUser
 from games_archive.consoles.models import Console
@@ -10,7 +11,8 @@ from games_archive.games.models import Game
 
 class GameRating(models.Model):
     rating = models.IntegerField(validators=[
-
+        validators.MinValueValidator(0),
+        validators.MaxValueValidator(5),
     ])
     from_user = models.ForeignKey(GamesArchiveUser, on_delete=models.DO_NOTHING)
     to_game = models.ForeignKey(Game, on_delete=models.CASCADE)
@@ -18,7 +20,8 @@ class GameRating(models.Model):
 
 class ConsoleRating(models.Model):
     rating = models.IntegerField(validators=[
-
+        validators.MinValueValidator(0),
+        validators.MaxValueValidator(5),
     ])
     from_user = models.ForeignKey(GamesArchiveUser, on_delete=models.DO_NOTHING)
     to_console = models.ForeignKey(Console, on_delete=models.CASCADE)

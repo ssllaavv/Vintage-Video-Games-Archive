@@ -24,7 +24,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
 class ProfileEditView(LoginRequiredMixin, UpdateView):
     model = GamesArchiveUser
     form_class = UserProfileForm
-    template_name = 'profile_edit.html'
+    template_name = 'profile_edit.html'   
     success_url = reverse_lazy('profile')
 
     def get_object(self):
