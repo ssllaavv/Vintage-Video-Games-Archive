@@ -17,7 +17,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
     template_name = 'profile.html'
     context_object_name = 'user'
 
-    def get_object(self):
+    def get_object(self, queryset=None):
         return self.request.user
 
 
@@ -27,5 +27,5 @@ class ProfileEditView(LoginRequiredMixin, UpdateView):
     template_name = 'profile_edit.html'   
     success_url = reverse_lazy('profile')
 
-    def get_object(self):
+    def get_object(self, queryset=None):
         return self.request.user

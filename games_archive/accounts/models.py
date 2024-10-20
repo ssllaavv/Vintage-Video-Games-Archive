@@ -1,11 +1,10 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from games_archive.mixins import ResizeImageMixin
 from django.core import validators
 from .custom_validators import validate_name
 
 
-class GamesArchiveUser(AbstractUser,  ResizeImageMixin):
+class GamesArchiveUser(AbstractUser):
     email = models.EmailField(
         validators=[
             validators.EmailValidator
@@ -31,7 +30,7 @@ class GamesArchiveUser(AbstractUser,  ResizeImageMixin):
     profile_picture = models.ImageField(
         upload_to='profile-pictures/',
         blank=True,
-        null=True
+        null=True,
     )
     gender = models.CharField(
         max_length=15,

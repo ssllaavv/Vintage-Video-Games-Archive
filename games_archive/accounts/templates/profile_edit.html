@@ -6,10 +6,10 @@
 </head>
 <body>
     <H1>profile_edit</H1>
-    <form method="POST">
+    <form method="POST", enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
-        <button>Submit</button>
+        <button type="submit" class="edit_btn">Submit</button>
     </form>
 </body>
 </html>
