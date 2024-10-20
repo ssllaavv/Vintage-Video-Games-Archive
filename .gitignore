@@ -13,8 +13,8 @@ __pycache__/
 *.sqlite3
 
 # Ignore static and media files (optional, depending on your setup)
-static/
-media/
+# static/
+# media/
 
 # Ignore system files (e.g., macOS, Windows)
 .DS_Store
