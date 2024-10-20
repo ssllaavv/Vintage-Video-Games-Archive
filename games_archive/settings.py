@@ -9,13 +9,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@br2v4ei_g%rv(c04mnqd#5ob2&li-z1mzuzoc-8oilk3=6chy'
+SECRET_KEY = os.environ.get('SECRET_KEY', None)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(int(os.environ.get('DEBUG', 0)))
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(' ')
+CSRF_TRUSTED_ORIGINS = [f'http://{x}:80' for x in ALLOWED_HOSTS] + [f'https://{x}:443' for x in ALLOWED_HOSTS]
 
 # Application definition
 
@@ -71,11 +71,11 @@ WSGI_APPLICATION = 'games_archive.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "games_archive_db",
-        "USER": "postgres-user",
-        "PASSWORD": "pass",
-        "HOST": "127.0.0.1",
-        "PORT": "5432",
+        "NAME": os.environ.get('POSTGRES_DB', None),
+        "USER": os.environ.get('POSTGRES_USER', None),
+        "PASSWORD": os.environ.get('POSTGRES_PASSWORD', None),
+        "HOST": os.environ.get('DB_HOST', None),
+        "PORT": os.environ.get('DB_PORT', "5432"),
     }
 }
 
@@ -120,14 +120,19 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
+# for deploy with docker
+STATIC_ROOT = os.path.join(BASE_DIR, 'static-files/')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+# URL to access media files
+MEDIA_URL = '/media/'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# Define where uploaded media files will be stored
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
-# URL to access media files
-MEDIA_URL = '/media/'
+
+
