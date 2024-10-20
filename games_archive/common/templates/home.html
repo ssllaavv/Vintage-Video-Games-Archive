@@ -1,15 +1,18 @@
 {% extends 'base.html' %}
 {% load static %}
+<script src="{% static 'assets/js/jquery.min.js' %}"></script>
 
 {% block content %}
-<header>
+<!-- Banner -->
+<section id="banner">
     <div class="inner">
+        <div class="logo"><span class="icon fa-gem"></span></div>
         <h2>Welcome to Video Games Archive</h2>
         <p>Explore the history of gaming through our extensive collection of vintage games and consoles.</p>
     </div>
-</header>
+</section>
 
-<div class="wrapper">
+<section id="wrapper">
     <section id="one" class="wrapper spotlight style1">
         <div class="inner">
             <a href="{% url 'game_list' %}" class="image"><img src="{% static 'images/pic01.jpg' %}" alt="" /></a>
@@ -39,5 +42,5 @@
             </div>
         </div>
     </section>
-</div>
+</section>
 {% endblock %}
