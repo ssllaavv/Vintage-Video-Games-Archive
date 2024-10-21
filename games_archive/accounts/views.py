@@ -38,6 +38,13 @@ class UserLoginView(auth_views.LoginView):
     template_name = 'login.html'
     next_page = reverse_lazy('home')
 
+    def form_invalid(self, form):
+        # Access the form errors here
+        print(form.errors)  # This will print the form errors to the console
+
+        # You can also pass the form with errors back to the template
+        return self.render_to_response(self.get_context_data(form=form))
+
 
 class UserLogoutView(LoginRequiredMixin, auth_views.LogoutView):
     http_method_names = ["post", "options", "get"]

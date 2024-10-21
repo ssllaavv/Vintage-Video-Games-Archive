@@ -35,4 +35,7 @@ class UserLoginForm(AuthenticationForm):
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = get_user_model()
-        fields = ['first_name', 'last_name', 'email', 'profile_picture', 'gender', 'age']
+        fields = ['first_name', 'last_name', 'email', 'gender', 'age', 'profile_picture', ]
+        widgets = {
+            'age': forms.TextInput(attrs={'type': 'text'}),
+        }

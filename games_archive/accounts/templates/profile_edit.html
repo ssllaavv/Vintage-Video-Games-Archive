@@ -1,15 +1,80 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <H1>profile_edit</H1>
-    <form method="POST", enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="edit_btn">Submit</button>
-    </form>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+    <div class="wrapper">
+        <div class="inner">
+            <section>
+                <div class="edit-profile-header">
+                {% if object.profile_picture %}
+                    <a href="{{ object.profile_picture.url }}" class="profile-picture-container" target="_blank">
+                        <img class="profile-picture-small" src=" {{ object.profile_picture.url }}" alt="Profile picture">
+                    </a>
+                {% endif %}
+                <h2 class="major">Profile Edit</h2>
+                </div>
+                <form class="custom-form" method="post" enctype="multipart/form-data">
+
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value= {{ next }}>
+
+                    <div class="row gtr-uniform">
+
+                        {% for field in form %}
+
+                            <div class="col-6 col-12-xsmall">
+                                <label>{{ field.label }}</label>
+                                {% if field.label == 'Profile picture' %}
+                                <div>
+                                  <label for="id_profile_picture" class="custom-file-label">Choose File</label>
+                                </div>
+
+
+                                {% endif %}
+
+                                {{ field }}
+
+                                {% if form.errors %}
+
+                                    <ul class="error">
+                                        {% for error in field.errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+
+                                {% endif %}
+
+
+                            </div>
+
+                        {% endfor %}
+
+                        {% if form.non_field_errors %}
+                            <div class="error">
+                                <ul>
+                                    {% for error in form.non_field_errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+
+                        <div class="col-12">
+                            <ul class="actions">
+                                <li><input type="submit" value="Submit" class="primary"></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </form>
+
+            </section>
+        </div>
+    </div>
+
+
+
+
+{% endblock %}

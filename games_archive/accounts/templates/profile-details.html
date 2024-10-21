@@ -8,6 +8,6 @@
     <h1>
         Profile details
     </h1>
-    <a href="{% url 'profile_edit' %}">Edit profile</a>
+    <a href="{% url 'profile_edit' request.user.pk %}">Edit profile</a>
 </body>
 </html>

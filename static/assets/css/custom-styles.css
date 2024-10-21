@@ -3,3 +3,68 @@
 /*  flex-direction: column;*/
 /*  align-items: center;*/
 /*}*/
+
+.error > * {
+    color: red;
+}
+
+/* Hides the default file input */
+input[type="file"] {
+    display: none;
+}
+
+/* Create a custom label that looks like a button */
+.custom-file-label {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #4c5c96;
+    color: white; /* White text */
+    cursor: pointer; /* Pointer cursor on hover */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 16px; /* Font size */
+    border: solid 2px rgba(255, 255, 255, 0.125);
+    transition: background-color 0.3s ease; /* Transition for hover effect */
+}
+
+/* Change background on hover */
+.custom-file-label:hover {
+    background-color: #5c669a;
+}
+
+/* Ensure the label is accessible to keyboard users */
+.custom-file-label:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #76baff;
+}
+
+.custom-file-label {
+    vertical-align: center;
+    font-weight: normal;
+    text-transform: capitalize;
+}
+
+/*profile picture */
+
+.profile-picture-container {
+    width: 150px; /* Set the desired width and height of the circle */
+    height: 150px;
+    border-radius: 50%; /* Make the container circular */
+    overflow: hidden; /* Ensure the image does not overflow */
+    display: flex; /* Use flexbox to center the image */
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2em;
+}
+
+.profile-picture-small {
+    width: 100%; /* Ensure the image takes full width of the container */
+    height: 100%; /* Ensure the image takes full height of the container */
+    object-fit: cover; /* Cover the entire area without overflow */
+    border-radius: 50%; /* Make the image circular as well */
+}
+
+.edit-profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
