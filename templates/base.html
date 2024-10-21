@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <link rel="stylesheet" href="{% static 'assets/css/main.css' %}" />
     <link rel="stylesheet" href="{% static 'assets/css/fontawesome-all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/custom-styles.css' %}" />
     <noscript><link rel="stylesheet" href="{% static 'assets/css/noscript.css' %}" /></noscript>
 </head>
 <body class="is-preload">
@@ -17,7 +18,16 @@
 
         <!-- Header -->
         <header id="header" class="alt">
-            <h1><a href="{% url 'home' %}">Video Games Archive</a></h1>
+
+
+            {% if user.is_authenticated %}
+                  <h1><a href="{% url 'home' %}">Video Games Archive, {{ user.get_user_name }}</a></h1>
+
+            {% else %}
+                  <h1><a href="{% url 'home' %}">Video Games Archive</a></h1>
+
+            {% endif %}
+
             <nav>
                 <a href="#menu">Menu</a>
             </nav>
@@ -32,7 +42,7 @@
                     <li><a href="{% url 'game_list' %}">Games</a></li>
                     <li><a href="{% url 'console_list' %}">Consoles</a></li>
                     {% if user.is_authenticated %}
-                        <li><a href="{% url 'profile' %}">Profile</a></li>
+                        <li><a href="{% url 'profile details' request.user.pk %}">Profile</a></li>
                         <li><a href="{% url 'logout' %}">Logout</a></li>
                     {% else %}
                         <li><a href="{% url 'login' %}">Login</a></li>

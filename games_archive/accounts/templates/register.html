@@ -1,10 +1,126 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <h1>REGISTER</h1>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% load static %}
+
+{% block content %}
+
+    <div class="wrapper">
+        <div class="inner">
+            <section>
+                <h3 class="major">Video Games Archive</h3>
+                <form class="custom-form" method="post">
+
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value= {{ next }}>
+
+                    <div class="row gtr-uniform">
+                        <div class="col-6 col-12-xsmall">
+                            <label>Username</label>
+
+                            {{ form.username|placeholder:'Username' }}
+                             {{ form.username.errors }}
+                        </div>
+                        <div class="col-6 col-12-xsmall">
+                            <label>Email</label>
+
+                            {{ form.email|placeholder:'Email' }}
+                            {{ form.email.errors }}
+                        </div>
+                        <div class="col-6 col-12-xsmall">
+                            <label>Password</label>
+
+                            {{ form.password1|placeholder:'Password' }}
+                            {{ form.password1.errors }}
+                        </div>
+                        <div class="col-6 col-12-xsmall">
+                            <label>Repeat password</label>
+
+                            {{ form.password2|placeholder:'Repeat password' }}
+                            {{ form.password2.errors }}
+                        </div>
+                        {#                        <div class="col-12">#}
+                        {#                            <label for="demo-category">Category</label>#}
+                        {#                            <select name="demo-category" id="demo-category">#}
+                        {#                                <option value="">-</option>#}
+                        {#                                <option value="1">Manufacturing</option>#}
+                        {#                                <option value="1">Shipping</option>#}
+                        {#                                <option value="1">Administration</option>#}
+                        {#                                <option value="1">Human Resources</option>#}
+                        {#                            </select>#}
+                        {#                        </div>#}
+                        {#                        <div class="col-4 col-12-small">#}
+                        {#                            <input type="radio" id="demo-priority-low" name="demo-priority" checked="">#}
+                        {#                            <label for="demo-priority-low">Low Priority</label>#}
+                        {#                        </div>#}
+                        {#                        <div class="col-4 col-12-small">#}
+                        {#                            <input type="radio" id="demo-priority-normal" name="demo-priority">#}
+                        {#                            <label for="demo-priority-normal">Normal Priority</label>#}
+                        {#                        </div>#}
+                        {#                        <div class="col-4 col-12-small">#}
+                        {#                            <input type="radio" id="demo-priority-high" name="demo-priority">#}
+                        {#                            <label for="demo-priority-high">High Priority</label>#}
+                        {#                        </div>#}
+                        {#                        <div class="col-6 col-12-small">#}
+                        {#                            <input type="checkbox" id="demo-copy" name="demo-copy">#}
+                        {#                            <label for="demo-copy">Email me a copy</label>#}
+                        {#                        </div>#}
+                        {#                        <div class="col-6 col-12-small">#}
+                        {#                            <input type="checkbox" id="demo-human" name="demo-human" checked="">#}
+                        {#                            <label for="demo-human">Not a robot</label>#}
+                        {#                        </div>#}
+                        {#                        <div class="col-12">#}
+                        {#                            <label for="demo-message">Message</label>#}
+                        {#                            <textarea name="demo-message" id="demo-message" rows="6"></textarea>#}
+                        {#                        </div>#}
+                        <div class="col-12">
+                            <ul class="actions">
+                                <li><input type="submit" value="Register" class="primary"></li>
+                                <li><a href="{% url 'register' %}" class="button">Reset</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </form>
+                <div class="second-option">
+
+                    <!-- Link to Login Page -->
+                    <p>Have an account? <a href="{% url 'login' %}">Log in</a></p>
+                </div>
+            </section>
+        </div>
+    </div>
+{#    <!-- Start Register Section -->#}
+{#    <div class="login-register-div">#}
+{#        <div class="login-register-box">#}
+{#            <h1>Video Games Archive</h1>#}
+
+{#            <!-- Start Register Form -->#}
+{#            <form method="POST">#}
+{##}
+{#                {% csrf_token %}#}
+{##}
+{##}
+{#                <input type="hidden" name="next" value= {{ next }}>#}
+{##}
+                {#                <input type="text" placeholder="Username">#}
+                {##}
+                {#                <input type="email" placeholder="Email">#}
+                {##}
+                {#                <input type="password" placeholder="Password">#}
+                {##}
+                {#                <input type="password" placeholder="Repeat Password">#}
+{##}
+{#                <!-- Register Button -->#}
+{#                <button type="submit">Register</button>#}
+{#            </form>#}
+{#            <!-- End Register Form -->#}
+{##}
+{#        </div>#}
+{#        <div class="second-option">#}
+{##}
+{#            <!-- Link to Login Page -->#}
+{#            <p>Have an account? <a href="{% url 'login' %}">Log in</a></p>#}
+{#        </div>#}
+{#    </div>#}
+{#    <!-- End Register Section -->#}
+
+{% endblock %}

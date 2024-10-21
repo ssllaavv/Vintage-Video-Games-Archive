@@ -7,7 +7,16 @@
 <section id="banner">
     <div class="inner">
         <div class="logo"><span class="icon fa-gem"></span></div>
+        {% if user.is_authenticated %}
+
+        <h2>Welcome to Video Games Archive, {{ user.get_user_name }}</h2>
+
+        {% else %}
+
         <h2>Welcome to Video Games Archive</h2>
+
+        {% endif %}
+
         <p>Explore the history of gaming through our extensive collection of vintage games and consoles.</p>
     </div>
 </section>
