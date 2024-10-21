@@ -1,7 +1,75 @@
 {% extends 'base.html' %}
+{% load custom_filters %}
 {% load static %}
-<script src="{% static 'assets/js/jquery.min.js' %}"></script>
 
 {% block content %}
+
+    <div class="wrapper">
+        <div class="inner">
+            <section>
+                <h3 class="major">Register to Video Games Archive</h3>
+                <form class="custom-form" method="post">
+
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value= {{ next }}>
+
+                    <div class="row gtr-uniform">
+                        <div class="col-6 col-12-xsmall">
+                            <label>Username</label>
+
+                            {{ form.username }}
+                             {% if form.username.errors %}
+                                <div class="error">
+                                    <ul>
+                                        {% for error in form.username.errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-6 col-12-xsmall">
+                            <label>Password</label>
+
+                            {{ form.password }}
+                            {% if form.password.errors %}
+                                <div class="error">
+                                    <ul>
+                                        {% for error in form.password.errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div>
+                        {% if form.non_field_errors %}
+                            <div class="error">
+                                <ul>
+                                    {% for error in form.non_field_errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                        </div>
+
+                        <div class="col-12">
+                            <ul class="actions">
+                                <li><input type="submit" value="Register" class="primary"></li>
+                                <li><a href="{% url 'login' %}" class="button">Reset</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </form>
+                <div class="second-option">
+
+                    <!-- Link to Login Page -->
+                    <p>Don't have an account? <a href="{% url 'register' %}"><b>Register</b></a></p>
+                </div>
+            </section>
+        </div>
+    </div>
+
 
 {% endblock %}
