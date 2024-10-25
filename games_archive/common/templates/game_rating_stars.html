@@ -1,0 +1,342 @@
+{#{% block extra_head %}#}
+{#<style>#}
+{#    .star-rating {#}
+{#        display: inline-flex;#}
+{#        gap: 4px;#}
+{#    }#}
+{##}
+{#    .star-rating .star {#}
+{#        cursor: pointer;#}
+{#        font-size: 24px;#}
+{#        color: #ddd;#}
+{#        transition: color 0.2s;#}
+{#    }#}
+{##}
+{#    .star-rating .star.active {#}
+{#        color: #ffd700;#}
+{#    }#}
+{##}
+{#    .star-rating:hover .star {#}
+{#        color: #ddd;#}
+{#    }#}
+{##}
+{#    .star-rating .star:hover,#}
+{#    .star-rating .star:hover ~ .star {#}
+{#        color: #ffd700;#}
+{#    }#}
+{##}
+{#    .rating-message {#}
+{#        margin-top: 8px;#}
+{#        font-size: 14px;#}
+{#        display: none;#}
+{#    }#}
+{##}
+{#    .rating-message.show {#}
+{#        display: block;#}
+{#    }#}
+{##}
+{#    .rating-message.success {#}
+{#        color: green;#}
+{#    }#}
+{##}
+{#    .rating-message.error {#}
+{#        color: red;#}
+{#    }#}
+{#</style>#}
+{#{% endblock %}#}
+{##}
+{#{% block content %}#}
+{#<!-- ... other content ... -->#}
+{##}
+{#<div class="game-rating">#}
+{#    <div class="star-rating" data-game-id="{{ game.pk }}">#}
+{#        <i class="fas fa-star star" data-rating="5"></i>#}
+{#        <i class="fas fa-star star" data-rating="4"></i>#}
+{#        <i class="fas fa-star star" data-rating="3"></i>#}
+{#        <i class="fas fa-star star" data-rating="2"></i>#}
+{#        <i class="fas fa-star star" data-rating="1"></i>#}
+{#    </div>#}
+{#    <div class="rating-message"></div>#}
+{#</div>#}
+{##}
+{#{% block extra_js %}#}
+{#<script>#}
+{#document.addEventListener('DOMContentLoaded', function() {#}
+{#    const starRating = document.querySelector('.star-rating');#}
+{#    const ratingMessage = document.querySelector('.rating-message');#}
+{##}
+{#    if (starRating) {#}
+{#        const gameId = starRating.dataset.gameId;#}
+{#        const stars = starRating.querySelectorAll('.star');#}
+{##}
+{#        // Set initial rating if exists#}
+{#        function updateStars(rating) {#}
+{#            stars.forEach(star => {#}
+{#                star.classList.toggle('active', star.dataset.rating <= rating);#}
+{#            });#}
+{#        }#}
+{##}
+{#        // Handle star click#}
+{#        stars.forEach(star => {#}
+{#            star.addEventListener('click', async function() {#}
+{#                const rating = this.dataset.rating;#}
+{##}
+{#                try {#}
+{#                    const response = await fetch(`/games/${gameId}/rate/`, {#}
+{#                        method: 'POST',#}
+{#                        headers: {#}
+{#                            'Content-Type': 'application/json',#}
+{#                            'X-CSRFToken': getCookie('csrftoken')#}
+{#                        },#}
+{#                        body: JSON.stringify({ rating: rating })#}
+{#                    });#}
+{##}
+{#                    if (response.ok) {#}
+{#                        const data = await response.json();#}
+{#                        updateStars(rating);#}
+{#                        showMessage(data.message, 'success');#}
+{#                    } else {#}
+{#                        showMessage('Error saving rating', 'error');#}
+{#                    }#}
+{#                } catch (error) {#}
+{#                    showMessage('Error saving rating', 'error');#}
+{#                }#}
+{#            });#}
+{#        });#}
+{##}
+{#        // Helper function to show messages#}
+{#        function showMessage(message, type) {#}
+{#            ratingMessage.textContent = message;#}
+{#            ratingMessage.className = `rating-message show ${type}`;#}
+{#            setTimeout(() => {#}
+{#                ratingMessage.classList.remove('show');#}
+{#            }, 3000);#}
+{#        }#}
+{##}
+{#        // Helper function to get CSRF token#}
+{#        function getCookie(name) {#}
+{#            let cookieValue = null;#}
+{#            if (document.cookie && document.cookie !== '') {#}
+{#                const cookies = document.cookie.split(';');#}
+{#                for (let i = 0; i < cookies.length; i++) {#}
+{#                    const cookie = cookies[i].trim();#}
+{#                    if (cookie.substring(0, name.length + 1) === (name + '=')) {#}
+{#                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));#}
+{#                        break;#}
+{#                    }#}
+{#                }#}
+{#            }#}
+{#            return cookieValue;#}
+{#        }#}
+{#    }#}
+{#});#}
+{#</script>#}
+{#{% endblock %}#}
+{##}
+{#{% endblock %}#}
+
+
+
+
+
+{% block extra_head %}
+<style>
+    .star-rating {
+        display: inline-flex;
+        gap: 4px;
+        flex-direction: row; /* Ensure stars are in a row */
+    }
+
+    .star-rating .star {
+        cursor: pointer;
+        font-size: 24px;
+        transition: all 0.2s;
+    }
+
+    /* Default state - empty stars */
+    .star-rating .star i {
+        color: #ddd;
+    }
+
+    /* Active state - solid golden stars */
+    .star-rating .star.active i.far {
+        display: none;
+    }
+
+    .star-rating .star.active i.fas {
+        display: inline-block;
+        color: #ffd700;
+    }
+
+    /* Hide solid star by default */
+    .star-rating .star i.fas {
+        display: none;
+    }
+
+    /* Show empty star by default */
+    .star-rating .star i.far {
+        display: inline-block;
+    }
+
+    /* Hover effects */
+    .star-rating .star:hover i.far {
+        display: none;
+    }
+
+    .star-rating .star:hover i.fas {
+        display: inline-block;
+        color: #ffd700;
+    }
+
+    .star-rating .star:hover ~ .star i.far {
+        display: inline-block;
+    }
+
+    .star-rating .star:hover ~ .star i.fas {
+        display: none;
+    }
+
+    .rating-message {
+        margin-top: 8px;
+        font-size: 14px;
+        display: none;
+    }
+
+    .rating-message.show {
+        display: block;
+    }
+
+    .rating-message.success {
+        color: green;
+    }
+
+    .rating-message.error {
+        color: red;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- ... other content ... -->
+
+<div class="game-rating">
+    <div class="star-rating" data-game-id="{{ game.pk }}">
+        <!-- Each star now contains both empty and solid versions -->
+        <span class="star" data-rating="1">
+            <i class="far fa-star"></i>
+            <i class="fas fa-star"></i>
+        </span>
+        <span class="star" data-rating="2">
+            <i class="far fa-star"></i>
+            <i class="fas fa-star"></i>
+        </span>
+        <span class="star" data-rating="3">
+            <i class="far fa-star"></i>
+            <i class="fas fa-star"></i>
+        </span>
+        <span class="star" data-rating="4">
+            <i class="far fa-star"></i>
+            <i class="fas fa-star"></i>
+        </span>
+        <span class="star" data-rating="5">
+            <i class="far fa-star"></i>
+            <i class="fas fa-star"></i>
+        </span>
+    </div>
+    <div class="rating-message"></div>
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const starRating = document.querySelector('.star-rating');
+    const ratingMessage = document.querySelector('.rating-message');
+
+    if (starRating) {
+        const gameId = starRating.dataset.gameId;
+        const stars = starRating.querySelectorAll('.star');
+
+        // Function to fetch initial user rating
+        async function fetchUserRating() {
+            try {
+                const response = await fetch(`/games/${gameId}/user-rating/`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.rating) {
+                        updateStars(data.rating);
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching user rating:', error);
+            }
+        }
+
+        // Set initial rating if exists
+        function updateStars(rating) {
+            stars.forEach(star => {
+                const starRating = parseInt(star.dataset.rating);
+                star.classList.toggle('active', starRating <= rating);
+            });
+        }
+
+        // Handle star click
+        stars.forEach(star => {
+            star.addEventListener('click', async function() {
+                const rating = this.dataset.rating;
+
+                try {
+                    const response = await fetch(`/games/${gameId}/rate/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: JSON.stringify({ rating: rating })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        updateStars(rating);
+                        showMessage(data.message, 'success');
+                    } else {
+                        showMessage('Error saving rating', 'error');
+                    }
+                } catch (error) {
+                    showMessage('Error saving rating', 'error');
+                }
+            });
+        });
+
+        // Helper function to show messages
+        function showMessage(message, type) {
+            ratingMessage.textContent = message;
+            ratingMessage.className = `rating-message show ${type}`;
+            setTimeout(() => {
+                ratingMessage.classList.remove('show');
+            }, 3000);
+        }
+
+        // Helper function to get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Fetch initial rating when page loads
+        fetchUserRating();
+    }
+});
+</script>
+{% endblock %}
+
+{% endblock %}

@@ -6,6 +6,9 @@ class GameRatingForm(forms.ModelForm):
     class Meta:
         model = GameRating
         fields = ['rating']
+        widgets = {
+            'rating': forms.RadioSelect
+        }
 
 
 class ConsoleRatingForm(forms.ModelForm):

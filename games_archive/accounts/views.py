@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 from .models import GamesArchiveUser
 from .forms import UserRegistrationForm, UserProfileForm, UserLoginForm
 from django.views import generic as views
+from django.templatetags.static import static
 
 
 class UserRegisterView(CreateView):
@@ -38,12 +39,12 @@ class UserLoginView(auth_views.LoginView):
     template_name = 'login.html'
     next_page = reverse_lazy('home')
 
-    def form_invalid(self, form):
-        # Access the form errors here
-        print(form.errors)  # This will print the form errors to the console
-
-        # You can also pass the form with errors back to the template
-        return self.render_to_response(self.get_context_data(form=form))
+    # def form_invalid(self, form):
+    #     # Access the form errors here
+    #     print(form.errors)
+    #
+    #     # pass the form with errors back to the template
+    #     return self.render_to_response(self.get_context_data(form=form))
 
 
 class UserLogoutView(LoginRequiredMixin, auth_views.LogoutView):
@@ -74,19 +75,21 @@ class UserDetailView(LoginRequiredMixin, DetailView):
     def get_object(self, queryset=None):
         return self.request.user
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     total_likes_count = sum(p.like_set.count() for p in self.object.photo_set.all())
-    #     profile_image = static('images/person.png')
-    #     if self.object.profile_picture not in ['', None]:
-    #         profile_image = self.object.profile_picture
-    #
-    #     context.update({
-    #         'total_likes_count': total_likes_count,
-    #         'profile_image': profile_image,
-    #     })
-    #
-    #     return context
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        comments_count = self.object.gamecomment_set.count() + self.object.consolecomment_set.count()
+        profile_image = static('static/images/added/person.png')
+        if self.object.profile_picture not in ['', None]:
+            profile_image = self.object.profile_picture
+
+        context.update({
+            'comments_count': comments_count,
+            'profile_image': profile_image,
+        })
+
+        print(comments_count)
+
+        return context
 
 
 class UserDeleteView(LoginRequiredMixin, views.DeleteView):

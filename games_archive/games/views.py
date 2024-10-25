@@ -1,8 +1,9 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from .models import Game, Screenshot, GameReview
 from .forms import GameForm, ScreenshotForm, GameReviewForm
+from ..common.forms import GameRatingForm
 
 
 class GameListView(ListView):
@@ -10,6 +11,11 @@ class GameListView(ListView):
     template_name = 'game_list.html'
     context_object_name = 'games'
     paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['game_rating_form'] = GameRatingForm()  # Add the rating form to the context
+        return context
 
 
 class GameDetailView(DetailView):
@@ -29,10 +35,17 @@ class GameUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Game
     form_class = GameForm
     template_name = 'game_form.html'
-    success_url = reverse_lazy('game_list')
 
     def test_func(self):
-        return self.request.user.is_staff
+        game = self.get_object()
+        result = self.request.user == game.to_user
+        if self.request.user.is_staff:
+            result = True
+        return result
+
+    def get_success_url(self):
+        game = self.get_object()
+        return reverse_lazy('game_detail', kwargs={'pk': game.pk})
 
 
 class GameDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
@@ -41,7 +54,11 @@ class GameDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     success_url = reverse_lazy('game_list')
 
     def test_func(self):
-        return self.request.user.is_staff
+        game = self.get_object()
+        result = self.request.user == game.to_user
+        if self.request.user.is_staff:
+            result = True
+        return result
 
 
 class AddScreenshotView(LoginRequiredMixin, CreateView):

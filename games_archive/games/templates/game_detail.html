@@ -1,12 +1,71 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <H1>
-        game_details
-    </H1>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <section class="wrapper alt style1">
+        <div class="inner">
+            <h2 class="major">Games</h2>
+            <section class="features-my">
+                <article id="game-{{ game.pk }}">
+                    {% if game.cover_image %}
+                    <img src="{{ game.cover_image.url }}" alt="{{ game.title }}"/>
+
+                    {% endif %}
+                    <div class="game_details">
+                        <h3 class="major">{{ game.title }}</h3>
+                        <div>{{ game.release_year }}</div>
+                        <div>By: {{ game.developer }}</div>
+                        <div>Genre: {{ game.genre }}</div>
+                        <div>
+                            Consoles:
+                            <ul>
+                                {% for console in game.to_consoles.all %}
+                                    <li><a href="{% url 'console_detail' console.pk %}">console.name</a></li>
+                                {% endfor %}
+                            </ul>
+
+                            <div>
+                                {% include 'game_rating_stars.html' %}
+
+{#                                <div>#}
+{##}
+{#                                    <span class="rating">{{ game.stars_rating_html|safe }}</span>#}
+{#                                    <!-- Button that triggers the modal -->#}
+{#                                    <form method="post" action="{% url 'rate_game' game.pk %}" id="rating-form">#}
+{#                                        {% csrf_token %}#}
+{#                                        <h3>Rate {{ game.title }}</h3>#}
+{#                                        {{ game_rating_form.as_p }}#}
+{#                                        {% if game_rating_form.errors %}#}
+{#                                            <div class="errorlist">#}
+{#                                                {% for field in game_rating_form %}#}
+{#                                                    {% for error in field.errors %}#}
+{#                                                        <p class="error">{{ error }}</p>#}
+{#                                                    {% endfor %}#}
+{#                                                {% endfor %}#}
+{#                                                {% for error in game_rating_form.non_field_errors %}#}
+{#                                                    <p class="error">{{ error }}</p>#}
+{#                                                {% endfor %}#}
+{#                                            </div>#}
+{#                                        {% endif %}#}
+{#                                        <button type="submit" class="button small">Submit</button>#}
+{#                                    </form>#}
+{#                                </div>#}
+                                {% if game.to_user == request.user %}
+                                <ul class="actions">
+                                    <li><a href="{% url 'game_update' game.pk  %}" class="button primary small">Edit
+                                        game</a>
+                                    </li>
+                                    <li><a href="{% url 'game_delete' game.pk %}" class="button small">Delete game</a>
+                                    </li>
+
+                                </ul>
+                                {% endif %}
+                                <p>{{ game.description }}</p>
+
+                            </div>
+                </article>
+            </section>
+        </div>
+    </section>
+
+{% endblock %}

@@ -2180,6 +2180,7 @@ input, select, textarea {
 	input[type="email"],
 	input[type="tel"],
 	input[type="file"],
+	input[type="number"],
 	select,
 	/*.custom-file-label,*/
 	textarea {

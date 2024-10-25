@@ -1,22 +1,58 @@
 {% extends 'base.html' %}
+{% load static %}
+<script src="{% static 'assets/js/jquery.min.js' %}"></script>
+
 
 {% block content %}
-<header>
-    <div class="inner">
-        <h2>Game Library</h2>
-        <p>Explore our collection of vintage video games</p>
-    </div>
-</header>
+    <!-- Banner -->
 
-<div class="wrapper">
+    <section id="banner">
+        <div class="inner">
+            <h2>Game Library</h2>
+            <p>Explore our collection of vintage video games</p>
+        </div>
+    </section>
+
+
     <section class="wrapper alt style1">
         <div class="inner">
             <h2 class="major">Games</h2>
             <section class="features">
                 {% for game in games %}
-                    <article>
-                        <a href="{% url 'game_detail' game.id %}" class="image"><img src="{{ game.cover_image.url }}" alt="{{ game.title }}" /></a>
+                    <article id="game-{{ game.pk }}">
+                    {% if game.cover_image %}
+                        <a href="{% url 'game_detail' game.id %}" class="image">
+                            <img src="{{ game.cover_image.url }}" alt="{{ game.title }}"/>
+                        </a>
+                    {% else  %}
+
+                    {% endif %}
                         <h3 class="major">{{ game.title }}</h3>
+                        <div>
+
+                            <span class="rating">{{ game.stars_rating_html|safe }}</span>
+                            <!-- Button that triggers the modal -->
+                            <form method="post" action="{% url 'rate_game' game.pk %}" id="rating-form">
+                                {% csrf_token %}
+                                <h3>Rate {{ game.title }}</h3>
+                                {{ game_rating_form.as_p }}
+                                {% if game_rating_form.errors %}
+                                    <div class="errorlist">
+                                        {% for field in game_rating_form %}
+                                            {% for error in field.errors %}
+                                                <p class="error">{{ error }}</p>
+                                            {% endfor %}
+                                        {% endfor %}
+                                        {% for error in game_rating_form.non_field_errors %}
+                                            <p class="error">{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <button type="submit" class="button small">Submit</button>
+                            </form>
+                            -
+
+                        </div>
                         <p>{{ game.description|truncatewords:20 }}</p>
                         <a href="{% url 'game_detail' game.id %}" class="special">Learn more</a>
                     </article>
@@ -34,5 +70,6 @@
             {% endif %}
         </div>
     </section>
-</div>
+
 {% endblock %}
+

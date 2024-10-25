@@ -1,12 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <H1>
-        game_confirm_delete
-    </H1>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block content %}
+
+    <section id="banner" class="small-banner">
+<div class="delete-profile-header">
+            <h1>
+                Are you sure you want to delete this game?
+            </h1>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="sure-buttons">
+                    <!-- Yes (Delete Profile) Button -->
+                    <button class="button primary">Yes</button>
+                    <!-- Go Back Button -->
+                    <a class="button" href="javascript:history.back()">Go Back</a>
+                </div>
+
+            </form>
+        </div>
+    </section>
+{% endblock %}

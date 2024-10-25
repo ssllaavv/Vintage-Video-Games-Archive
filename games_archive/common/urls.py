@@ -3,9 +3,10 @@ from . import views
 
 urlpatterns = [
     path('', views.HomeView.as_view(), name='home'),
-    path('game/<int:game_id>/rate/', views.AddGameRatingView.as_view(), name='rate_game'),
-    path('console/<int:console_id>/rate/', views.AddConsoleRatingView.as_view(), name='rate_console'),
-    path('game/<int:game_id>/comment/', views.AddGameCommentView.as_view(), name='comment_game'),
-    path('console/<int:console_id>/comment/', views.AddConsoleCommentView.as_view(), name='comment_console'),
-    path('search/', views.SearchView.as_view(), name='search'),
+    path('games/<int:game_pk>/rate/', views.add_game_rating, name='rate_game'),
+    path('games/<int:game_pk>/user-rating/', views.get_user_rating, name='get_user_rating'),
+    path('consoles/<int:console_pk>/rate/', views.AddConsoleRatingView.as_view(), name='rate_console'),
+    path('games/<int:game_pk>/comment/', views.AddGameCommentView.as_view(), name='comment_game'),
+    path('console/<int:console_pk>/comment/', views.AddConsoleCommentView.as_view(), name='comment_console'),
+    path('searchs/', views.SearchView.as_view(), name='search'),
 ]

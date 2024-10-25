@@ -1,13 +1,108 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>PROFILE</title>
-</head>
-<body>
-    <h1>
-        Profile details
-    </h1>
-    <a href="{% url 'profile_edit' request.user.pk %}">Edit profile</a>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <section id="banner" class="small-banner">
+        <div class="profile-header">
+            {% if object.profile_picture %}
+                <a href="{{ user.profile_picture.url }}" class="logo profile-picture-container" target="_blank">
+                    <img class="profile-picture-small" src=" {{ object.profile_picture.url }}" alt="Profile picture">
+                </a>
+            {% endif %}
+            <h2 class="major">{{ user.get_user_name }}</h2>
+            {% if user.pk == request.user.pk %}
+                <ul class="actions">
+                    <li><a href="{% url 'profile_edit' request.user.pk %}" class="button primary small">Edit profile</a>
+                    </li>
+                    <li><a href="{% url 'logout' %}" class="button small">Logout</a>
+                    </li>
+                    <li><a href="{% url 'profile delete' request.user.pk %}" class="button small">Delete profile</a>
+                    </li>
+                </ul>
+            {% endif %}
+            <div class="profile-data">
+
+                <section class="logo personal_data">
+                    <h3 class="center">
+                        Personal data
+                    </h3>
+                    <div>
+                        <div>
+                            <b>{{ user.email }}</b>
+                        </div>
+                        <div>
+                            <b>@{{ user.username }}</b>
+                        </div>
+                        <div>
+                            Age: {{ user.age }}
+                        </div>
+                        <div>
+                            Gender: {{ user.gender }}
+                        </div>
+                    </div>
+
+                </section>
+                <section class="contributions">
+                    <h3 class="center">
+                        Contributions
+                    </h3>
+                    <div>
+                        <div>
+
+                            Registered games: {{ user.game_set.count }}
+                        </div>
+                        <div>
+                            Screenshots added: {{ user.screenshot_set.count }}
+                        </div>
+                        <div>
+                            Games reviews: {{ user.gamereview_set.count }}
+                        </div>
+                        <div>
+                            Rated games: {{ user.gamerating_set.count }}
+                        </div>
+                        <div>
+                            Rated consoles: {{ user.consolerating_set.count }}
+                        </div>
+                        <div>
+                            Comments: {{ comments_count }}
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+    <section class="wrapper alt style1">
+        <div class="inner">
+            <h2 class="major">Games</h2>
+            <section class="features">
+                {% for game in user.game_set.all %}
+                    <article>
+                        {% if game.cover_image %}
+                        <a href="{% url 'game_detail' game.id %}" class="image"><img src="{{ game.cover_image.url }}"
+                                                                                     alt="{{ game.title }}"/></a>
+                        {% endif %}
+                        <h3 class="major">{{ game.title }}</h3>
+                        <div>
+                            Rating: {{ game.rating }}
+                        </div>
+                        <p>{{ game.description|truncatewords:20 }}</p>
+                        <a href="{% url 'game_detail' game.id %}" class="special">Learn more</a>
+                    </article>
+                {% endfor %}
+            </section>
+            {% if is_paginated %}
+                <ul class="actions">
+                    {% if page_obj.has_previous %}
+                        <li><a href="?page={{ page_obj.previous_page_number }}" class="button">Previous</a></li>
+                    {% endif %}
+                    {% if page_obj.has_next %}
+                        <li><a href="?page={{ page_obj.next_page_number }}" class="button">Next</a></li>
+                    {% endif %}
+                </ul>
+            {% endif %}
+        </div>
+    </section>
+
+
+
+{% endblock %}

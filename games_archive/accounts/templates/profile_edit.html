@@ -2,19 +2,34 @@
 {% load static %}
 
 {% block content %}
-
-
-    <div class="wrapper">
-        <div class="inner">
-            <section>
-                <div class="edit-profile-header">
+    <section id="banner" class="small-banner">
+{#    <div class="inner">#}
+{#        <h2>Game Library</h2>#}
+{#        <p>Explore our collection of vintage video games</p>#}
+{#    </div>#}
+          <div class="edit-profile-header">
                 {% if object.profile_picture %}
                     <a href="{{ object.profile_picture.url }}" class="profile-picture-container" target="_blank">
                         <img class="profile-picture-small" src=" {{ object.profile_picture.url }}" alt="Profile picture">
                     </a>
                 {% endif %}
                 <h2 class="major">Profile Edit</h2>
-                </div>
+          </div>
+    </section>
+
+
+    <div class="wrapper">
+
+        <div class="inner">
+            <section>
+{#                <div class="edit-profile-header">#}
+{#                {% if object.profile_picture %}#}
+{#                    <a href="{{ object.profile_picture.url }}" class="profile-picture-container" target="_blank">#}
+{#                        <img class="profile-picture-small" src=" {{ object.profile_picture.url }}" alt="Profile picture">#}
+{#                    </a>#}
+{#                {% endif %}#}
+{#                <h2 class="major">Profile Edit</h2>#}
+{#                </div>#}
                 <form class="custom-form" method="post" enctype="multipart/form-data">
 
                     {% csrf_token %}

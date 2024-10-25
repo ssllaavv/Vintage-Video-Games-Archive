@@ -9,7 +9,7 @@
         <div class="logo"><span class="icon fa-gem"></span></div>
         {% if user.is_authenticated %}
 
-        <h2>Welcome to Video Games Archive, {{ user.get_user_name }}</h2>
+        <h2>Welcome to Video Games Archive, @{{ user.get_user_name }}</h2>
 
         {% else %}
 
@@ -21,7 +21,7 @@
     </div>
 </section>
 
-<section id="wrapper">
+{#<section id="wrapper">#}
     <section id="one" class="wrapper spotlight style1">
         <div class="inner">
             <a href="{% url 'game_list' %}" class="image"><img src="{% static 'images/pic01.jpg' %}" alt="" /></a>
@@ -51,5 +51,5 @@
             </div>
         </div>
     </section>
-</section>
+{#</section>#}
 {% endblock %}
