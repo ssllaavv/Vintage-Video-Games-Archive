@@ -6,7 +6,7 @@ from games_archive.consoles.models import Console
 from games_archive.games.models import Game
 
 
-# Create your models he
+# auxiliary function creating rating options
 def create_rating_options(max_rating):
     options = []
     for i in range(1, max_rating + 1):

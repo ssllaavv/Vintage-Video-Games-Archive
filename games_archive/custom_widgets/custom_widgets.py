@@ -45,3 +45,18 @@ class CustomImageUploadWidget(ClearableFileInput):
         })
         return context
 
+
+# Auxiliary function to generate stars icons for rating
+def get_star_rating_html(rating):
+    full_stars = int(rating)  # Number of solid stars
+    half_star = 1 if rating - full_stars >= 0.5 else 0  # Determine if there's a half star
+    empty_stars = 5 - full_stars - half_star  # The rest will be empty stars
+
+    # Generate the HTML for the star rating
+    stars_html = ''
+    stars_html += '<i class="fas fa-star"></i>' * full_stars
+    stars_html += '<i class="fas fa-star-half-alt"></i>' * half_star
+    stars_html += '<i class="far fa-star"></i>' * empty_stars
+
+    return stars_html
+

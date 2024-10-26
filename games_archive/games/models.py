@@ -3,21 +3,7 @@ from django.template.defaultfilters import slugify
 
 from games_archive.accounts.models import GamesArchiveUser
 from games_archive.consoles.models import Console
-
-
-# Auxiliary function to generate stars icons for rating
-def get_star_rating_html(rating):
-    full_stars = int(rating)  # Number of solid stars
-    half_star = 1 if rating - full_stars >= 0.5 else 0  # Determine if there's a half star
-    empty_stars = 5 - full_stars - half_star  # The rest will be empty stars
-
-    # Generate the HTML for the star rating
-    stars_html = ''
-    stars_html += '<i class="fas fa-star"></i>' * full_stars
-    stars_html += '<i class="fas fa-star-half-alt"></i>' * half_star
-    stars_html += '<i class="far fa-star"></i>' * empty_stars
-
-    return stars_html
+from games_archive.custom_widgets.custom_widgets import get_star_rating_html
 
 
 class Game(models.Model):
@@ -27,7 +13,7 @@ class Game(models.Model):
     genre = models.CharField(max_length=50, blank=True, null=True)
     description = models.TextField()
     cover_image = models.ImageField(upload_to='game_covers/', blank=True, null=True)
-    to_consoles = models.ManyToManyField(Console)
+    to_consoles = models.ManyToManyField(Console, blank=True, null=True)
     to_user = models.ForeignKey(GamesArchiveUser, on_delete=models.DO_NOTHING)
 
     @property
@@ -55,6 +41,7 @@ class Screenshot(models.Model):
         super().save(*args, **kwargs)
         if not self.slug:
             self.slug = slugify(f"{self.to_game.title}-{self.from_user.username}-{self.pk}")
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.slug
@@ -67,4 +54,4 @@ class GameReview(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.from_user.username}'s review of {self.to_game.title}"
+        return f"{self.from_user.get_user_name()}'s review of {self.to_game.title}"

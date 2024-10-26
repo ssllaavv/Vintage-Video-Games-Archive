@@ -1,5 +1,7 @@
 from django.db import models
 
+from games_archive.custom_widgets.custom_widgets import get_star_rating_html
+
 
 class Console(models.Model):
     name = models.CharField(max_length=100)
@@ -7,6 +9,17 @@ class Console(models.Model):
     release_year = models.IntegerField(blank=True, null=True)
     description = models.TextField()
     cover_image = models.ImageField(upload_to='console_covers/')
+
+    @property
+    def rating(self):
+        if self.consolerating_set.count() > 0:
+            return sum(rating.rating for rating in self.consolerating_set.all()) / self.consolerating_set.count()
+        else:
+            return 0
+
+    @property
+    def stars_rating_html(self):
+        return get_star_rating_html(self.rating)
 
     def __str__(self):
         return self.name

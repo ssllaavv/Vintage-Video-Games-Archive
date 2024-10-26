@@ -1,12 +1,77 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <H1>
-        console_list
-    </H1>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load static %}
+<script src="{% static 'assets/js/jquery.min.js' %}"></script>
+
+
+{% block content %}
+    <!-- Banner -->
+
+    <section id="banner">
+        <div class="inner">
+            <h2>Console Library</h2>
+            <p>Explore our collection of vintage video Consoles</p>
+        </div>
+    </section>
+
+
+    <section class="wrapper alt style1">
+        <div class="inner">
+            <h2 class="major">Games</h2>
+            <section class="features">
+                {% for console in consoles %}
+                    <article id="console-{{ console.pk }}">
+                    {% if console.cover_image %}
+                        <a href="{% url 'console_detail' console.pk %}" class="image">
+                            <img src="{{ console.cover_image.url }}" alt="{{ console.name }}"/>
+                        </a>
+                    {% else  %}
+
+                    {% endif %}
+                        <h3 class="major">{{ console.name }}</h3>
+                            <P>{{ console.release_year }}</P>
+                            <p>{{ console.manufacturer }}</p>
+                        <div>
+
+                            <span class="rating">{{ console.stars_rating_html|safe }}</span>
+                            <!-- Button that triggers the modal -->
+{#                            <form method="post" action="{% url 'rate_game' game.pk %}" id="rating-form">#}
+{#                                {% csrf_token %}#}
+{#                                <h3>Rate {{ game.title }}</h3>#}
+{#                                {{ game_rating_form.as_p }}#}
+{#                                {% if game_rating_form.errors %}#}
+{#                                    <div class="errorlist">#}
+{#                                        {% for field in game_rating_form %}#}
+{#                                            {% for error in field.errors %}#}
+{#                                                <p class="error">{{ error }}</p>#}
+{#                                            {% endfor %}#}
+{#                                        {% endfor %}#}
+{#                                        {% for error in game_rating_form.non_field_errors %}#}
+{#                                            <p class="error">{{ error }}</p>#}
+{#                                        {% endfor %}#}
+{#                                    </div>#}
+{#                                {% endif %}#}
+{#                                <button type="submit" class="button small">Submit</button>#}
+{#                            </form>#}
+
+
+                        </div>
+                        <p>{{ console.description|truncatewords:20 }}</p>
+                        <a href="{% url 'console_detail' console.pk %}" class="special">Learn more</a>
+                    </article>
+                {% endfor %}
+            </section>
+            {% if is_paginated %}
+                <ul class="actions">
+                    {% if page_obj.has_previous %}
+                        <li><a href="?page={{ page_obj.previous_page_number }}" class="button">Previous</a></li>
+                    {% endif %}
+                    {% if page_obj.has_next %}
+                        <li><a href="?page={{ page_obj.next_page_number }}" class="button">Next</a></li>
+                    {% endif %}
+                </ul>
+            {% endif %}
+        </div>
+    </section>
+
+{% endblock %}
+

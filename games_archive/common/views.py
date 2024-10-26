@@ -52,8 +52,6 @@ class HomeView(TemplateView):
 #
 
 
-
-
 @require_http_methods(["POST"])
 @login_required
 def add_game_rating(request, game_pk):

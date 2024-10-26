@@ -8,5 +8,5 @@ urlpatterns = [
     path('<int:pk>/edit/', views.GameUpdateView.as_view(), name='game_update'),
     path('<int:pk>/delete/', views.GameDeleteView.as_view(), name='game_delete'),
     path('<int:game_id>/add_screenshot/', views.AddScreenshotView.as_view(), name='add_screenshot'),
-    path('<int:game_id>/add_review/', views.AddReviewView.as_view(), name='add_review'),
+    path('<int:game_id>/add_review/', views.AddOrUpdateReviewView.as_view(), name='add_review'),
 ]

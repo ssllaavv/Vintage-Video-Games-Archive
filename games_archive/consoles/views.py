@@ -17,6 +17,17 @@ class ConsoleDetailView(DetailView):
     template_name = 'console_detail.html'
     context_object_name = 'console'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comments'] = self.object.consolecomment_set.all()
+        popular_games = sorted(
+            self.object.game_set.all(),
+            key=lambda game: game.rating,
+            reverse=True
+        )
+        context['popular_games'] = popular_games
+        return context
+
 
 class ConsoleCreateView(LoginRequiredMixin, CreateView):
     model = Console

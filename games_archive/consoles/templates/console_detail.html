@@ -1,12 +1,92 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <H1>
-        console_details
-    </H1>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <section class="wrapper alt style1">
+        <div class="inner">
+            <h2 class="major">Console</h2>
+            <section class="features-my console">
+                <article id="console-{{ console.pk }}">
+                    {% if console.cover_image %}
+                        <img src="{{ console.cover_image.url }}" alt="{{ console.name }}"/>
+
+                    {% endif %}
+                    <div class="game_details">
+                        <h3 class="major">{{ console.name }}</h3>
+                        <div>{{ console.release_year }}</div>
+                        <div>By: {{ console.manufacturer }}</div>
+
+                        <div>
+                            <span class="rating">{{ console.stars_rating_html|safe }}</span>
+                        </div>
+
+                    </div>
+                </article>
+
+            </section>
+            <section>
+                <h3 class="major">Description</h3>
+                {% if console.description %}
+                    <div class="box alt">
+                        <p>{{ console.description }}</p>
+                    </div>
+                {% else %}
+                    <div class="box alt">
+                        <p>No description yet...</p>
+                    </div>
+                {% endif %}
+            </section>
+
+            <section>
+                <h3 class="major">Comments</h3>
+                {% if comments %}
+                    {% for comment in comments %}
+                        <div class="box alt comment">
+                            <a href="{% url 'profile details' comment.from_user.pk %}">
+                                {% if comment.from_user.profile_picture %}
+                                    <div class="thumbnail-container">
+                                        <img class="thumbnail-profile" src="{{ comment.from_user.profile_picture.url }}"
+                                             alt="profile picture">
+                                    </div>
+                                {% endif %}
+                                <div class="user-name">
+                                    {{ comment.from_user.get_user_name }}
+                                </div>
+                            </a>
+                            <blockquote>{{ comment.comment }}</blockquote>
+                            <p class="date-of-publication">{{ comment.created_on }}</p>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="box alt">
+
+                        <p>No comments yet...</p>
+                    </div>
+                {% endif %}
+            </section>
+                <h3 class="major">Popular games</h3>
+                     <div class="row gtr-uniform">
+                         {% if popular_games %}
+                         {% for game in popular_games %}
+                         <div class="col-4">
+                                <span class="image fit">
+                                      <a href="{% url 'game_detail' game.pk %}" >
+                                          <div class="game-title">
+                                              {{ game.title }}
+                                          </div>
+                                          {% if game.cover_image %}
+                                            <img src="{{ game.cover_image.url }}" alt="">
+                                          {% endif %}
+                                      </a>
+                                </span>
+                            </div>
+                        {% endfor %}
+                        {% endif %}
+                     </div>
+            <section>
+
+            </section>
+        </div>
+    </section>
+
+{% endblock %}

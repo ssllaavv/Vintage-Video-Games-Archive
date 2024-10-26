@@ -8,11 +8,23 @@
             <section class="features-my">
                 <article id="game-{{ game.pk }}">
                     {% if game.cover_image %}
-                    <img src="{{ game.cover_image.url }}" alt="{{ game.title }}"/>
+                        <img src="{{ game.cover_image.url }}" alt="{{ game.title }}"/>
 
                     {% endif %}
                     <div class="game_details">
                         <h3 class="major">{{ game.title }}</h3>
+                        <div>
+                            <a href="{% url 'profile details' game.to_user.pk %}">
+                                Uploaded by :
+                                {% if game.to_user.profile_picture %}
+                                    <div class="thumbnail-container">
+                                        <img class="thumbnail-profile" src="{{ game.to_user.profile_picture.url }}"
+                                             alt="profile picture">
+                                    </div>
+                                {% endif %}
+                                {{ game.to_user.get_user_name }}
+                            </a>
+                        </div>
                         <div>{{ game.release_year }}</div>
                         <div>By: {{ game.developer }}</div>
                         <div>Genre: {{ game.genre }}</div>
@@ -20,52 +32,134 @@
                             Consoles:
                             <ul>
                                 {% for console in game.to_consoles.all %}
-                                    <li><a href="{% url 'console_detail' console.pk %}">console.name</a></li>
+                                    <li><a href="{% url 'console_detail' console.pk %}">
+                                        <img src="{{ console.cover_image.url }}" class="thumbnail" alt="console image">
+                                        {{ console.name }}
+                                    </a></li>
                                 {% endfor %}
                             </ul>
 
                             <div>
                                 {% include 'game_rating_stars.html' %}
 
-{#                                <div>#}
-{##}
-{#                                    <span class="rating">{{ game.stars_rating_html|safe }}</span>#}
-{#                                    <!-- Button that triggers the modal -->#}
-{#                                    <form method="post" action="{% url 'rate_game' game.pk %}" id="rating-form">#}
-{#                                        {% csrf_token %}#}
-{#                                        <h3>Rate {{ game.title }}</h3>#}
-{#                                        {{ game_rating_form.as_p }}#}
-{#                                        {% if game_rating_form.errors %}#}
-{#                                            <div class="errorlist">#}
-{#                                                {% for field in game_rating_form %}#}
-{#                                                    {% for error in field.errors %}#}
-{#                                                        <p class="error">{{ error }}</p>#}
-{#                                                    {% endfor %}#}
-{#                                                {% endfor %}#}
-{#                                                {% for error in game_rating_form.non_field_errors %}#}
-{#                                                    <p class="error">{{ error }}</p>#}
-{#                                                {% endfor %}#}
-{#                                            </div>#}
-{#                                        {% endif %}#}
-{#                                        <button type="submit" class="button small">Submit</button>#}
-{#                                    </form>#}
-{#                                </div>#}
+                                {#                                <div>#}
+                                {##}
+                                {#                                    <span class="rating">{{ game.stars_rating_html|safe }}</span>#}
+                                {#                                    <!-- Button that triggers the modal -->#}
+                                {#                                    <form method="post" action="{% url 'rate_game' game.pk %}" id="rating-form">#}
+                                {#                                        {% csrf_token %}#}
+                                {#                                        <h3>Rate {{ game.title }}</h3>#}
+                                {#                                        {{ game_rating_form.as_p }}#}
+                                {#                                        {% if game_rating_form.errors %}#}
+                                {#                                            <div class="errorlist">#}
+                                {#                                                {% for field in game_rating_form %}#}
+                                {#                                                    {% for error in field.errors %}#}
+                                {#                                                        <p class="error">{{ error }}</p>#}
+                                {#                                                    {% endfor %}#}
+                                {#                                                {% endfor %}#}
+                                {#                                                {% for error in game_rating_form.non_field_errors %}#}
+                                {#                                                    <p class="error">{{ error }}</p>#}
+                                {#                                                {% endfor %}#}
+                                {#                                            </div>#}
+                                {#                                        {% endif %}#}
+                                {#                                        <button type="submit" class="button small">Submit</button>#}
+                                {#                                    </form>#}
+                                {#                                </div>#}
                                 {% if game.to_user == request.user %}
-                                <ul class="actions">
-                                    <li><a href="{% url 'game_update' game.pk  %}" class="button primary small">Edit
-                                        game</a>
-                                    </li>
-                                    <li><a href="{% url 'game_delete' game.pk %}" class="button small">Delete game</a>
-                                    </li>
+                                    <ul class="actions">
+                                        <li><a href="{% url 'game_update' game.pk %}" class="button primary small">Edit
+                                            game</a>
+                                        </li>
+                                        <li><a href="{% url 'game_delete' game.pk %}" class="button small">Delete
+                                            game</a>
+                                        </li>
 
-                                </ul>
+                                    </ul>
                                 {% endif %}
-                                <p>{{ game.description }}</p>
+
 
                             </div>
                 </article>
             </section>
+            <section>
+                <h3 class="major">Description</h3>
+                {% if game.description %}
+                    <div class="box alt">
+                        <p>{{ game.description }}</p>
+                    </div>
+                {% else %}
+                    <div class="box alt">
+                        <p>No description yet...</p>
+                    </div>
+                {% endif %}
+            </section>
+            <section>
+                <h3 class="major">Review by {{ game.to_user.get_user_name }}</h3>
+                {% if review %}
+                    <div class="box alt">
+                        <p>{{ review.content }}</p>
+                    </div>
+                {% else %}
+                    <div class="box alt">
+                        <p>No review yet...</p>
+                    </div>
+                {% endif %}
+
+            </section>
+            <section>
+                <h3 class="major">Screenshots</h3>
+                {% if screenshots %}
+                    <div class="box alt">
+                    <div class="row gtr-uniform">
+                        {% for screenshot in  screenshots %}
+                            <div class="col-4">
+                                <span class="image fit">
+                                      <a href="{{ screenshot.picture.url }}" target="_blank">
+                                            <img src="{{ screenshot.picture.url }}" alt="">
+                                      </a>
+                                </span>
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                {% else %}
+                    <div class="box alt">
+                        <p>No screenshots yet...</p>
+                    </div>
+
+                {% endif %}
+                <section>
+                    <h3 class="major">Comments</h3>
+                    {% if comments %}
+                        {% for comment in comments %}
+                            <div class="box alt comment">
+                                <a href="{% url 'profile details' comment.from_user.pk %}">
+                                    {% if comment.from_user.profile_picture %}
+                                        <div class="thumbnail-container">
+                                            <img class="thumbnail-profile"
+                                                 src="{{ comment.from_user.profile_picture.url }}"
+                                                 alt="profile picture">
+                                        </div>
+                                    {% endif %}
+                                    <div class="user-name">
+                                        {{ comment.from_user.get_user_name }}
+                                    </div>
+                                </a>
+                                <blockquote>{{ comment.comment }}</blockquote>
+                                <p class="date-of-publication">{{ comment.created_on }}</p>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="box alt">
+
+                            <p>No comments yet...</p>
+                        </div>
+                    {% endif %}
+                </section>
+                </div>
+            </section>
         </div>
     </section>
+
 
 {% endblock %}

@@ -72,8 +72,8 @@ class UserDetailView(LoginRequiredMixin, DetailView):
     template_name = 'profile-details.html'
     context_object_name = 'user'
 
-    def get_object(self, queryset=None):
-        return self.request.user
+    # def get_object(self, queryset=None):
+    #     return self.request.user
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
