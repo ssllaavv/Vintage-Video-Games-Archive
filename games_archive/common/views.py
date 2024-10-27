@@ -1,3 +1,5 @@
+import re
+
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView, CreateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -110,26 +112,66 @@ class AddConsoleRatingView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class AddGameCommentView(LoginRequiredMixin, CreateView):
-    model = GameComment
-    form_class = GameCommentForm
-    template_name = 'game_comment_form.html'
+# class AddGameCommentView(LoginRequiredMixin, CreateView):
+#     model = GameComment
+#     form_class = GameCommentForm
+#     template_name = 'game_comment_form.html'
+#
+#     def form_valid(self, form):
+#         form.instance.from_user = self.request.user
+#         form.instance.to_game = Game.objects.get(pk=self.kwargs['game_id'])
+#         return super().form_valid(form)
 
-    def form_valid(self, form):
-        form.instance.from_user = self.request.user
-        form.instance.to_game = Game.objects.get(pk=self.kwargs['game_id'])
-        return super().form_valid(form)
+@login_required
+def add_game_comment(request, game_pk):
+    if request.method == 'POST':
+        game = Game.objects.get(pk=game_pk)
+        form = GameCommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.to_game = game
+            comment.from_user = request.user
+            comment.save()
+
+    referrer = request.META.get('HTTP_REFERER')
+    pattern = r".*games/\d+/.*"
+    match = re.search(pattern, referrer)
+
+    if match:
+        return redirect(request.META['HTTP_REFERER'] + f'#game-comments-{game_pk}')
+    else:
+        return redirect(request.META['HTTP_REFERER'] + f'#game-{game_pk}')
 
 
-class AddConsoleCommentView(LoginRequiredMixin, CreateView):
-    model = ConsoleComment
-    form_class = ConsoleCommentForm
-    template_name = 'console_comment_form.html'
+# class AddConsoleCommentView(LoginRequiredMixin, CreateView):
+#     model = ConsoleComment
+#     form_class = ConsoleCommentForm
+#     template_name = 'console_comment_form.html'
+#
+#     def form_valid(self, form):
+#         form.instance.from_user = self.request.user
+#         form.instance.to_console = Console.objects.get(pk=self.kwargs['console_id'])
+#         return super().form_valid(form)
 
-    def form_valid(self, form):
-        form.instance.from_user = self.request.user
-        form.instance.to_console = Console.objects.get(pk=self.kwargs['console_id'])
-        return super().form_valid(form)
+@login_required
+def add_console_comment(request, console_pk):
+    if request.method == 'POST':
+        console = Console.objects.get(pk=console_pk)
+        form = ConsoleCommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.to_console = console
+            comment.from_user = request.user
+            comment.save()
+
+        referrer = request.META.get('HTTP_REFERER')
+        pattern = r".*consoles/\d+/.*"
+        match = re.search(pattern, referrer)
+
+        if match:
+            return redirect(request.META['HTTP_REFERER'] + f'#console-comments-{console_pk}')
+        else:
+            return redirect(request.META['HTTP_REFERER'] + f'#console-{ console.pk }')
 
 
 class SearchView(ListView):

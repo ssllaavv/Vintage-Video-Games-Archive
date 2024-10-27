@@ -32,29 +32,37 @@
 
                             <span class="rating">{{ game.stars_rating_html|safe }}</span>
                             <!-- Button that triggers the modal -->
-                            <form method="post" action="{% url 'rate_game' game.pk %}" id="rating-form">
-                                {% csrf_token %}
-                                <h3>Rate {{ game.title }}</h3>
-                                {{ game_rating_form.as_p }}
-                                {% if game_rating_form.errors %}
-                                    <div class="errorlist">
-                                        {% for field in game_rating_form %}
-                                            {% for error in field.errors %}
-                                                <p class="error">{{ error }}</p>
-                                            {% endfor %}
-                                        {% endfor %}
-                                        {% for error in game_rating_form.non_field_errors %}
-                                            <p class="error">{{ error }}</p>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                                <button type="submit" class="button small">Submit</button>
-                            </form>
-                            -
+{#                            <form method="post" action="{% url 'rate_game' game.pk %}" id="rating-form">#}
+{#                                {% csrf_token %}#}
+{#                                <h3>Rate {{ game.title }}</h3>#}
+{#                                {{ game_rating_form.as_p }}#}
+{#                                {% if game_rating_form.errors %}#}
+{#                                    <div class="errorlist">#}
+{#                                        {% for field in game_rating_form %}#}
+{#                                            {% for error in field.errors %}#}
+{#                                                <p class="error">{{ error }}</p>#}
+{#                                            {% endfor %}#}
+{#                                        {% endfor %}#}
+{#                                        {% for error in game_rating_form.non_field_errors %}#}
+{#                                            <p class="error">{{ error }}</p>#}
+{#                                        {% endfor %}#}
+{#                                    </div>#}
+{#                                {% endif %}#}
+{#                                <button type="submit" class="button small">Submit</button>#}
+{#                            </form>#}
+
 
                         </div>
                         <p>{{ game.description|truncatewords:20 }}</p>
                         <a href="{% url 'game_detail' game.id %}" class="special">Learn more</a>
+                        <div>
+                            <form method="POST" action="{% url 'comment_game' game.pk %}">
+                                {% csrf_token %}
+                                {{ game_comment_form.as_p }}
+                                <button type="submit" class="button primary small">Comment</button>
+                            </form>
+
+                        </div>
                     </article>
                 {% endfor %}
             </section>

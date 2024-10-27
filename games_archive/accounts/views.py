@@ -8,6 +8,8 @@ from .forms import UserRegistrationForm, UserProfileForm, UserLoginForm
 from django.views import generic as views
 from django.templatetags.static import static
 
+from ..common.forms import GameCommentForm
+
 
 class UserRegisterView(CreateView):
     model = get_user_model()
@@ -27,9 +29,9 @@ class UserRegisterView(CreateView):
 
     def get_success_url(self):
         result = self.request.POST.get('next', None)
-        print(result)
+        # print(result)
         if result == 'None' or result.includs('register'):
-            print('There is NO next!')
+            # print('There is NO next!')
             return self.success_url
         return result
 
@@ -85,6 +87,7 @@ class UserDetailView(LoginRequiredMixin, DetailView):
         context.update({
             'comments_count': comments_count,
             'profile_image': profile_image,
+            'game_comment_form': GameCommentForm(),
         })
 
         print(comments_count)

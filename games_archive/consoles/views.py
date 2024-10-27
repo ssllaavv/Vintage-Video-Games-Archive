@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from .models import Console
 from .forms import ConsoleForm
+from ..common.forms import ConsoleCommentForm
 
 
 class ConsoleListView(ListView):
@@ -10,6 +11,11 @@ class ConsoleListView(ListView):
     template_name = 'console_list.html'
     context_object_name = 'consoles'
     paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['console_comment_form'] = ConsoleCommentForm()
+        return context
 
 
 class ConsoleDetailView(DetailView):
@@ -20,6 +26,7 @@ class ConsoleDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['comments'] = self.object.consolecomment_set.all()
+        context['console_comment_form'] = ConsoleCommentForm()
         popular_games = sorted(
             self.object.game_set.all(),
             key=lambda game: game.rating,

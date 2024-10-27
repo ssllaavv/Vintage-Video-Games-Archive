@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy, reverse
 from .models import Game, Screenshot, GameReview
 from .forms import GameForm, ScreenshotForm, GameReviewForm
-from ..common.forms import GameRatingForm
+from ..common.forms import GameRatingForm, GameCommentForm
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -19,6 +19,7 @@ class GameListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['game_rating_form'] = GameRatingForm()  # Add the rating form to the context
+        context['game_comment_form'] = GameCommentForm()
         return context
 
 
@@ -32,6 +33,7 @@ class GameDetailView(DetailView):
         context['screenshots'] = self.object.screenshot_set.all()
         context['review'] = self.object.reviews.all().first()
         context['comments'] = self.object.gamecomment_set.all()
+        context['game_comment_form'] = GameCommentForm()
         return context
 
 

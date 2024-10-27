@@ -56,6 +56,13 @@
 
                         </div>
                         <p>{{ console.description|truncatewords:20 }}</p>
+                        <div>
+                            <form method="POST" action="{% url 'comment_console' console.pk %}">
+                                {% csrf_token %}
+                                {{ console_comment_form.as_p }}
+                                <button type="submit" class="button primary small">Comment</button>
+                            </form>
+                        </div>
                         <a href="{% url 'console_detail' console.pk %}" class="special">Learn more</a>
                     </article>
                 {% endfor %}

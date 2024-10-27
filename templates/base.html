@@ -4,84 +4,86 @@
 <html>
 <head>
     <title>{% block title %}Video Games Archive{% endblock %}</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-    <link rel="stylesheet" href="{% static 'assets/css/main.css' %}" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+    <link rel="stylesheet" href="{% static 'assets/css/main.css' %}"/>
     <link rel="stylesheet" href="{% static 'assets/css/fontawesome-all.min.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/css/custom-styles.css' %}" />
-    <noscript><link rel="stylesheet" href="{% static 'assets/css/noscript.css' %}" /></noscript>
+    <link rel="stylesheet" href="{% static 'assets/css/custom-styles.css' %}"/>
+    <noscript>
+        <link rel="stylesheet" href="{% static 'assets/css/noscript.css' %}"/>
+    </noscript>
 </head>
 <body class="is-preload">
 
-    <!-- Page Wrapper -->
-    <div id="page-wrapper">
+<!-- Page Wrapper -->
+<div id="page-wrapper">
 
-        <!-- Header -->
-        <header id="header" class="alt">
+    <!-- Header -->
+    <header id="header" class="alt">
 
 
-            {% if user.is_authenticated %}
-                  <h1><a href="{% url 'home' %}">Video Games Archive, </a>
-                  <a href="{% url 'profile details' user.pk  %}">@{{ user.get_user_name }}</a></h1>
+        {% if user.is_authenticated %}
+            <h1><a href="{% url 'home' %}">Video Games Archive, </a>
+                <a href="{% url 'profile details' user.pk %}">@{{ user.get_user_name }}</a></h1>
 
-            {% else %}
-                  <h1><a href="{% url 'home' %}">Video Games Archive</a></h1>
+        {% else %}
+            <h1><a href="{% url 'home' %}">Video Games Archive</a></h1>
 
-            {% endif %}
+        {% endif %}
 
-            <nav>
-                <a href="#menu">Menu</a>
-            </nav>
-        </header>
-
-        <!-- Menu -->
-        <nav id="menu">
-            <div class="inner">
-                <h2>Menu</h2>
-                <ul class="links">
-                    <li><a href="{% url 'home' %}">Home</a></li>
-                    <li><a href="{% url 'game_list' %}">Games</a></li>
-                    <li><a href="{% url 'console_list' %}">Consoles</a></li>
-                    {% if user.is_authenticated %}
-                        <li><a href="{% url 'profile details' request.user.pk %}">Profile</a></li>
-                        <li><a href="{% url 'logout' %}">Logout</a></li>
-                    {% else %}
-                        <li><a href="{% url 'login' %}">Login</a></li>
-                        <li><a href="{% url 'register' %}">Register</a></li>
-                    {% endif %}
-                </ul>
-                <a href="#" class="close">Close</a>
-            </div>
+        <nav>
+            <a href="#menu">Menu</a>
         </nav>
+    </header>
 
-        <!-- Wrapper -->
-        <section id="wrapper">
-            {% block content %}
-            {% endblock %}
-        </section>
+    <!-- Menu -->
+    <nav id="menu">
+        <div class="inner">
+            <h2>Menu</h2>
+            <ul class="links">
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'game_list' %}">Games</a></li>
+                <li><a href="{% url 'console_list' %}">Consoles</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'profile details' request.user.pk %}">Profile</a></li>
+                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                    <li><a href="{% url 'register' %}">Register</a></li>
+                {% endif %}
+            </ul>
+            <a href="#" class="close">Close</a>
+        </div>
+    </nav>
 
-        <!-- Footer -->
-        <section id="footer">
-            <div class="inner">
-                <h2 class="major">Get in touch</h2>
-                <p>Join our community of vintage game enthusiasts!</p>
-                <ul class="copyright">
-                    <li>&copy; Video Games Archive. All rights reserved.</li>
-                    <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-                </ul>
-            </div>
-        </section>
+    <!-- Wrapper -->
+    <section id="wrapper">
+        {% block content %}
+        {% endblock %}
+    </section>
 
-    </div>
+    <!-- Footer -->
+    <section id="footer">
+        <div class="inner">
+            <h2 class="major">Get in touch</h2>
+            <p>Join our community of vintage game enthusiasts!</p>
+            <ul class="copyright">
+                <li>&copy; Video Games Archive. All rights reserved.</li>
+                <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+            </ul>
+        </div>
+    </section>
 
-    <!-- Scripts -->
-    <script src="{% static 'assets/js/jquery.min.js' %}"></script>
-    <script src="{% static 'assets/js/jquery.scrollex.min.js' %}"></script>
-    <script src="{% static 'assets/js/browser.min.js' %}"></script>
-    <script src="{% static 'assets/js/breakpoints.min.js' %}"></script>
-    <script src="{% static 'assets/js/util.js' %}"></script>
-    <script src="{% static 'assets/js/main.js' %}"></script>
-    <script src="{% static 'assets/js/custom_js_scripts.js' %}"></script>
+</div>
+
+<!-- Scripts -->
+<script src="{% static 'assets/js/jquery.min.js' %}"></script>
+<script src="{% static 'assets/js/jquery.scrollex.min.js' %}"></script>
+<script src="{% static 'assets/js/browser.min.js' %}"></script>
+<script src="{% static 'assets/js/breakpoints.min.js' %}"></script>
+<script src="{% static 'assets/js/util.js' %}"></script>
+<script src="{% static 'assets/js/main.js' %}"></script>
+<script src="{% static 'assets/js/custom_js_scripts.js' %}"></script>
 
 </body>
 </html>

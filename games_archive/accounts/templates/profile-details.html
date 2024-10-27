@@ -83,10 +83,18 @@
                         {% endif %}
                         <h3 class="major">{{ game.title }}</h3>
                         <div>
-                            Rating: {{ game.rating }}
+                              <span class="rating">{{ game.stars_rating_html|safe }}</span>
                         </div>
                         <p>{{ game.description|truncatewords:20 }}</p>
                         <a href="{% url 'game_detail' game.id %}" class="special">Learn more</a>
+                        <div>
+                            <form method="POST" action="{% url 'comment_game' game.pk %}">
+                                {% csrf_token %}
+                                {{ game_comment_form.as_p }}
+                                <button type="submit" class="button primary small">Comment</button>
+                            </form>
+
+                        </div>
                     </article>
                 {% endfor %}
             </section>

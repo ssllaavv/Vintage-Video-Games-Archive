@@ -13,7 +13,7 @@ class Game(models.Model):
     genre = models.CharField(max_length=50, blank=True, null=True)
     description = models.TextField()
     cover_image = models.ImageField(upload_to='game_covers/', blank=True, null=True)
-    to_consoles = models.ManyToManyField(Console, blank=True, null=True)
+    to_consoles = models.ManyToManyField(Console, blank=True,)
     to_user = models.ForeignKey(GamesArchiveUser, on_delete=models.DO_NOTHING)
 
     @property

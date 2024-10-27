@@ -129,7 +129,15 @@
 
                 {% endif %}
                 <section>
-                    <h3 class="major">Comments</h3>
+                <div>
+                    <form method="POST" action="{% url 'comment_game' game.pk %}">
+                        {% csrf_token %}
+                        {{ game_comment_form.as_p }}
+                        <button type="submit" class="button primary small">Comment</button>
+                    </form>
+
+                </div>
+                    <h3 class="major" id="game-comments-{{ game.pk }}">Comments</h3>
                     {% if comments %}
                         {% for comment in comments %}
                             <div class="box alt comment">
@@ -145,7 +153,7 @@
                                         {{ comment.from_user.get_user_name }}
                                     </div>
                                 </a>
-                                <blockquote>{{ comment.comment }}</blockquote>
+                                <blockquote>{{ comment.comment|linebreaksbr }}</blockquote>
                                 <p class="date-of-publication">{{ comment.created_on }}</p>
                             </div>
                         {% endfor %}
