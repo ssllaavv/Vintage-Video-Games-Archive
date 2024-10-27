@@ -1,3 +1,8 @@
+body {
+    background-image: url(../images/arcademachines1.jpg);
+}
+
+
 
 /*.custom-form .row.gtr-uniform {*/
 /*  flex-direction: column;*/
@@ -230,7 +235,17 @@ section .comment:nth-of-type(even) {
     background-color: rgba(0, 0, 0, 0.1);
     padding: 50px;
     border-radius: 10px;
+    word-wrap: break-word;   /* Wraps long words to the next line */
+    white-space: pre-line;   /* Preserves new lines and spaces */
 }
+
+.comment-textarea {
+    min-height: 100px;
+    max-height: 300px;
+    height: 100px;
+    resize: vertical;
+}
+
 
 
 /* game title in console details view*/
@@ -244,3 +259,4 @@ section .comment:nth-of-type(even) {
 .features-my {
     margin-bottom: 50px;
 }
+
