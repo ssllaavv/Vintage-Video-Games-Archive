@@ -1,5 +1,6 @@
 from django.db import models
 
+from games_archive.accounts.models import GamesArchiveUser
 from games_archive.custom_widgets.custom_widgets import get_star_rating_html
 
 
@@ -9,6 +10,7 @@ class Console(models.Model):
     release_year = models.IntegerField(blank=True, null=True)
     description = models.TextField()
     cover_image = models.ImageField(upload_to='console_covers/')
+    to_user = models.ForeignKey(GamesArchiveUser, on_delete=models.DO_NOTHING)
 
     @property
     def rating(self):

@@ -1,0 +1,321 @@
+{##}
+{#{% block extra_head %}#}
+{#<style>#}
+{#  .star-rating {#}
+{#    display: flex;#}
+{#    justify-content: center;#}
+{#    gap: 4px;#}
+{#  }#}
+{##}
+{#  .star {#}
+{#    cursor: pointer;#}
+{#    font-size: 24px;#}
+{#    color: #ccc;#}
+{#  }#}
+{##}
+{#  .star:hover,#}
+{#  .star:hover ~ .star {#}
+{#    color: #fc0;#}
+{#  }#}
+{##}
+{#  .star.active {#}
+{#    color: #f90;#}
+{#  }#}
+{##}
+{#  .rating-message {#}
+{#    text-align: center;#}
+{#    font-style: italic;#}
+{#    color: #999;#}
+{#    margin-top: 0.5em;#}
+{#  }#}
+{#</style>#}
+{#{% endblock %}#}
+{##}
+{#{% block content %}#}
+{#<div class="console-rating">#}
+{#  <!-- DIFFERENCE with game_rating_stars.html: Changed game-id to console-id -->#}
+{#  <div class="star-rating" console-id="{{ console.pk }}">#}
+{#    <!-- Instead of radio buttons, use spans for stars like in game rating -->#}
+{#    <span class="star" rating="1">★</span>#}
+{#    <span class="star" rating="2">★</span>#}
+{#    <span class="star" rating="3">★</span>#}
+{#    <span class="star" rating="4">★</span>#}
+{#    <span class="star" rating="5">★</span>#}
+{#  </div>#}
+{#  <div class="rating-message"></div>#}
+{#</div>#}
+{#{% endblock %}#}
+{##}
+{#{% block extra_js %}#}
+{#<script>#}
+{#  document.addEventListener('DOMContentLoaded', function () {#}
+{#    const starRatingEls = document.querySelectorAll('.console-rating .star-rating');#}
+{##}
+{#    starRatingEls.forEach((starRatingEl) => {#}
+{#      const consoleId = starRatingEl.getAttribute('console-id');#}
+{#      const stars = starRatingEl.querySelectorAll('.star');#}
+{#      const ratingMessage = starRatingEl.nextElementSibling;#}
+{##}
+{#      // Function to update stars visual state#}
+{#      function updateStars(rating) {#}
+{#        stars.forEach(star => {#}
+{#          const starRating = parseInt(star.getAttribute('rating'));#}
+{#          if (starRating <= rating) {#}
+{#            star.classList.add('active');#}
+{#          } else {#}
+{#            star.classList.remove('active');#}
+{#          }#}
+{#        });#}
+{#      }#}
+{##}
+{#      // Get user's existing rating#}
+{#      fetch(`/consoles/${consoleId}/user-rating/`)#}
+{#        .then((response) => response.json())#}
+{#        .then((data) => {#}
+{#          if (data.rating) {#}
+{#            updateStars(data.rating);#}
+{#          }#}
+{#        })#}
+{#        .catch((error) => {#}
+{#          console.error('Error fetching user rating:', error);#}
+{#        });#}
+{##}
+{#      // Add click handlers to stars#}
+{#      stars.forEach(star => {#}
+{#        star.addEventListener('click', () => {#}
+{#          const rating = star.getAttribute('rating');#}
+{##}
+{#          fetch(`/consoles/${consoleId}/rate/`, {#}
+{#            method: 'POST',#}
+{#            headers: {#}
+{#              'Content-Type': 'application/json',#}
+{#              'X-CSRFToken': '{{ csrf_token }}',#}
+{#            },#}
+{#            body: JSON.stringify({ rating }),#}
+{#          })#}
+{#            .then((response) => response.json())#}
+{#            .then((data) => {#}
+{#              if (data.error) {#}
+{#                ratingMessage.textContent = data.error;#}
+{#              } else {#}
+{#                ratingMessage.textContent = data.message;#}
+{#                updateStars(rating);#}
+{#              }#}
+{#            })#}
+{#            .catch((error) => {#}
+{#              console.error('Error saving console rating:', error);#}
+{#              ratingMessage.textContent = 'Error saving rating';#}
+{#            });#}
+{#        });#}
+{#      });#}
+{#    });#}
+{#  });#}
+{#</script>#}
+{#{% endblock %}#}
+
+
+{% block extra_head %}
+<style>
+    .star-rating {
+        display: inline-flex;
+        gap: 4px;
+        flex-direction: row; /* Ensure stars are in a row */
+    }
+
+    .star-rating .star {
+        cursor: pointer;
+        font-size: 24px;
+        transition: all 0.2s;
+    }
+
+    /* Default state - empty stars */
+    .star-rating .star i {
+        color: #ddd;
+    }
+
+    /* Active state - solid golden stars */
+    .star-rating .star.active i.far {
+        display: none;
+    }
+
+    .star-rating .star.active i.fas {
+        display: inline-block;
+        color: #ffd700;
+    }
+
+    /* Hide solid star by default */
+    .star-rating .star i.fas {
+        display: none;
+    }
+
+    /* Show empty star by default */
+    .star-rating .star i.far {
+        display: inline-block;
+    }
+
+    /* Hover effects */
+    .star-rating .star:hover i.far {
+        display: none;
+    }
+
+    .star-rating .star:hover i.fas {
+        display: inline-block;
+        color: #ffd700;
+    }
+
+    .star-rating .star:hover ~ .star i.far {
+        display: inline-block;
+    }
+
+    .star-rating .star:hover ~ .star i.fas {
+        display: none;
+    }
+
+    .rating-message {
+        margin-top: 8px;
+        font-size: 14px;
+        display: none;
+    }
+
+    .rating-message.show {
+        display: block;
+    }
+
+    .rating-message.success {
+        color: green;
+    }
+
+    .rating-message.error {
+        color: red;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- ... other content ... -->
+
+<div class="console-rating">
+    <div class="star-rating" data-console-id="{{ console.pk }}">
+        <!-- Each star now contains both empty and solid versions -->
+        <span class="star" data-rating="1">
+            <i class="far fa-star"></i>
+            <i class="fas fa-star"></i>
+        </span>
+        <span class="star" data-rating="2">
+            <i class="far fa-star"></i>
+            <i class="fas fa-star"></i>
+        </span>
+        <span class="star" data-rating="3">
+            <i class="far fa-star"></i>
+            <i class="fas fa-star"></i>
+        </span>
+        <span class="star" data-rating="4">
+            <i class="far fa-star"></i>
+            <i class="fas fa-star"></i>
+        </span>
+        <span class="star" data-rating="5">
+            <i class="far fa-star"></i>
+            <i class="fas fa-star"></i>
+        </span>
+    </div>
+    <div class="rating-message"></div>
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ratingWidgets = document.querySelectorAll('.console-rating');  // Changed from game-rating
+
+    ratingWidgets.forEach((ratingWidget) => {
+        const starRating = ratingWidget.querySelector('.star-rating');
+        const ratingMessage = ratingWidget.querySelector('.rating-message');
+
+        if (starRating) {
+            const consoleId = starRating.dataset.consoleId;  // Changed from gameId
+            const stars = starRating.querySelectorAll('.star');
+
+            // Function to fetch initial user rating
+            async function fetchUserRating() {
+                try {
+                    const response = await fetch(`/consoles/${consoleId}/user-rating/`);  // Changed URL
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.rating) {
+                            updateStars(stars, data.rating);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error fetching user rating:', error);
+                }
+            }
+
+            // Set initial rating if exists
+            function updateStars(stars, rating) {
+                stars.forEach(star => {
+                    const starRating = parseInt(star.dataset.rating);
+                    star.classList.toggle('active', starRating <= rating);
+                });
+            }
+
+            // Handle star click
+            stars.forEach(star => {
+                star.addEventListener('click', async function() {
+                    const rating = this.dataset.rating;
+
+                    try {
+                        const response = await fetch(`/consoles/${consoleId}/rate/`, {  // Changed URL
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCookie('csrftoken')
+                            },
+                            body: JSON.stringify({ rating: rating })
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            updateStars(stars, rating);
+                            showMessage(ratingMessage, data.message, 'success');
+                        } else {
+                            showMessage(ratingMessage, 'Error saving rating', 'error');
+                        }
+                    } catch (error) {
+                        showMessage(ratingMessage, 'Error saving rating', 'error');
+                    }
+                });
+            });
+
+            // Helper function to show messages
+            function showMessage(ratingMessage, message, type) {
+                ratingMessage.textContent = message;
+                ratingMessage.className = `rating-message show ${type}`;
+                setTimeout(() => {
+                    ratingMessage.classList.remove('show');
+                }, 3000);
+            }
+
+            // Helper function to get CSRF token
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            // Fetch initial rating when page loads
+            fetchUserRating();
+        }
+    });
+});
+</script>
+{% endblock %}
+
+{% endblock %}

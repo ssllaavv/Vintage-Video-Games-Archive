@@ -11,7 +11,7 @@
                 <form class="custom-form" method="post">
 
                     {% csrf_token %}
-                    <input type="hidden" name="next" value= {{ next }}>
+                   <input type="hidden" name="next" value="{{ request.GET.next|default:'' }}">
 
                     <div class="row gtr-uniform">
                         <div class="col-6 col-12-xsmall">
@@ -61,6 +61,7 @@
                             </ul>
                         </div>
                     </div>
+
                 </form>
                 <div class="second-option">
 

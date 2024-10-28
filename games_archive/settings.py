@@ -88,6 +88,8 @@ DATABASES = {
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTH_USER_MODEL = 'accounts.GamesArchiveUser'
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home'
 
 if not DEBUG:
     AUTH_PASSWORD_VALIDATORS = [

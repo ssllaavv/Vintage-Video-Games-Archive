@@ -2,6 +2,19 @@
 /*    background-image: url(../images/arcademachines1.jpg);*/
 /*}*/
 
+
+/*Logo icon */
+
+.big-icon {
+    font-size: 10rem;
+}
+.small-icon {
+    font-size: 2rem;
+}
+#banner .logo.big-icon {
+    margin-bottom: 0;
+}
+
 /* Background container with image and overlay */
 .bg-container {
     position: relative;
@@ -9,7 +22,7 @@
     width: 100%;
 }
 
-.bg-container::before {
+.bg-container:before {
     content: "";
     background-image: url('../images/arcademachines1.jpg');  /* Update path to your image */
     background-size: cover;
@@ -157,13 +170,38 @@ input[type="file"] {
     color: gold;  /* Star color */
 }
 
+.rating-widget a {
+    border-bottom: none;
+}
 
-/*games details*/
+.your-rating {
+    border: 1px dotted;
+    color: white;
+    border-radius: 10px;
+    padding: 10px 10px;
+    text-align: center;
+}
 
-.features-my {
-    display: flex;
+@media screen and (max-width: 800px) {
+    .your-rating *{
+        font-size: 14pt;
+    }
 
 }
+@media screen and (max-width: 500px) {
+    .your-rating *{
+        font-size: 13pt;
+    }
+
+}
+
+
+/*games details, console details*/
+
+/*.features-my {*/
+/*    display: flex;*/
+
+/*}*/
 
 .features-my > article {
     display: flex;
@@ -172,12 +210,34 @@ input[type="file"] {
 .features-my > article > img {
     width: 50%;
     object-fit: contain;
-
 }
 
-.game_details {
+.game-details,
+.console-details{
     padding: 40px 60px;
     width: 50%;
+}
+
+@media screen and (max-width: 736px) {
+    .features-my > article {
+        flex-direction: column;
+    }
+
+    .features-my > article > img {
+        width: 100%;
+    }
+
+    .game-details,
+    .console-details {
+        padding: 40px 0;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .game-details > *,
+    .console-details > * {
+        font-size: 14pt;
+    }
 }
 
 
@@ -269,7 +329,7 @@ section .comment:nth-of-type(even) {
 }
 .box.alt.comment {
     background-color: rgba(0, 0, 0, 0.1);
-    padding: 50px;
+    padding: 30px 50px;
     border-radius: 10px;
 
 }

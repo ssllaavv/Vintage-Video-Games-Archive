@@ -4,14 +4,14 @@
 {% block content %}
     <section class="wrapper alt style1">
         <div class="inner">
-            <h2 class="major">Games</h2>
+            <h2 class="major">{{ game.title }}</h2>
             <section class="features-my">
                 <article id="game-{{ game.pk }}">
                     {% if game.cover_image %}
                         <img src="{{ game.cover_image.url }}" alt="{{ game.title }}"/>
 
                     {% endif %}
-                    <div class="game_details">
+                    <div class="game-details">
                         <h3 class="major">{{ game.title }}</h3>
                         <div>
                             <a href="{% url 'profile details' game.to_user.pk %}">
@@ -39,46 +39,39 @@
                                 {% endfor %}
                             </ul>
 
-                            <div>
-                                {% include 'game_rating_stars.html' %}
+                                {% if user.is_authenticated %}
 
-                                {#                                <div>#}
-                                {##}
-                                {#                                    <span class="rating">{{ game.stars_rating_html|safe }}</span>#}
-                                {#                                    <!-- Button that triggers the modal -->#}
-                                {#                                    <form method="post" action="{% url 'rate_game' game.pk %}" id="rating-form">#}
-                                {#                                        {% csrf_token %}#}
-                                {#                                        <h3>Rate {{ game.title }}</h3>#}
-                                {#                                        {{ game_rating_form.as_p }}#}
-                                {#                                        {% if game_rating_form.errors %}#}
-                                {#                                            <div class="errorlist">#}
-                                {#                                                {% for field in game_rating_form %}#}
-                                {#                                                    {% for error in field.errors %}#}
-                                {#                                                        <p class="error">{{ error }}</p>#}
-                                {#                                                    {% endfor %}#}
-                                {#                                                {% endfor %}#}
-                                {#                                                {% for error in game_rating_form.non_field_errors %}#}
-                                {#                                                    <p class="error">{{ error }}</p>#}
-                                {#                                                {% endfor %}#}
-                                {#                                            </div>#}
-                                {#                                        {% endif %}#}
-                                {#                                        <button type="submit" class="button small">Submit</button>#}
-                                {#                                    </form>#}
-                                {#                                </div>#}
-                                {% if game.to_user == request.user %}
-                                    <ul class="actions">
-                                        <li><a href="{% url 'game_update' game.pk %}" class="button primary small">Edit
-                                            game</a>
-                                        </li>
-                                        <li><a href="{% url 'game_delete' game.pk %}" class="button small">Delete
-                                            game</a>
-                                        </li>
+                                   <div class="rating-widget">
+                                        <div class="current-rating">
+                                            <a href="#" ><span class="rating">{{ game.stars_rating_html|safe }}</span></a>
+                                        </div>
+                                        <div hidden="hidden" class="your-rating">
+                                            <div>Choose your rating:</div>
+                                            {% include 'partials/game_rating_stars.html' %}
+                                            <a class="button small" href="#">close</a>
+                                        </div>
+                                    </div>
 
-                                    </ul>
+                                {% else  %}
+
+                                        <span class="rating">{{ game.stars_rating_html|safe }}</span>
+
                                 {% endif %}
 
 
-                            </div>
+                            {% if game.to_user == request.user %}
+                                <ul class="actions">
+                                    <li><a href="{% url 'game_update' game.pk %}" class="button primary small">Edit
+                                        game</a>
+                                    </li>
+                                    <li><a href="{% url 'game_delete' game.pk %}" class="button small">Delete
+                                        game</a>
+                                    </li>
+
+                                </ul>
+                            {% endif %}
+
+
                 </article>
             </section>
             <section>
@@ -129,14 +122,14 @@
 
                 {% endif %}
                 <section>
-                <div>
-                    <form method="POST" action="{% url 'comment_game' game.pk %}">
-                        {% csrf_token %}
-                        {{ game_comment_form.as_p }}
-                        <button type="submit" class="button primary small">Comment</button>
-                    </form>
+                    <div>
+                        <form method="POST" action="{% url 'comment_game' game.pk %}">
+                            {% csrf_token %}
+                            {{ game_comment_form.as_p }}
+                            <button type="submit" class="button primary small">Comment</button>
+                        </form>
 
-                </div>
+                    </div>
                     <h3 class="major" id="game-comments-{{ game.pk }}">Comments</h3>
                     {% if comments %}
                         {% for comment in comments %}

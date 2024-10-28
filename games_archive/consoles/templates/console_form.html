@@ -1,12 +1,73 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <H1>
-        console_form
-    </H1>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <section id="banner" class="small-banner">
+
+          <div class="edit-profile-header">
+                {% if object.cover_image %}
+                    <a href="{{ object.cover_image.url }}" class="cover-picture-container" target="_blank">
+                    <img class="cover-picture-small" src=" {{ object.cover_image.url }}" alt="Profile picture">
+                    </a>
+                {% endif %}
+                <h2 class="major">{{ object.title }}</h2>
+          </div>
+    </section>
+
+
+    <div class="wrapper">
+
+        <div class="inner">
+            <section>
+                <form class="custom-form" method="post" enctype="multipart/form-data">
+
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value= {{ next }}>
+
+                    <div class="row gtr-uniform">
+
+                        {% for field in form %}
+
+                            <div class="col-6 col-12-xsmall">
+                                <label>{{ field.label }}</label>
+                                {{ field }}
+
+                                {% if form.errors %}
+
+                                    <ul class="error">
+                                        {% for error in field.errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+
+                                {% endif %}
+
+
+                            </div>
+
+                        {% endfor %}
+
+                        {% if form.non_field_errors %}
+                            <div class="error">
+                                <ul>
+                                    {% for error in form.non_field_errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+
+                        <div class="col-12">
+                            <ul class="actions">
+                                <li><input type="submit" value="Submit" class="primary"></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </form>
+
+            </section>
+        </div>
+    </div>
+
+{% endblock %}

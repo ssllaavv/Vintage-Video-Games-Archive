@@ -82,9 +82,25 @@
                                                                                      alt="{{ game.title }}"/></a>
                         {% endif %}
                         <h3 class="major">{{ game.title }}</h3>
-                        <div>
-                              <span class="rating">{{ game.stars_rating_html|safe }}</span>
-                        </div>
+                           {% if user.is_authenticated %}
+
+                           <div class="rating-widget">
+                                <div class="current-rating">
+                                    <a href="#" ><span class="rating">{{ game.stars_rating_html|safe }}</span></a>
+                                </div>
+                                <div hidden="hidden" class="your-rating">
+                                    <div>Choose your rating:</div>
+                                    {% include 'partials/game_rating_stars.html' %}
+                                    <a class="button small" href="#">close</a>
+                                </div>
+                            </div>
+
+                        {% else  %}
+
+                                <span class="rating">{{ game.stars_rating_html|safe }}</span>
+
+                        {% endif %}
+
                         <p>{{ game.description|truncatewords:20 }}</p>
                         <a href="{% url 'game_detail' game.id %}" class="special">Learn more</a>
                         <div>

@@ -10,13 +10,14 @@
         <div class="inner">
             <h2>Console Library</h2>
             <p>Explore our collection of vintage video Consoles</p>
+            <a href="{% url "console_create" %}" class="button primary small">Add console</a>
         </div>
     </section>
 
 
     <section class="wrapper alt style1">
         <div class="inner">
-            <h2 class="major">Games</h2>
+            <h2 class="major">Consoles</h2>
             <section class="features">
                 {% for console in consoles %}
                     <article id="console-{{ console.pk }}">

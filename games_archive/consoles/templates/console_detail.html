@@ -4,21 +4,37 @@
 {% block content %}
     <section class="wrapper alt style1">
         <div class="inner">
-            <h2 class="major">Console</h2>
-            <section class="features-my console">
+            <h2 class="major">{{ console.name }}</h2>
+            <section class="features-my">
                 <article id="console-{{ console.pk }}">
                     {% if console.cover_image %}
                         <img src="{{ console.cover_image.url }}" alt="{{ console.name }}"/>
 
                     {% endif %}
-                    <div class="game_details">
+                    <div class="console-details">
                         <h3 class="major">{{ console.name }}</h3>
                         <div>{{ console.release_year }}</div>
                         <div>By: {{ console.manufacturer }}</div>
 
-                        <div>
-                            <span class="rating">{{ console.stars_rating_html|safe }}</span>
-                        </div>
+                        {% if user.is_authenticated %}
+
+                           <div class="rating-widget">
+                                <div class="current-rating">
+                                    <a href="#" ><span class="rating">{{ console.stars_rating_html|safe }}</span></a>
+                                </div>
+                                <div hidden="hidden" class="your-rating">
+                                    <div>Choose your rating:</div>
+                                    {% include 'partials/console_rating_stars.html' %}
+                                    <a class="button small" href="#">close</a>
+                                </div>
+                            </div>
+
+                        {% else  %}
+
+                                <span class="rating">{{ game.stars_rating_html|safe }}</span>
+
+                        {% endif %}
+
 
                     </div>
                 </article>
@@ -85,6 +101,26 @@
                                           {% if game.cover_image %}
                                             <img src="{{ game.cover_image.url }}" alt="">
                                           {% endif %}
+
+                                 {% if user.is_authenticated %}
+
+                                   <div class="rating-widget">
+                                        <div class="current-rating">
+                                            <a href="#" ><span class="rating">{{ game.stars_rating_html|safe }}</span></a>
+                                        </div>
+                                        <div hidden="hidden" class="your-rating">
+                                            <div>Choose your rating:</div>
+                                            {% include 'partials/game_rating_stars.html' %}
+                                            <a class="button small" href="#">close</a>
+                                        </div>
+                                    </div>
+
+                                {% else  %}
+
+                                        <span class="rating">{{ game.stars_rating_html|safe }}</span>
+
+                                {% endif %}
+
                                       </a>
                                 </span>
                             </div>

@@ -35,13 +35,19 @@ class GameRating(models.Model):
 class ConsoleRating(models.Model):
 
     MAX_RATING_VALUE = 5
+    RATING_OPTIONS = create_rating_options(MAX_RATING_VALUE)
 
-    rating = models.IntegerField(validators=[
-        validators.MinValueValidator(0),
-        validators.MaxValueValidator(MAX_RATING_VALUE),
-    ])
+    rating = models.IntegerField(
+        choices=RATING_OPTIONS,
+        blank=True,
+        null=True
+    )
+
     from_user = models.ForeignKey(GamesArchiveUser, on_delete=models.DO_NOTHING)
     to_console = models.ForeignKey(Console, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('from_user', 'to_console')
 
 
 class GameComment(models.Model):

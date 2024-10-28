@@ -9,6 +9,7 @@ from django.views import generic as views
 from django.templatetags.static import static
 
 from ..common.forms import GameCommentForm
+from django.utils.http import url_has_allowed_host_and_scheme
 
 
 class UserRegisterView(CreateView):
@@ -39,14 +40,15 @@ class UserRegisterView(CreateView):
 class UserLoginView(auth_views.LoginView):
     form_class = UserLoginForm
     template_name = 'login.html'
-    next_page = reverse_lazy('home')
 
-    # def form_invalid(self, form):
-    #     # Access the form errors here
-    #     print(form.errors)
-    #
-    #     # pass the form with errors back to the template
-    #     return self.render_to_response(self.get_context_data(form=form))
+    def get_success_url(self):
+        # Retrieve the 'next' parameter from either GET or POST data
+        next_url = self.request.POST.get('next') or self.request.GET.get('next')
+
+        # Ensure the 'next' URL is safe
+        if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={self.request.get_host()}):
+            return next_url
+        return reverse_lazy('home')  # Default redirect if 'next' is missing or invalid
 
 
 class UserLogoutView(LoginRequiredMixin, auth_views.LogoutView):

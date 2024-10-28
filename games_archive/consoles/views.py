@@ -40,17 +40,29 @@ class ConsoleCreateView(LoginRequiredMixin, CreateView):
     model = Console
     form_class = ConsoleForm
     template_name = 'console_form.html'
-    success_url = reverse_lazy('console_list')
+
+    def form_valid(self, form):
+        # Set the to_user field to the currently logged-in user
+        form.instance.to_user = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        # Redirect to the detail page of the created game
+        return reverse_lazy('console_detail', kwargs={'pk': self.object.pk})
 
 
 class ConsoleUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Console
     form_class = ConsoleForm
     template_name = 'console_form.html'
-    success_url = reverse_lazy('console_list')
+
+
+    def get_success_url(self):
+        # Redirect to the detail page of the created game
+        return reverse_lazy('console_detail', kwargs={'pk': self.object.pk})
 
     def test_func(self):
-        return self.request.user.is_staff
+        return self.request.user == self.object.to_user
 
 
 class ConsoleDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):

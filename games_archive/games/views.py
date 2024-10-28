@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy, reverse
 from .models import Game, Screenshot, GameReview
 from .forms import GameForm, ScreenshotForm, GameReviewForm
-from ..common.forms import GameRatingForm, GameCommentForm
+from ..common.forms import GameCommentForm
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -18,7 +18,6 @@ class GameListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['game_rating_form'] = GameRatingForm()  # Add the rating form to the context
         context['game_comment_form'] = GameCommentForm()
         return context
 
@@ -41,7 +40,15 @@ class GameCreateView(LoginRequiredMixin, CreateView):
     model = Game
     form_class = GameForm
     template_name = 'game_form.html'
-    success_url = reverse_lazy('game_list')
+
+    def form_valid(self, form):
+        # Set the to_user field to the currently logged-in user
+        form.instance.to_user = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        # Redirect to the detail page of the created game
+        return reverse_lazy('game_detail', kwargs={'pk': self.object.pk})
 
 
 class GameUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -52,8 +59,6 @@ class GameUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         game = self.get_object()
         result = self.request.user == game.to_user
-        if self.request.user.is_staff:
-            result = True
         return result
 
     def get_success_url(self):
@@ -69,8 +74,6 @@ class GameDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         game = self.get_object()
         result = self.request.user == game.to_user
-        if self.request.user.is_staff:
-            result = True
         return result
 
 

@@ -10,6 +10,7 @@
         <div class="inner">
             <h2>Game Library</h2>
             <p>Explore our collection of vintage video games</p>
+            <a href="{% url "game_create" %}" class="button primary small">Add game</a>
         </div>
     </section>
 
@@ -28,31 +29,26 @@
 
                     {% endif %}
                         <h3 class="major">{{ game.title }}</h3>
-                        <div>
 
-                            <span class="rating">{{ game.stars_rating_html|safe }}</span>
-                            <!-- Button that triggers the modal -->
-{#                            <form method="post" action="{% url 'rate_game' game.pk %}" id="rating-form">#}
-{#                                {% csrf_token %}#}
-{#                                <h3>Rate {{ game.title }}</h3>#}
-{#                                {{ game_rating_form.as_p }}#}
-{#                                {% if game_rating_form.errors %}#}
-{#                                    <div class="errorlist">#}
-{#                                        {% for field in game_rating_form %}#}
-{#                                            {% for error in field.errors %}#}
-{#                                                <p class="error">{{ error }}</p>#}
-{#                                            {% endfor %}#}
-{#                                        {% endfor %}#}
-{#                                        {% for error in game_rating_form.non_field_errors %}#}
-{#                                            <p class="error">{{ error }}</p>#}
-{#                                        {% endfor %}#}
-{#                                    </div>#}
-{#                                {% endif %}#}
-{#                                <button type="submit" class="button small">Submit</button>#}
-{#                            </form>#}
+                                {% if user.is_authenticated %}
 
+                                   <div class="rating-widget">
+                                        <div class="current-rating">
+                                            <a href="#" ><span class="rating">{{ game.stars_rating_html|safe }}</span></a>
+                                        </div>
+                                        <div hidden="hidden" class="your-rating">
+                                            <div>Choose your rating:</div>
+                                            {% include 'partials/game_rating_stars.html' %}
+                                            <a class="button small" href="#">close</a>
+                                        </div>
+                                    </div>
 
-                        </div>
+                                {% else  %}
+
+                                        <span class="rating">{{ game.stars_rating_html|safe }}</span>
+
+                                {% endif %}
+
                         <p>{{ game.description|truncatewords:20 }}</p>
                         <a href="{% url 'game_detail' game.id %}" class="special">Learn more</a>
                         <div>
