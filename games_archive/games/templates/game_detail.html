@@ -122,14 +122,15 @@
 
                 {% endif %}
                 <section>
+                    {% if user.is_authenticated %}
                     <div>
                         <form method="POST" action="{% url 'comment_game' game.pk %}">
                             {% csrf_token %}
                             {{ game_comment_form.as_p }}
                             <button type="submit" class="button primary small">Comment</button>
                         </form>
-
                     </div>
+                    {% endif %}
                     <h3 class="major" id="game-comments-{{ game.pk }}">Comments</h3>
                     {% if comments %}
                         {% for comment in comments %}

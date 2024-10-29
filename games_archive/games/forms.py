@@ -26,3 +26,12 @@ class GameReviewForm(forms.ModelForm):
         model = GameReview
         fields = ['content']
 
+
+class GameSearchForm(forms.Form):
+    search = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Search games...'
+        })
+    )

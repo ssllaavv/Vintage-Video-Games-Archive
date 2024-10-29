@@ -10,14 +10,38 @@
         <div class="inner">
             <h2>Game Library</h2>
             <p>Explore our collection of vintage video games</p>
-            <a href="{% url "game_create" %}" class="button primary small">Add game</a>
+            {% if user.is_authenticated %}
+            <a href="{% url "game_create" %}" class="button">Add game</a>
+            {% endif %}
         </div>
     </section>
 
 
-    <section class="wrapper alt style1">
+    <section class="wrapper alt style1" id="games-list">
         <div class="inner">
             <h2 class="major">Games</h2>
+
+
+                <form method="get" class="mb-4">
+                    {{ search_form.search }}
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    {% if search_query %}
+                        <a href="{% url 'game_list' %}#games-list" class="btn btn-secondary">Clear</a>
+                    {% endif %}
+                </form>
+
+                {% if search_query %}
+                    <p>Search results for: "{{ search_query }}"</p>
+                {% endif %}
+
+                {% if current_url %}
+                <script>
+                    // Redirect to the URL with fragment after page load
+                    window.location.href = "{{ current_url|safe }}";
+                </script>
+                {% endif %}
+
+
             <section class="features">
                 {% for game in games %}
                     <article id="game-{{ game.pk }}">
@@ -51,6 +75,9 @@
 
                         <p>{{ game.description|truncatewords:20 }}</p>
                         <a href="{% url 'game_detail' game.id %}" class="special">Learn more</a>
+
+                        {% if user.is_authenticated %}
+
                         <div>
                             <form method="POST" action="{% url 'comment_game' game.pk %}">
                                 {% csrf_token %}
@@ -59,6 +86,9 @@
                             </form>
 
                         </div>
+
+                        {% endif %}
+
                     </article>
                 {% endfor %}
             </section>

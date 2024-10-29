@@ -71,10 +71,10 @@ class UserEditView(LoginRequiredMixin, UpdateView):
         return reverse_lazy('profile details', kwargs={'pk': self.object.pk})
 
 
-class UserDetailView(LoginRequiredMixin, DetailView):
+class UserDetailView(DetailView):
     model = get_user_model()
     template_name = 'profile-details.html'
-    context_object_name = 'user'
+    # context_object_name = 'user'
 
     # def get_object(self, queryset=None):
     #     return self.request.user
@@ -92,7 +92,7 @@ class UserDetailView(LoginRequiredMixin, DetailView):
             'game_comment_form': GameCommentForm(),
         })
 
-        print(comments_count)
+        # print(comments_count)
 
         return context
 

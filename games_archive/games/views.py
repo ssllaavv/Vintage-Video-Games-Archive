@@ -1,14 +1,29 @@
+from django.db.models import Q
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy, reverse
 from .models import Game, Screenshot, GameReview
-from .forms import GameForm, ScreenshotForm, GameReviewForm
+from .forms import GameForm, ScreenshotForm, GameReviewForm, GameSearchForm
 from ..common.forms import GameCommentForm
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
+from ..consoles.models import Console
+
+
+# class GameListView(ListView):
+#     model = Game
+#     template_name = 'game_list.html'
+#     context_object_name = 'games'
+#     paginate_by = 10
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['game_comment_form'] = GameCommentForm()
+#         return context
+#
 
 class GameListView(ListView):
     model = Game
@@ -16,10 +31,40 @@ class GameListView(ListView):
     context_object_name = 'games'
     paginate_by = 10
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_query = self.request.GET.get('search', '').strip()
+
+        if search_query:
+            # First, get console IDs that match the search query
+            console_ids = Console.objects.filter(
+                name__icontains=search_query
+            ).values_list('id', flat=True)
+
+            queryset = queryset.filter(
+                Q(title__icontains=search_query) |
+                Q(description__icontains=search_query) |
+                Q(developer__icontains=search_query) |
+                Q(to_consoles__in=console_ids) |
+                Q(to_user__first_name__icontains=search_query) |
+                Q(to_user__last_name__icontains=search_query) |
+                Q(to_user__username__icontains=search_query)
+            ).distinct()
+
+        return queryset
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['game_comment_form'] = GameCommentForm()
+        context['search_form'] = GameSearchForm(self.request.GET)
+        context['search_query'] = self.request.GET.get('search', '')
+        # Add the fragment identifier to the current URL
+        if self.request.GET.get('search'):
+            context['current_url'] = f"{self.request.path}?{self.request.GET.urlencode()}#games-list"
+
         return context
+
+
 
 
 class GameDetailView(DetailView):

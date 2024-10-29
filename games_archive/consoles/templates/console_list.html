@@ -57,6 +57,8 @@
 
                         </div>
                         <p>{{ console.description|truncatewords:20 }}</p>
+
+                        {% if user.is_authenticated %}
                         <div>
                             <form method="POST" action="{% url 'comment_console' console.pk %}">
                                 {% csrf_token %}
@@ -64,6 +66,8 @@
                                 <button type="submit" class="button primary small">Comment</button>
                             </form>
                         </div>
+                        {% endif %}
+
                         <a href="{% url 'console_detail' console.pk %}" class="special">Learn more</a>
                     </article>
                 {% endfor %}

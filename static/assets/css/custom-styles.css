@@ -2,6 +2,9 @@
 /*    background-image: url(../images/arcademachines1.jpg);*/
 /*}*/
 
+html {
+    scroll-behavior: smooth;
+}
 
 /*Logo icon */
 

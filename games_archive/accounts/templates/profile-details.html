@@ -5,12 +5,13 @@
     <section id="banner" class="small-banner">
         <div class="profile-header">
             {% if object.profile_picture %}
-                <a href="{{ user.profile_picture.url }}" class="logo profile-picture-container" target="_blank">
+                <a href="{{ object.profile_picture.url }}" class="logo profile-picture-container" target="_blank">
                     <img class="profile-picture-small" src=" {{ object.profile_picture.url }}" alt="Profile picture">
                 </a>
             {% endif %}
-            <h2 class="major">{{ user.get_user_name }}</h2>
-            {% if user.pk == request.user.pk %}
+            <h2 class="major">{{ object.get_user_name }}</h2>
+            {% if user.is_authenticated %}
+            {% if object.pk == request.user.pk %}
                 <ul class="actions">
                     <li><a href="{% url 'profile_edit' request.user.pk %}" class="button primary small">Edit profile</a>
                     </li>
@@ -20,6 +21,7 @@
                     </li>
                 </ul>
             {% endif %}
+            {% endif %}
             <div class="profile-data">
 
                 <section class="logo personal_data">
@@ -28,16 +30,16 @@
                     </h3>
                     <div>
                         <div>
-                            <b>{{ user.email }}</b>
+                            <b>{{ object.email }}</b>
                         </div>
                         <div>
-                            <b>@{{ user.username }}</b>
+                            <b>@{{ object.username }}</b>
                         </div>
                         <div>
-                            Age: {{ user.age }}
+                            Age: {{ object.age }}
                         </div>
                         <div>
-                            Gender: {{ user.gender }}
+                            Gender: {{ object.gender }}
                         </div>
                     </div>
 
@@ -49,19 +51,19 @@
                     <div>
                         <div>
 
-                            Registered games: {{ user.game_set.count }}
+                            Registered games: {{ object.game_set.count }}
                         </div>
                         <div>
-                            Screenshots added: {{ user.screenshot_set.count }}
+                            Screenshots added: {{ object.screenshot_set.count }}
                         </div>
                         <div>
-                            Games reviews: {{ user.gamereview_set.count }}
+                            Games reviews: {{ object.gamereview_set.count }}
                         </div>
                         <div>
-                            Rated games: {{ user.gamerating_set.count }}
+                            Rated games: {{ object.gamerating_set.count }}
                         </div>
                         <div>
-                            Rated consoles: {{ user.consolerating_set.count }}
+                            Rated consoles: {{ object.consolerating_set.count }}
                         </div>
                         <div>
                             Comments: {{ comments_count }}
@@ -75,7 +77,7 @@
         <div class="inner">
             <h2 class="major">Games</h2>
             <section class="features">
-                {% for game in user.game_set.all %}
+                {% for game in object.game_set.all %}
                     <article>
                         {% if game.cover_image %}
                         <a href="{% url 'game_detail' game.id %}" class="image"><img src="{{ game.cover_image.url }}"
@@ -103,14 +105,15 @@
 
                         <p>{{ game.description|truncatewords:20 }}</p>
                         <a href="{% url 'game_detail' game.id %}" class="special">Learn more</a>
+                        {% if user.is_authenticated %}
                         <div>
                             <form method="POST" action="{% url 'comment_game' game.pk %}">
                                 {% csrf_token %}
                                 {{ game_comment_form.as_p }}
                                 <button type="submit" class="button primary small">Comment</button>
                             </form>
-
                         </div>
+                        {% endif %}
                     </article>
                 {% endfor %}
             </section>
