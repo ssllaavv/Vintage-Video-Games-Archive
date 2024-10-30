@@ -3,53 +3,90 @@
 <script src="{% static 'assets/js/jquery.min.js' %}"></script>
 
 {% block content %}
-<!-- Banner -->
-<section id="banner">
-    <div class="inner">
-        <div class="logo big-icon"><span id="gif-icon" class="fas fa-gamepad"></span></div>
-        {% if user.is_authenticated %}
+    <!-- Banner -->
+    <section id="banner">
+        <div class="inner">
+            <div class="logo big-icon"><span id="gif-icon" class="fas fa-gamepad"></span></div>
+            {% if user.is_authenticated %}
 
-        <h2>Welcome to Video Games Archive, @{{ user.get_user_name }}</h2>
+                <h2>Welcome to Video Games Archive, @{{ user.get_user_name }}</h2>
 
-        {% else %}
+            {% else %}
 
-        <h2>Welcome to Video Games Archive</h2>
+                <h2>Welcome to Video Games Archive</h2>
 
-        {% endif %}
+            {% endif %}
 
-        <p>Explore the history of gaming through our extensive collection of vintage games and consoles.</p>
-    </div>
-</section>
+            <p>Explore the history of gaming through our extensive collection of vintage games and consoles.</p>
+        </div>
+    </section>
 
-{#<section id="wrapper">#}
+    {#<section id="wrapper">#}
     <section id="one" class="wrapper spotlight style1">
         <div class="inner">
-            <a href="{% url 'game_list' %}" class="image"><img src="{% static 'images/pic01.jpg' %}" alt="" /></a>
+            <a href="{% url 'game_list' %}" class="image">
+                <div class="spotlight-img-container">
+                    <img src="{% static 'images/added/games-collage.jpg' %}" alt=""/>
+                </div>
+            </a>
             <div class="content">
                 <h2 class="major">Latest Games</h2>
-                <ul>
+                <div class="home-thumbnails-container">
                     {% for game in latest_games %}
-                        <li><a href="{% url 'game_detail' game.id %}">{{ game.title }}</a></li>
+                        <div>
+                            <a href="{% url 'game_detail' game.id %}">
+                                <div class="thumbnail-text">{{ game.title }}</div>
+                                <img class="thumbnail-home" src="{{ game.cover_image.url }}" alt="game">
+
+                            </a>
+                        </div>
                     {% endfor %}
-                </ul>
+                </div>
+                <div class="view-all">
                 <a href="{% url 'game_list' %}" class="special">View All Games</a>
+                </div>
             </div>
         </div>
     </section>
+
 
     <section id="two" class="wrapper alt spotlight style2">
         <div class="inner">
-            <a href="{% url 'console_list' %}" class="image"><img src="{% static 'images/pic02.jpg' %}" alt="" /></a>
+            <a href="{% url 'console_list' %}" class="image">
+                <div class="spotlight-img-container">
+                    <img src="{% static 'images/added/consoles-colage.jpg' %}" alt=""/>
+                </div>
+
+            </a>
+{#            <div class="content">#}
+{#                <h2 class="major">Latest Consoles</h2>#}
+{##}
+{#                {% for console in latest_consoles %}#}
+{#                    <div><a href="{% url 'console_detail' console.id %}">#}
+{#                        {{ console.name }}#}
+{#                    </a></div>#}
+{#                {% endfor %}#}
+{##}
+{#                <a href="{% url 'console_list' %}" class="special">View All Consoles</a>#}
+{#            </div>#}
             <div class="content">
-                <h2 class="major">Latest Consoles</h2>
-                <ul>
+                <h2 class="major">Latest Games</h2>
+                <div class="home-thumbnails-container">
                     {% for console in latest_consoles %}
-                        <li><a href="{% url 'console_detail' console.id %}">{{ console.name }}</a></li>
+                        <div>
+                            <a href="{% url 'console_detail' console.id %}">
+                                <div class="thumbnail-text">{{ console.name }}</div>
+                                <img class="thumbnail-home" src="{{ console.default_image.url }}" alt="game">
+
+                            </a>
+                        </div>
                     {% endfor %}
-                </ul>
-                <a href="{% url 'console_list' %}" class="special">View All Consoles</a>
-            </div>
+                </div>
+                <div class="view-all">
+                <a href="{% url 'game_list' %}" class="special">View All Games</a>
+                </div>
+</div>
         </div>
     </section>
-{#</section>#}
+    {#</section>#}
 {% endblock %}

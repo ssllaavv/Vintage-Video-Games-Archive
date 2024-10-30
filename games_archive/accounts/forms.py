@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UsernameField
 from .models import GamesArchiveUser
+from ..custom_widgets.custom_widgets import CustomImageUploadWidget
 
 
 class UserRegistrationForm(UserCreationForm):
@@ -38,4 +39,5 @@ class UserProfileForm(forms.ModelForm):
         fields = ['first_name', 'last_name', 'email', 'gender', 'age', 'profile_picture', ]
         widgets = {
             'age': forms.TextInput(attrs={'type': 'text'}),
+            'profile_picture': CustomImageUploadWidget,
         }

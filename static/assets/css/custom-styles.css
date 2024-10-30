@@ -8,6 +8,15 @@
 
 /*Logo icon */
 
+
+/*banner fake*/
+
+#banner.fake {
+    padding: 40px;
+}
+
+
+
 .big-icon {
     font-size: 10rem;
 }
@@ -102,9 +111,22 @@ input[type="file"] {
 
 /*profile picture */
 
+
+.inner.profile-details {
+    display: flex;
+}
+
+
+.profile-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+}
+
 .profile-picture-container {
-    width: 150px; /* Set the desired width and height of the circle */
-    height: 150px;
+    width: 300px; /* Set the desired width and height of the circle */
+    height: 300px;
     border-radius: 50%; /* Make the container circular */
     overflow: hidden; /* Ensure the image does not overflow */
     display: flex; /* Use flexbox to center the image */
@@ -118,15 +140,10 @@ input[type="file"] {
     height: 100%; /* Ensure the image takes full height of the container */
     object-fit: cover; /* Cover the entire area without overflow */
     border-radius: 50%; /* Make the image circular as well */
+    border: solid 3px rgba(255, 255, 255, 0.125);
 }
 
-.edit-profile-header,
-.delete-profile-header,
-.profile-header  {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+
 
 
 /*profile details */
@@ -136,34 +153,119 @@ input[type="file"] {
 /*    align-content: center;*/
 /*}*/
 
+.username-big {
+    font-size: 2.6em;
+    font-weight: 300;
+    letter-spacing: 2pt;
+}
+
+.profile-names {
+    font-size: 1.4em;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin: 10px 0  ;
+}
+
+.profile-data {
+    padding-left: 30pt;
+}
+
+.contributions {
+    display: flex;
+    flex-wrap: wrap;
+    /*flex-direction: column;*/
+    /*gap: 10px;*/
+    margin: 0 0 20pt 0;
+}
+
+.contributions > div {
+    margin-right: 10px;
+}
+
+.contributions span {
+    font-size: 1.2em;
+}
+
+ ul.actions {
+    margin: 40pt 0 0 0;
+}
+
 .center {
     text-align: center;
 }
 
-.profile-data {
-    display: flex;
-    gap: 20vw;
+/*.profile-data {*/
+/*    display: flex;*/
+    /*flex-direction: column;*/
+/*}*/
+
+
+@media screen and (max-width: 600px) {
+    .inner.profile-details {
+        flex-direction: column;
+    }
+    .contributions {
+        margin: 0;
+        width: 100%;
+    }
+    .profile-left {
+        width: 100%;
+    }
+    .profile-data {
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        align-items: center;
+        margin-bottom: 30pt;
+    }
+    .contributions {
+        justify-content: center;
+    }
+
 }
 
-@media screen and (max-width: 480px) {
-    .profile-data {
-        -moz-flex-direction: column;
-        -webkit-flex-direction: column;
-        -ms-flex-direction: column;
-        flex-direction: column;
-        margin-left: 0;
-        width: 100% !important;
-        align-items: center;
+@media screen and (max-width: 700px) {
+    .profile-picture-container {
+        width: 200px;
+        height: 200px;
+    }
+    ul.actions li {
+        padding: 2pt;
     }
 }
 
-.profile-data h3 {
-    margin-bottom: 30px;
+/*@media screen and (max-width: 480px) {*/
+/*    .profile-data {*/
+/*        -moz-flex-direction: column;*/
+/*        -webkit-flex-direction: column;*/
+/*        -ms-flex-direction: column;*/
+/*        flex-direction: column;*/
+/*        margin-left: 0;*/
+/*        width: 100% !important;*/
+/*        align-items: center;*/
+/*    }*/
+/*}*/
+
+/*.profile-data h3 {*/
+/*    margin-bottom: 30px;*/
+/*}*/
+
+/*.profile-data > section > div > div {*/
+/*    margin-bottom: 10px;*/
+/*}*/
+
+
+
+
+
+.edit-profile-header,
+.delete-profile-header,
+.profile-header  {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.profile-data > section > div > div {
-    margin-bottom: 10px;
-}
 
 
 /*Rating - stars*/
@@ -317,6 +419,41 @@ input[type="file"] {
     margin-right: 40px;
 }
 
+.thumbnail-home {
+    width: 4em;
+}
+
+@media screen and (max-width: 830px) {
+    .thumbnail-home {
+        width: 3em;
+    }
+    .thumbnail-text {
+        font-size: 0.8em;
+    }
+}
+
+@media screen and (max-width: 630px) {
+    .thumbnail-home {
+        width: 2.5em;
+    }
+    .thumbnail-text {
+        font-size: 0.6em;
+    }
+}
+
+.home-thumbnails-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    text-align: center;
+}
+
+.view-all {
+    margin-top: 50pt;
+}
+
 
 /*game-header*/
 
@@ -345,7 +482,13 @@ input[type="file"] {
     font-size: 0.8rem;
 }
 
-.game-header.small .thumbnail-container {
+#id_username *{
+    font-size: 0.8em;
+    font-style: normal;
+}
+
+.game-header.small .thumbnail-container,
+.comment .thumbnail-container {
 
     width: 30px; /* Adjust the size as needed */
     height: 30px;
@@ -353,7 +496,8 @@ input[type="file"] {
     margin-bottom: 6px;
 }
 
-.game-header.small .uploaded-by {
+.game-header.small .uploaded-by,
+.comment .uploaded-by {
     gap: 10px;
 }
 
@@ -406,11 +550,48 @@ section .comment:nth-of-type(even) {
 
 .date-of-publication{
     text-align: right;
+    font-size: 0.7rem;
 }
 .box.alt.comment {
     background-color: rgba(0, 0, 0, 0.1);
-    padding: 30px 50px;
+    padding: 20px 40px;
     border-radius: 10px;
+}
+
+@media screen and (max-width: 736px) {
+    section .comment:nth-of-type(odd) {
+        margin-right: 50px;
+    }
+    section .comment:nth-of-type(even) {
+        margin-left: 50px;
+    }
+
+}
+
+@media screen and (max-width: 560px) {
+    section .comment:nth-of-type(odd) {
+        margin-right: 30px;
+    }
+    section .comment:nth-of-type(even) {
+        margin-left: 30px;
+    }
+    .box.alt.comment {
+        margin-bottom: 20px;
+        padding: 10px 20px;
+    }
+
+}
+
+@media screen and (max-width: 400px) {
+    section .comment:nth-of-type(odd) {
+        margin-right: 0;
+    }
+    section .comment:nth-of-type(even) {
+        margin-left: 0;
+    }
+    .box.alt.comment {
+        margin-bottom: 20px;
+    }
 
 }
 
@@ -488,4 +669,30 @@ section .comment:nth-of-type(even) {
         width: 100px
     }
 
+}
+
+
+/*spotlight-img-container*/
+/* Ensures the flex container allows items to grow and stay circular */
+a.image {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.spotlight-img-container {
+    width: 100%;             /* Fills the parent element (the anchor) */
+    padding-top: 100%;       /* Maintains a square aspect ratio */
+    border-radius: 50%;      /* Makes the container circular */
+    overflow: hidden;        /* Clips any overflow */
+    position: relative;      /* Allows absolute positioning of the image */
+}
+
+.spotlight-img-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;       /* Ensures the image covers the circle without distortion */
 }

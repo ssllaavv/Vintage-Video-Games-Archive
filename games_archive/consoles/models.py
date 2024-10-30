@@ -37,6 +37,17 @@ class Console(models.Model):
         supplier = Supplier.objects.filter(name__icontains=self.manufacturer).first()
         return supplier.logo if supplier else None
 
+    @property
+    def default_image(self):
+        if self.cover_image:
+            return self.cover_image
+        elif self.logo:
+            return self.logo
+        elif self.manufacturer_logo:
+            return self.manufacturer_logo
+        return None
+
+
     def __str__(self):
         return self.name
 

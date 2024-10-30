@@ -57,6 +57,8 @@ class ConsoleDetailView(DetailView):
             key=lambda game: game.rating,
             reverse=True
         )
+        if len(popular_games) > 6:
+            popular_games = popular_games[:6]
         context['popular_games'] = popular_games
         return context
 
