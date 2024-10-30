@@ -15,9 +15,32 @@
     </section>
 
 
-    <section class="wrapper alt style1">
+    <section class="wrapper alt style1" id="consoles-list">
         <div class="inner">
             <h2 class="major">Consoles</h2>
+
+            <form method="get" class="mb-4">
+                <div class="search-form">
+                    {{ search_form.search }}
+                    <button type="submit" class="button">Search</button>
+                </div>
+                {% if search_query %}
+                    <a href="{% url 'console_list' %}#consoles-list" class="btn btn-secondary">Clear</a>
+                {% endif %}
+            </form>
+
+             {% if search_query %}
+                <p>Search results for: "{{ search_query }}"</p>
+            {% endif %}
+
+            {% if current_url %}
+            <script>
+                // Redirect to the URL with fragment after page load
+                window.location.href = "{{ current_url|safe }}";
+            </script>
+            {% endif %}
+
+
             <section class="features">
                 {% for console in consoles %}
                     <article id="console-{{ console.pk }}">

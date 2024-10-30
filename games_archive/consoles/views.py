@@ -1,8 +1,9 @@
+from django.db.models import Q
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from .models import Console
-from .forms import ConsoleForm
+from .forms import ConsoleForm, ConsoleSearchForm
 from ..common.forms import ConsoleCommentForm
 
 
@@ -12,9 +13,33 @@ class ConsoleListView(ListView):
     context_object_name = 'consoles'
     paginate_by = 10
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_query = self.request.GET.get('search', '').strip()
+
+        if search_query:
+
+            queryset = queryset.filter(
+                Q(name__icontains=search_query) |
+                Q(description__icontains=search_query) |
+                Q(manufacturer__icontains=search_query)
+            ).distinct()
+
+        return queryset
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['console_comment_form'] = ConsoleCommentForm()
+        context['search_form'] = ConsoleSearchForm(self.request.GET)
+        context['search_query'] = self.request.GET.get('search', '')
+
+        if 'search' in self.request.GET:
+            current_url = f"{self.request.path}"
+            if self.request.GET.urlencode():
+                current_url += f"?{self.request.GET.urlencode()}"
+            current_url += "#consoles-list"
+            context['current_url'] = current_url
+
         return context
 
 

@@ -12,3 +12,13 @@ class ConsoleForm(forms.ModelForm):
             'cover_image': CustomImageUploadWidget,
             'logo': CustomImageUploadWidget,
         }
+
+
+class ConsoleSearchForm(forms.Form):
+    search = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Search consoles...'
+        })
+    )
