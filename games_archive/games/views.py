@@ -13,18 +13,6 @@ from django.views.decorators.csrf import csrf_exempt
 from ..consoles.models import Console
 
 
-# class GameListView(ListView):
-#     model = Game
-#     template_name = 'game_list.html'
-#     context_object_name = 'games'
-#     paginate_by = 10
-#
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context['game_comment_form'] = GameCommentForm()
-#         return context
-#
-
 class GameListView(ListView):
     model = Game
     template_name = 'game_list.html'
@@ -58,13 +46,16 @@ class GameListView(ListView):
         context['game_comment_form'] = GameCommentForm()
         context['search_form'] = GameSearchForm(self.request.GET)
         context['search_query'] = self.request.GET.get('search', '')
-        # Add the fragment identifier to the current URL
-        if self.request.GET.get('search'):
-            context['current_url'] = f"{self.request.path}?{self.request.GET.urlencode()}#games-list"
+
+        # Add the fragment identifier if the form was submitted (even with empty search)
+        if 'search' in self.request.GET:
+            current_url = f"{self.request.path}"
+            if self.request.GET.urlencode():
+                current_url += f"?{self.request.GET.urlencode()}"
+            current_url += "#games-list"
+            context['current_url'] = current_url
 
         return context
-
-
 
 
 class GameDetailView(DetailView):

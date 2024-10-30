@@ -10,7 +10,7 @@
         <div class="inner">
             <h2>Console Library</h2>
             <p>Explore our collection of vintage video Consoles</p>
-            <a href="{% url "console_create" %}" class="button primary small">Add console</a>
+            <a href="{% url "console_create" %}" class="button logo">Add console</a>
         </div>
     </section>
 
@@ -28,34 +28,44 @@
                     {% else  %}
 
                     {% endif %}
-                        <h3 class="major">{{ console.name }}</h3>
-                            <P>{{ console.release_year }}</P>
-                            <p>{{ console.manufacturer }}</p>
-                        <div>
+                        <h3 class="major console-list">
+                            {{ console.name }}
 
-                            <span class="rating">{{ console.stars_rating_html|safe }}</span>
-                            <!-- Button that triggers the modal -->
-{#                            <form method="post" action="{% url 'rate_game' game.pk %}" id="rating-form">#}
-{#                                {% csrf_token %}#}
-{#                                <h3>Rate {{ game.title }}</h3>#}
-{#                                {{ game_rating_form.as_p }}#}
-{#                                {% if game_rating_form.errors %}#}
-{#                                    <div class="errorlist">#}
-{#                                        {% for field in game_rating_form %}#}
-{#                                            {% for error in field.errors %}#}
-{#                                                <p class="error">{{ error }}</p>#}
-{#                                            {% endfor %}#}
-{#                                        {% endfor %}#}
-{#                                        {% for error in game_rating_form.non_field_errors %}#}
-{#                                            <p class="error">{{ error }}</p>#}
-{#                                        {% endfor %}#}
-{#                                    </div>#}
-{#                                {% endif %}#}
-{#                                <button type="submit" class="button small">Submit</button>#}
-{#                            </form>#}
+{#                             By:  {{ console.manufacturer }} &reg;#}
+                        </h3>
+                            {% if console.logo  %}
+                            <img src="{{ console.logo.url }}" class="thumbnail small" alt="console logo">
+                            {% endif %}
+                            {% if console.manufacturer_logo %}
+                            <img src="{{ console.manufacturer_logo.url }}" class="thumbnail small" alt="manufacturer logo">
+                            {% endif %}
 
 
-                        </div>
+{#                        <h3 class="major">{{ console.name }}</h3>#}
+                            <div class="release-year">{{ console.release_year }}</div>
+                            <div>By  {{ console.manufacturer }} &reg;</div>
+
+                     {% if user.is_authenticated %}
+
+                           <div class="rating-widget">
+                                <div class="current-rating">
+                                    <a href="#" ><span class="rating">{{ console.stars_rating_html|safe }}</span></a>
+                                </div>
+                                <div hidden="hidden" class="your-rating">
+                                    <div>Choose your rating:</div>
+                                    {% include 'partials/console_rating_stars.html' %}
+                                    <a class="button small" href="#">close</a>
+                                </div>
+                            </div>
+
+                        {% else  %}
+
+                                <span class="rating">{{ game.stars_rating_html|safe }}</span>
+
+                        {% endif %}
+
+
+
                         <p>{{ console.description|truncatewords:20 }}</p>
 
                         {% if user.is_authenticated %}

@@ -12,9 +12,30 @@
 
                     {% endif %}
                     <div class="console-details">
-                        <h3 class="major">{{ console.name }}</h3>
-                        <div>{{ console.release_year }}</div>
-                        <div>By: {{ console.manufacturer }}</div>
+
+                        <h3 class="major">
+                             {% if console.logo  %}
+                            <img src="{{ console.logo.url }}" class="thumbnail big" alt="console logo">
+
+                            {% elif console.manufacturer_logo %}
+                            <img src="{{ console.manufacturer_logo.url }}" class="thumbnail big" alt="manufacturer logo">
+                            {% endif %}
+                             By  {{ console.manufacturer }} &reg;
+                        </h3>
+
+
+{#                        <h3 class="major">{{ console.name }}</h3>#}
+{#                    #}
+
+                        <div class="release-year">{{ console.release_year }}</div>
+                        <div>
+                            {% if console.logo and console.manufacturer_logo %}
+                            <div>
+                                 <img src="{{ console.manufacturer_logo.url }}" class="thumbnail big" alt="manufacturer logo">
+                            </div>
+                            {% endif %}
+
+                        </div>
 
                         {% if user.is_authenticated %}
 

@@ -2,7 +2,7 @@ from django.db import models
 from django.template.defaultfilters import slugify
 
 from games_archive.accounts.models import GamesArchiveUser
-from games_archive.consoles.models import Console
+from games_archive.consoles.models import Console, Supplier
 from games_archive.custom_widgets.custom_widgets import get_star_rating_html
 
 
@@ -26,6 +26,11 @@ class Game(models.Model):
     @property
     def stars_rating_html(self):
         return get_star_rating_html(self.rating)
+
+    @property
+    def developer_logo(self):
+        supplier = Supplier.objects.filter(name__icontains=self.developer).first()
+        return supplier.logo if supplier else None
 
     def __str__(self):
         return self.title

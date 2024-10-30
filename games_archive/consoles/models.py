@@ -4,12 +4,21 @@ from games_archive.accounts.models import GamesArchiveUser
 from games_archive.custom_widgets.custom_widgets import get_star_rating_html
 
 
+class Supplier(models.Model):
+    name = models.CharField(max_length=100)
+    logo = models.ImageField(upload_to='suppliers_logos/')
+
+    def __str__(self):
+        return self.name
+
+
 class Console(models.Model):
     name = models.CharField(max_length=100)
     manufacturer = models.CharField(max_length=100, blank=True, null=True)
     release_year = models.IntegerField(blank=True, null=True)
-    description = models.TextField()
-    cover_image = models.ImageField(upload_to='console_covers/')
+    description = models.TextField(null=True, blank=True)
+    cover_image = models.ImageField(upload_to='console_covers/', null=True, blank=True)
+    logo = models.ImageField(upload_to='console_covers/', null=True, blank=True)
     to_user = models.ForeignKey(GamesArchiveUser, on_delete=models.DO_NOTHING)
 
     @property
@@ -23,12 +32,13 @@ class Console(models.Model):
     def stars_rating_html(self):
         return get_star_rating_html(self.rating)
 
+    @property
+    def manufacturer_logo(self):
+        supplier = Supplier.objects.filter(name__icontains=self.manufacturer).first()
+        return supplier.logo if supplier else None
+
     def __str__(self):
         return self.name
-
-
-
-
 
 
 

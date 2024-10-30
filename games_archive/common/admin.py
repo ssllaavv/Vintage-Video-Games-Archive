@@ -24,4 +24,3 @@ class GameCommentAdmin(admin.ModelAdmin):
 class ConsoleCommentAdmin(admin.ModelAdmin):
     pass
 
-
