@@ -20,11 +20,18 @@
 .big-icon {
     font-size: 10rem;
 }
-.small-icon {
-    font-size: 2rem;
+.small-icon  #gif-icon {
+    padding-top: 20px;
+    height: 60px;
+    filter: brightness(0) saturate(100%) invert(1) sepia(100%) hue-rotate(180deg) saturate(1000%) brightness(0.5);
 }
 #banner .logo.big-icon {
     margin-bottom: 0;
+    filter: brightness(0) saturate(100%) invert(1) sepia(100%) hue-rotate(180deg) saturate(1000%) brightness(0.5);
+}
+.h1-flex {
+    display: flex;
+    gap: 20px;
 }
 
 /* Background container with image and overlay */

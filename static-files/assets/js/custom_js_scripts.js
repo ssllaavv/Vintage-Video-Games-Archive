@@ -222,3 +222,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+
+// show / hide rating / your rating
+
+document.addEventListener('DOMContentLoaded', function() {
+  const currentRatingLinks = document.querySelectorAll('.current-rating a');
+
+  currentRatingLinks.forEach(currentRatingLink => {
+    const currentRatingDiv = currentRatingLink.closest('.current-rating');
+    const yourRatingDiv = currentRatingDiv.nextElementSibling;
+    const hideRatingLink = yourRatingDiv.querySelector('a');
+
+    currentRatingLink.addEventListener('click', (event) => {
+      event.preventDefault();
+      yourRatingDiv.style.display = 'block';
+      currentRatingLink.style.display = 'none';
+    });
+
+    hideRatingLink.addEventListener('click', (event) => {
+      event.preventDefault();
+      yourRatingDiv.style.display = 'none';
+      currentRatingLink.style.display = 'block';
+    });
+  });
+});

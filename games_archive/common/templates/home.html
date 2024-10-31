@@ -6,7 +6,7 @@
     <!-- Banner -->
     <section id="banner">
         <div class="inner">
-            <div class="logo big-icon"><span id="gif-icon" class="fas fa-gamepad"></span></div>
+            <div class="logo big-icon"><img src="{% static "images/added/joystick.png" %}" id="gif-icon" alt=""></div>
             {% if user.is_authenticated %}
 
                 <h2>Welcome to Video Games Archive, @{{ user.get_user_name }}</h2>

@@ -22,8 +22,16 @@
         <!-- Header -->
         <header id="header" class="alt">
             {% if user.is_authenticated %}
-                <h1><a class="small-icon" href="{% url 'home' %}"><i class="fas fa-gamepad"></i> </a>
-                    <a href="{% url 'profile details' user.pk %}">Welcome, {{ user.get_user_name }}</a></h1>
+                <h1 class="h1-flex">
+                    <a class="small-icon" href="{% url 'home' %}">
+                        <img src="{% static "images/added/joystick.png" %}" id="gif-icon" alt="">
+                    </a>
+                    <div>
+                        <a href="{% url 'profile details' user.pk %}">Welcome, {{ user.get_user_name }}</a>
+                     </div>
+                </h1>
+
+
 
             {% else %}
                 <h1><a class="small-icon" href="{% url 'home' %}"><i class="fas fa-gamepad"></i></a></h1>
