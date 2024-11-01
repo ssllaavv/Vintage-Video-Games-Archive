@@ -3214,6 +3214,7 @@ input, select, textarea {
 		@media screen and (max-width: 480px) {
 
 			#header nav a[href="#menu"] {
+				overflow: hidden;
 				width: 4em;
 				white-space: nowrap;
 				text-indent: 4em;
