@@ -27,7 +27,6 @@ class HomeView(TemplateView):
         return context
 
 
-
 @require_http_methods(["POST"])
 @login_required
 def add_game_rating(request, game_pk):
@@ -74,17 +73,6 @@ def get_user_rating_to_game(request, game_pk):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
-#
-# class AddConsoleRatingView(LoginRequiredMixin, CreateView):
-#     model = ConsoleRating
-#     # form_class = ConsoleRatingForm
-#     # template_name = 'console_rating_form.html'
-#
-#     def form_valid(self, form):
-#         form.instance.from_user = self.request.user
-#         form.instance.to_console = Console.objects.get(pk=self.kwargs['console_id'])
-#         return super().form_valid(form)
-#
 
 
 @require_http_methods(["POST"])

@@ -24,17 +24,23 @@
             {% if user.is_authenticated %}
                 <h1 class="h1-flex">
                     <a class="small-icon" href="{% url 'home' %}">
-                        <img src="{% static "images/added/joystick.png" %}" id="gif-icon" alt="">
+                        <img src="{% static "images/added/space-invadors.png" %}" id="gif-icon" alt="">
                     </a>
-                    <div>
+                    <div class="user-name-nav-big">
                         <a href="{% url 'profile details' user.pk %}">Welcome, {{ user.get_user_name }}</a>
-                     </div>
+                    </div>
+                    <div class="user-name-nav-small" hidden="hidden">
+                        <a href="{% url 'profile details' user.pk %}">{{ user.get_user_name }}</a>
+                    </div>
+
                 </h1>
 
 
 
             {% else %}
-                <h1><a class="small-icon" href="{% url 'home' %}"><i class="fas fa-gamepad"></i></a></h1>
+                <a class="small-icon" href="{% url 'home' %}">
+                    <img src="{% static "images/added/space-invadors.png" %}" id="gif-icon" alt="">
+                </a>
 
             {% endif %}
 

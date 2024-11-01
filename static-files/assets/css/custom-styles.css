@@ -17,17 +17,17 @@
 
 
 
-.big-icon {
-    font-size: 10rem;
+.big-icon > img {
+    width: 6em;
 }
 .small-icon  #gif-icon {
-    padding-top: 20px;
-    height: 60px;
-    filter: brightness(0) saturate(100%) invert(1) sepia(100%) hue-rotate(180deg) saturate(1000%) brightness(0.5);
+    padding-top: 10px;
+    height: 3em;
+    filter: brightness(0) saturate(100%) invert(1) sepia(100%) hue-rotate(180deg) saturate(1000%) brightness(0.8);
 }
 #banner .logo.big-icon {
     margin-bottom: 0;
-    filter: brightness(0) saturate(100%) invert(1) sepia(100%) hue-rotate(180deg) saturate(1000%) brightness(0.5);
+    filter: brightness(0) saturate(100%) invert(1) sepia(100%) hue-rotate(180deg) saturate(1000%) brightness(0.8);
 }
 .h1-flex {
     display: flex;
@@ -624,6 +624,24 @@ section .comment:nth-of-type(even) {
     margin-inside: 30px;
 }
 
+@media screen and (max-width: 736px) {
+    .game-title {
+        font-size: 1.6em;
+    }
+}
+
+@media screen and (max-width: 640px) {
+    .game-title {
+        font-size: 1.4em;
+    }
+}
+
+@media screen and (max-width: 520px) {
+    .game-title {
+        font-size: 1.2em;
+    }
+}
+
 .features-my {
     margin-bottom: 50px;
 }
@@ -702,4 +720,15 @@ a.image {
     width: 100%;
     height: 100%;
     object-fit: cover;       /* Ensures the image covers the circle without distortion */
+}
+
+@media screen and (max-width: 736px) {
+    .user-name-nav-big {
+       display: none;
+    }
+    .user-name-nav-small {
+        display: block;
+        font-size: 0.7em;
+    }
+
 }
