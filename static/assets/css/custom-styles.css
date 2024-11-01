@@ -624,6 +624,24 @@ section .comment:nth-of-type(even) {
     margin-inside: 30px;
 }
 
+@media screen and (max-width: 736px) {
+    .game-title {
+        font-size: 1.6em;
+    }
+}
+
+@media screen and (max-width: 640px) {
+    .game-title {
+        font-size: 1.4em;
+    }
+}
+
+@media screen and (max-width: 520px) {
+    .game-title {
+        font-size: 1.2em;
+    }
+}
+
 .features-my {
     margin-bottom: 50px;
 }

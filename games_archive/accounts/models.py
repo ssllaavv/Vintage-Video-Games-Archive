@@ -1,10 +1,14 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.core import validators
+from django.templatetags.static import static
+
 from .custom_validators import validate_name
 
 
 class GamesArchiveUser(AbstractUser):
+
+    DEFAULT_PROFILE_PICTURE = static('/images/added/person.png')
 
     GENDER_CHOICES = (
         ('Male', 'Male'),
@@ -75,3 +79,8 @@ class GamesArchiveUser(AbstractUser):
         else:
             return self.username
 
+    @property
+    def get_profile_picture_or_default(self):
+        if self.profile_picture not in ['', None]:
+            return self.profile_picture.url
+        return self.DEFAULT_PROFILE_PICTURE

@@ -11,12 +11,12 @@
             <div class="game-header">
                 <h2>{{ game.title }}</h2>
                 <div class="uploaded-by">
-                    {% if game.to_user.profile_picture %}
+{#                    {% if game.to_user.profile_picture %}#}
                         <div class="thumbnail-container">
-                            <img class="thumbnail-profile" src="{{ game.to_user.profile_picture.url }}"
+                            <img class="thumbnail-profile" src="{{ game.to_user.get_profile_picture_or_default }}"
                                  alt="profile picture">
                         </div>
-                    {% endif %}
+{#                    {% endif %}#}
                     <div class="username">
                         <a href="{% url 'profile details' game.to_user.pk %}">
                             {{ game.to_user.get_user_name }}
@@ -179,12 +179,12 @@
                         <div class="box alt comment">
 
                      <div class="uploaded-by">
-                        {% if comment.from_user.profile_picture %}
+{#                        {% if comment.from_user.profile_picture %}#}
                             <div class="thumbnail-container">
-                                <img class="thumbnail-profile" src="{{ comment.from_user.profile_picture.url }}"
+                                <img class="thumbnail-profile" src="{{ comment.from_user.get_profile_picture_or_default }}"
                                      alt="profile picture">
                             </div>
-                        {% endif %}
+{#                        {% endif %}#}
                         <div class="username" id="id_username">
                             <a href="{% url 'profile details' comment.from_user.pk %}">
                                 {{ comment.from_user.get_user_name }}

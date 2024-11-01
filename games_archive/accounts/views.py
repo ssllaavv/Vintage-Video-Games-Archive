@@ -82,15 +82,15 @@ class UserDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         comments_count = self.object.gamecomment_set.count() + self.object.consolecomment_set.count()
-        profile_image = static('/images/added/person.png')
-        if self.object.profile_picture not in ['', None]:
-            profile_image = self.object.profile_picture.url
+        # profile_image = static('/images/added/person.png')
+        # if self.object.profile_picture not in ['', None]:
+        #     profile_image = self.object.profile_picture.url
 
         rates = self.object.gamerating_set.count() + self.object.consolerating_set.count()
 
         context.update({
             'comments_count': comments_count,
-            'profile_image': profile_image,
+            # 'profile_image': profile_image,
             'game_comment_form': GameCommentForm(),
             'rates': rates,
         })

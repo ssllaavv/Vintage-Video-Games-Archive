@@ -83,13 +83,13 @@ class ConsoleUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     form_class = ConsoleForm
     template_name = 'console_form.html'
 
-
     def get_success_url(self):
         # Redirect to the detail page of the created game
         return reverse_lazy('console_detail', kwargs={'pk': self.object.pk})
 
     def test_func(self):
-        return self.request.user == self.object.to_user
+        console = self.get_object()
+        return self.request.user == console.to_user or self.request.user.is_staff
 
 
 class ConsoleDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
