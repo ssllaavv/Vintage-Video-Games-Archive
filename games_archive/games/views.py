@@ -1,4 +1,9 @@
+import re
+
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
+from django.http import JsonResponse
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -69,6 +74,7 @@ class GameDetailView(DetailView):
         context['review'] = self.object.reviews.all().first()
         context['comments'] = self.object.gamecomment_set.all()
         context['game_comment_form'] = GameCommentForm()
+        context['add_screenshot_form'] = ScreenshotForm()
         return context
 
 
@@ -113,15 +119,15 @@ class GameDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return result
 
 
-class AddScreenshotView(LoginRequiredMixin, CreateView):
-    model = Screenshot
-    form_class = ScreenshotForm
-    template_name = 'screenshot_form.html'
-
-    def form_valid(self, form):
-        form.instance.from_user = self.request.user
-        form.instance.to_game = Game.objects.get(pk=self.kwargs['game_id'])
-        return super().form_valid(form)
+# class AddScreenshotView(LoginRequiredMixin, CreateView):
+#     model = Screenshot
+#     form_class = ScreenshotForm
+#     template_name = 'screenshot_form.html'
+#
+#     def form_valid(self, form):
+#         form.instance.from_user = self.request.user
+#         form.instance.to_game = Game.objects.get(pk=self.kwargs['game_id'])
+#         return super().form_valid(form)
 
 
 # class AddReviewView(LoginRequiredMixin, CreateView):
@@ -163,3 +169,104 @@ class AddOrUpdateReviewView(LoginRequiredMixin, View):
             return redirect(reverse_lazy('game_detail', kwargs={'pk': game.id}))  # or any other page
 
         return render(request, self.template_name, {'form': form, 'game': game})
+
+
+class DeleteReviewView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = GameReview
+    template_name = 'review_confirm_delete.html'
+
+    def get_object(self, queryset=None):
+        # Get the review using game_id from URL
+        return get_object_or_404(
+            GameReview,
+            to_game__pk=self.kwargs['game_id'],
+            from_user=self.request.user
+        )
+
+    def test_func(self):
+        # Check if the logged-in user is the author of the review
+        review = self.get_object()
+        return self.request.user == review.from_user
+
+    def get_success_url(self):
+        # Redirect to the game detail page after deletion
+        return reverse_lazy('game_detail', kwargs={'pk': self.kwargs['game_id']})
+
+
+# @login_required
+# def add_game_screenshot(request, game_id):
+#     if request.method == 'POST':
+#         game = Game.objects.get(pk=game_id)
+#         form = ScreenshotForm(request.POST)
+#         if form.is_valid():
+#             screenshot = form.save(commit=False)
+#             screenshot.to_game = game
+#             screenshot.from_user = request.user
+#             screenshot.save()
+#             return redirect(request.META['HTTP_REFERER'] + f'#screenshot--{screenshot.pk}')
+#
+#     # return redirect(request.META['HTTP_REFERER'] + f'#game-{game_id}')
+#
+
+
+@login_required
+def add_game_screenshot(request, game_id):
+    game = get_object_or_404(Game, pk=game_id)
+
+    if request.method == 'POST':
+        form = ScreenshotForm(request.POST, request.FILES)
+        if form.is_valid():
+            screenshot = form.save(commit=False)
+            screenshot.to_game = game
+            screenshot.from_user = request.user
+            screenshot.save()
+            messages.success(request, 'Screenshot uploaded successfully!')
+            return redirect(f'{request.META.get("HTTP_REFERER")}#screenshot-{screenshot.pk}')
+        else:
+            # Add form errors to messages
+            for field, errors in form.errors.items():
+                for error in errors:
+                    if error == 'This field is required.':
+                        messages.error(request, "No file selected")
+                    else:
+                        messages.error(request, f'{field}: {error}')
+
+    return redirect(f'{request.META.get("HTTP_REFERER")}#add_screenshot')
+
+
+class DeleteScreenshotView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        screenshot = get_object_or_404(Screenshot, pk=self.kwargs['pk'])
+        return self.request.user == screenshot.from_user
+
+    def post(self, request, pk):
+        screenshot = get_object_or_404(Screenshot, pk=pk)
+        game_id = screenshot.to_game.id
+
+        # Get the previous screenshot's ID if it exists
+        previous_screenshot = Screenshot.objects.filter(
+            to_game=screenshot.to_game,
+            pk__lt=screenshot.pk
+        ).order_by('-pk').first()
+
+        # Get the next screenshot's ID if previous doesn't exist
+        next_screenshot = Screenshot.objects.filter(
+            to_game=screenshot.to_game,
+            pk__gt=screenshot.pk
+        ).order_by('pk').first()
+
+        # Delete the screenshot
+        screenshot.delete()
+
+        # Determine redirect target
+        if previous_screenshot:
+            target = f'#screenshot-{previous_screenshot.pk}'
+        elif next_screenshot:
+            target = f'#screenshot-{next_screenshot.pk}'
+        else:
+            target = '#screenshots'
+
+        return JsonResponse({
+            'status': 'success',
+            'redirect_url': target
+        })

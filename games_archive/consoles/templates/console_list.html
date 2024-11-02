@@ -42,6 +42,7 @@
 
 
             <section class="features">
+                {% if consoles %}
                 {% for console in consoles %}
                     <article id="console-{{ console.pk }}">
                     {% if console.cover_image %}
@@ -54,7 +55,6 @@
                         <h3 class="major console-list">
                             {{ console.name }}
 
-{#                             By:  {{ console.manufacturer }} &reg;#}
                         </h3>
                             {% if console.logo  %}
                             <img src="{{ console.logo.url }}" class="thumbnail small" alt="console logo">
@@ -63,8 +63,6 @@
                             <img src="{{ console.manufacturer_logo.url }}" class="thumbnail small" alt="manufacturer logo">
                             {% endif %}
 
-
-{#                        <h3 class="major">{{ console.name }}</h3>#}
                             <div class="release-year">{{ console.release_year }}</div>
                             <div>By  {{ console.manufacturer }} &reg;</div>
 
@@ -82,12 +80,8 @@
                             </div>
 
                         {% else  %}
-
                                 <span class="rating">{{ game.stars_rating_html|safe }}</span>
-
                         {% endif %}
-
-
 
                         <p>{{ console.description|truncatewords:20 }}</p>
 
@@ -104,6 +98,11 @@
                         <a href="{% url 'console_detail' console.pk %}" class="special">Learn more</a>
                     </article>
                 {% endfor %}
+                {% else %}
+                    <div>
+                        No consoles yet...
+                    </div>
+                {% endif %}
             </section>
             {% if is_paginated %}
                 <ul class="actions">

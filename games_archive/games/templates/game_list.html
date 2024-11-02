@@ -5,7 +5,6 @@
 
 {% block content %}
     <!-- Banner -->
-
     <section id="banner">
         <div class="inner">
             <h2>Game Library</h2>
@@ -16,11 +15,9 @@
         </div>
     </section>
 
-
     <section class="wrapper alt style1" id="games-list">
         <div class="inner">
             <h2 class="major">Games</h2>
-
 
                 <form method="get" class="mb-4">
                     <div class="search-form">
@@ -43,8 +40,8 @@
                 </script>
                 {% endif %}
 
-
             <section class="features">
+                {% if games %}
                 {% for game in games %}
                     <article id="game-{{ game.pk }}">
                     {% if game.cover_image %}
@@ -60,12 +57,10 @@
                     <div class="game-header small">
                         <h2>{{ game.title }}</h2>
                         <div class="uploaded-by">
-{#                            {% if game.to_user.profile_picture %}#}
                                 <div class="thumbnail-container">
                                     <img class="thumbnail-profile" src="{{ game.to_user.get_profile_picture_or_default }}"
                                          alt="profile picture">
                                 </div>
-{#                            {% endif %}#}
                             <div class="username">
                                 <a href="{% url 'profile details' game.to_user.pk %}">
                                     {{ game.to_user.get_user_name }}
@@ -121,6 +116,11 @@
 
                     </article>
                 {% endfor %}
+                {% else  %}
+                    <div>
+                        No games yet..
+                    </div>
+                {% endif %}
             </section>
             {% if is_paginated %}
                 <ul class="actions">

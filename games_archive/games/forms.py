@@ -19,12 +19,20 @@ class ScreenshotForm(forms.ModelForm):
     class Meta:
         model = Screenshot
         fields = ['picture']
+        widgets = {
+            'picture':  CustomImageUploadWidget,
+        }
 
 
 class GameReviewForm(forms.ModelForm):
     class Meta:
         model = GameReview
         fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={
+                'placeholder': 'Write your review here...',
+            }),
+        }
 
 
 class GameSearchForm(forms.Form):

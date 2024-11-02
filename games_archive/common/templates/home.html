@@ -76,14 +76,14 @@
                         <div>
                             <a href="{% url 'console_detail' console.id %}">
                                 <div class="thumbnail-text">{{ console.name }}</div>
-                                <img class="thumbnail-home" src="{{ console.default_image.url }}" alt="game">
+                                <img class="thumbnail-home" src="{{ console.default_image.url }}" alt="console">
 
                             </a>
                         </div>
                     {% endfor %}
                 </div>
                 <div class="view-all">
-                <a href="{% url 'game_list' %}" class="special">View All Games</a>
+                <a href="{% url 'console_list' %}" class="special">View All Consoles</a>
                 </div>
 </div>
         </div>

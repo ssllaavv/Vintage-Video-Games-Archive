@@ -247,3 +247,61 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
+
+
+ // Screenshot delete functionality
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('#delete-screenshot').forEach(button => {
+        button.addEventListener('click', async function(e) {
+            e.preventDefault();
+
+            // Get the screenshot container and its ID
+            const container = this.closest('.screenshot-container');
+            const screenshotId = container.id.split('-')[1];
+
+            // Change button text and disable it
+            const originalText = this.textContent;
+            this.textContent = 'Deleting...';
+            this.classList.add('disabled');
+            this.style.backgroundColor = 'red';
+
+            try {
+                // Get CSRF token
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+                // Send delete request
+                const response = await fetch(`/games/screenshot/${screenshotId}/delete/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    // Wait for 500ms to show the "Deleting..." message
+                    await new Promise(resolve => setTimeout(resolve, 500));
+
+                    // Smooth fade out animation
+                    container.style.transition = 'opacity 0.3s ease-out';
+                    container.style.opacity = '0';
+
+                    // Wait for fade out animation
+                    await new Promise(resolve => setTimeout(resolve, 300));
+
+                    // Remove the container and redirect
+                    container.remove();
+                    window.location.hash = data.redirect_url;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                // Reset button on error
+                this.textContent = originalText;
+                this.classList.remove('disabled');
+                this.style.backgroundColor = '';
+            }
+        });
+    });
+});

@@ -8,17 +8,11 @@
         <div class="inner profile-details">
             <div class="profile-left">
                 <div class="profile-picture-container">
-                    <img class="profile-picture-small" src=" {{ object.get_profile_picture_or_default }}" alt="Profile picture">
+                    <img class="profile-picture-small" src=" {{ object.get_profile_picture_or_default }}"
+                         alt="Profile picture">
                 </div>
             </div>
-
             <div class="profile-data">
-
-                {#                <section class="logo personal_data">#}
-                {#                    <h3 class="center">#}
-                {#                        Personal data#}
-                {#                    </h3>#}
-
                 <div class="username-big">
                     {{ object.username }}
                 </div>
@@ -42,16 +36,22 @@
                 <div class="profile-names">
                     {{ object.get_user_name }}
                 </div>
-                <div>
-                    {{ object.email }}
-                </div>
-                <div>
-                    Age: {{ object.age }}
-                </div>
-                <div>
-                    {{ object.gender }}
-                </div>
-                 {% if user.is_authenticated %}
+                {% if object.email %}
+                    <div>
+                        {{ object.email }}
+                    </div>
+                {% endif %}
+                {% if object.age %}
+                    <div>
+                        Age: {{ object.age }}
+                    </div>
+                {% endif %}
+                {% if object.gender %}
+                    <div>
+                        {{ object.gender }}
+                    </div>
+                {% endif %}
+                {% if user.is_authenticated %}
                     {% if object.pk == request.user.pk %}
                         <ul class="actions">
                             <li><a href="{% url 'logout' %}" class="button primary small">Logout</a>
@@ -70,121 +70,85 @@
         <div class="inner">
             <h2 class="major">Games</h2>
             <section class="features">
-                {% for game in object.game_set.all %}
-                    <article id="game-{{ game.pk }}">
-                        {% if game.cover_image %}
-                            <a href="{% url 'game_detail' game.id %}" class="image">
-                                <img src="{{ game.cover_image.url }}" alt="{{ game.title }}"/>
-                            </a>
-                        {% else %}
+                {% if object.game_set.all %}
 
-                        {% endif %}
-                        {#                        <h3 class="major">#}
-                        {#                            {{ game.title }}#}
-                        {#                        </h3>#}
-                        <div class="game-header small">
-                            <h2>{{ game.title }}</h2>
-                            <div class="uploaded-by">
-{#                                {% if game.to_user.profile_picture %}#}
+                    {% for game in object.game_set.all %}
+                        <article id="game-{{ game.pk }}">
+                            {% if game.cover_image %}
+                                <a href="{% url 'game_detail' game.id %}" class="image">
+                                    <img src="{{ game.cover_image.url }}" alt="{{ game.title }}"/>
+                                </a>
+                            {% else %}
+
+                            {% endif %}
+
+                            <div class="game-header small">
+                                <h2>{{ game.title }}</h2>
+                                <div class="uploaded-by">
+
                                     <div class="thumbnail-container">
-                                        <img class="thumbnail-profile" src="{{ game.to_user.get_profile_picture_or_default }}"
+                                        <img class="thumbnail-profile"
+                                             src="{{ game.to_user.get_profile_picture_or_default }}"
                                              alt="profile picture">
                                     </div>
-{#                                {% endif %}#}
-                                <div class="username">
-                                    <a href="{% url 'profile details' game.to_user.pk %}">
-                                        {{ game.to_user.get_user_name }}
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        {% if game.developer_logo %}
-                            <img src="{{ game.developer_logo.url }}" class="thumbnail small" alt="developer logo">
-                        {% endif %}
-
-                        <div class="release-year">{{ game.release_year }}</div>
-                        <div>By {{ game.developer }} &reg;</div>
-
-                        {% if user.is_authenticated %}
-
-                            <div class="rating-widget">
-                                <div class="current-rating">
-                                    <a href="#"><span class="rating">{{ game.stars_rating_html|safe }}</span></a>
-                                </div>
-                                <div hidden="hidden" class="your-rating">
-                                    <div>Choose your rating:</div>
-                                    {% include 'partials/game_rating_stars.html' %}
-                                    <a class="button small" href="#">close</a>
+                                    <div class="username">
+                                        <a href="{% url 'profile details' game.to_user.pk %}">
+                                            {{ game.to_user.get_user_name }}
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
 
-                        {% else %}
+                            {% if game.developer_logo %}
+                                <img src="{{ game.developer_logo.url }}" class="thumbnail small" alt="developer logo">
+                            {% endif %}
 
-                            <span class="rating">{{ game.stars_rating_html|safe }}</span>
+                            <div class="release-year">{{ game.release_year }}</div>
+                            <div>By {{ game.developer }} &reg;</div>
 
-                        {% endif %}
+                            {% if user.is_authenticated %}
 
-                        <p>{{ game.description|truncatewords:20 }}</p>
-                        <div class="uploaded-by">
+                                <div class="rating-widget">
+                                    <div class="current-rating">
+                                        <a href="#"><span class="rating">{{ game.stars_rating_html|safe }}</span></a>
+                                    </div>
+                                    <div hidden="hidden" class="your-rating">
+                                        <div>Choose your rating:</div>
+                                        {% include 'partials/game_rating_stars.html' %}
+                                        <a class="button small" href="#">close</a>
+                                    </div>
+                                </div>
 
-                        </div>
-                        <a href="{% url 'game_detail' game.id %}" class="special">Learn more</a>
+                            {% else %}
+                                <span class="rating">{{ game.stars_rating_html|safe }}</span>
+                            {% endif %}
 
-                        {% if user.is_authenticated %}
-
-                            <div>
-                                <form method="POST" action="{% url 'comment_game' game.pk %}">
-                                    {% csrf_token %}
-                                    {{ game_comment_form.as_p }}
-                                    <button type="submit" class="button primary small">Comment</button>
-                                </form>
+                            <p>{{ game.description|truncatewords:20 }}</p>
+                            <div class="uploaded-by">
 
                             </div>
+                            <a href="{% url 'game_detail' game.id %}" class="special">Learn more</a>
 
-                        {% endif %}
+                            {% if user.is_authenticated %}
 
-                    </article>
-                {% endfor %}
-                {#                {% for game in object.game_set.all %}#}
-                {#                    <article>#}
-                {#                        {% if game.cover_image %}#}
-                {#                        <a href="{% url 'game_detail' game.id %}" class="image"><img src="{{ game.cover_image.url }}"#}
-                {#                                                                                     alt="{{ game.title }}"/></a>#}
-                {#                        {% endif %}#}
-                {#                        <h3 class="major">{{ game.title }}</h3>#}
-                {#                           {% if user.is_authenticated %}#}
-                {##}
-                {#                           <div class="rating-widget">#}
-                {#                                <div class="current-rating">#}
-                {#                                    <a href="#" ><span class="rating">{{ game.stars_rating_html|safe }}</span></a>#}
-                {#                                </div>#}
-                {#                                <div hidden="hidden" class="your-rating">#}
-                {#                                    <div>Choose your rating:</div>#}
-                {#                                    {% include 'partials/game_rating_stars.html' %}#}
-                {#                                    <a class="button small" href="#">close</a>#}
-                {#                                </div>#}
-                {#                            </div>#}
-                {##}
-                {#                        {% else  %}#}
-                {##}
-                {#                                <span class="rating">{{ game.stars_rating_html|safe }}</span>#}
-                {##}
-                {#                        {% endif %}#}
-                {##}
-                {#                        <p>{{ game.description|truncatewords:20 }}</p>#}
-                {#                        <a href="{% url 'game_detail' game.id %}" class="special">Learn more</a>#}
-                {#                        {% if user.is_authenticated %}#}
-                {#                        <div>#}
-                {#                            <form method="POST" action="{% url 'comment_game' game.pk %}">#}
-                {#                                {% csrf_token %}#}
-                {#                                {{ game_comment_form.as_p }}#}
-                {#                                <button type="submit" class="button primary small">Comment</button>#}
-                {#                            </form>#}
-                {#                        </div>#}
-                {#                        {% endif %}#}
-                {#                    </article>#}
-                {#                {% endfor %}#}
+                                <div>
+                                    <form method="POST" action="{% url 'comment_game' game.pk %}">
+                                        {% csrf_token %}
+                                        {{ game_comment_form.as_p }}
+                                        <button type="submit" class="button primary small">Comment</button>
+                                    </form>
+                                </div>
+
+                            {% endif %}
+
+                        </article>
+                    {% endfor %}
+                {% else %}
+                    <div>
+                        No games from {{ object.get_username }} yet...
+                    </div>
+                {% endif %}
+
             </section>
             {% if is_paginated %}
                 <ul class="actions">
@@ -198,7 +162,5 @@
             {% endif %}
         </div>
     </section>
-
-
 
 {% endblock %}

@@ -127,6 +127,25 @@
                         <p>No review yet...</p>
                     </div>
                 {% endif %}
+                 {% if game.to_user == request.user %}
+                    <ul class="actions">
+                        <li><a href="{% url 'add_review' game.pk %}" class="button primary small">
+                            {% if review %}
+                                Update review
+                            {% else %}
+                                Write review
+                            {% endif %}
+                        </a>
+                        </li>
+                        {% if review %}
+                        <li><a href="{% url 'delete_review' game.pk %}" class="button small">
+                            Delete review
+                        </a>
+                        </li>
+                        {% endif %}
+
+                    </ul>
+                {% endif %}
 
             </section>
 
@@ -141,11 +160,21 @@
                     <div class="row gtr-uniform">
                         {% for screenshot in  screenshots %}
                             <div class="col-4">
-                                <span class="image fit">
+                                <div class="screenshot-container" id="screenshot-{{ screenshot.pk }}">
+                                <div class="image fit">
                                       <a href="{{ screenshot.picture.url }}" target="_blank">
                                             <img src="{{ screenshot.picture.url }}" alt="">
                                       </a>
-                                </span>
+                                </div>
+                                 {% if screenshot.from_user == request.user %}
+                                <div class="screenshot-delete-btn">
+                                    <a href="#" class="button primary small" id="delete-screenshot">
+                                        Delete
+                                    </a>
+                                </div>
+
+                                {% endif %}
+                            </div>
                             </div>
                         {% endfor %}
 
@@ -154,8 +183,35 @@
                     <div class="box alt">
                         <p>No screenshots yet...</p>
                     </div>
-
                 {% endif %}
+                {% if user.is_authenticated %}
+                <div id="add_screenshot">
+                        <h3>Add screenshot</h3>
+                        <form method="POST" action="{% url 'add_screenshot' game.pk %}" enctype="multipart/form-data" class="screenshot-form">
+                            {% csrf_token %}
+                            {{ add_screenshot_form.picture }}
+                            <button type="submit" class="button primary small">Confirm</button>
+                        </form>
+
+                </div>
+                    {# Display messages #}
+                    {% if messages %}
+                        <div class="messages error">
+                            {% for message in messages %}
+                                <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endif %}
+{#                {% if user.is_authenticated %}#}
+{#                    <form method="post" action="{% url 'add_screenshot' game.pk %}" enctype="multipart/form-data" class="screenshot-form">#}
+{#                        {% csrf_token %}#}
+{#                        {{ add_screenshot_form.picture }}#}
+{#                        <button type="submit" class="button primary small">Upload Screenshot</button>#}
+{#                    </form>#}
+{#                {% endif %}#}
 
                 </div>
             </section>

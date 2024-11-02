@@ -3,10 +3,7 @@
 
 {% block content %}
     <section id="banner" class="small-banner">
-{#    <div class="inner">#}
-{#        <h2>Game Library</h2>#}
-{#        <p>Explore our collection of vintage video games</p>#}
-{#    </div>#}
+
           <div class="edit-profile-header logo">
                 {% if object.cover_image %}
                     <a href="{{ object.cover_image.url }}" class="cover-picture-container" target="_blank">
@@ -22,48 +19,28 @@
 
         <div class="inner">
             <section>
-{#                <div class="edit-profile-header">#}
-{#                {% if object.profile_picture %}#}
-{#                    <a href="{{ object.profile_picture.url }}" class="profile-picture-container" target="_blank">#}
-{#                        <img class="profile-picture-small" src=" {{ object.profile_picture.url }}" alt="Profile picture">#}
-{#                    </a>#}
-{#                {% endif %}#}
-{#                <h2 class="major">Profile Edit</h2>#}
-{#                </div>#}
+
                 <form class="custom-form" method="post" enctype="multipart/form-data">
 
                     {% csrf_token %}
                     <input type="hidden" name="next" value= {{ next }}>
-
                     <div class="row gtr-uniform">
-
                         {% for field in form %}
-
                             <div class="col-6 col-12-xsmall">
                                 <label>{{ field.label }}</label>
-{#                                {% if field.label == 'Cover image' %}#}
-{#                                <div>#}
-{#                                  <label for="id_profile_picture" class="custom-file-label">Choose File</label>#}
-{#                                </div>#}
-{#                                {% endif %}#}
-
                                 {{ field }}
 
                                 {% if form.errors %}
-
                                     <ul class="error">
                                         {% for error in field.errors %}
                                             <li>{{ error }}</li>
                                         {% endfor %}
                                     </ul>
-
                                 {% endif %}
-
 
                             </div>
 
                         {% endfor %}
-
                         {% if form.non_field_errors %}
                             <div class="error">
                                 <ul>
@@ -73,7 +50,6 @@
                                 </ul>
                             </div>
                         {% endif %}
-
                         <div class="col-12">
                             <ul class="actions">
                                 <li><input type="submit" value="Submit" class="primary"></li>
