@@ -795,3 +795,27 @@ a.image {
     pointer-events: none;
     opacity: 0.7;
 }
+
+
+.console-by-manufacturer {
+    font-size: 0.8rem;
+}
+
+@media screen and (max-width: 736px) {
+    .console-by-manufacturer {
+        font-size: 0.6rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .console-by-manufacturer {
+        font-size: 0.5rem;
+    }
+}
+
+
+/* hide comment icon */
+
+a#show-less-comments:not(.button):before {
+    content: "\f068";
+}

@@ -9,5 +9,5 @@ urlpatterns = [
     path('consoles/<int:console_pk>/user-rating/', views.get_user_rating_to_console, name='get_user_rating_to_console'),
     path('games/<int:game_pk>/comment/', views.add_game_comment, name='comment_game'),
     path('console/<int:console_pk>/comment/', views.add_console_comment, name='comment_console'),
-    path('searchs/', views.SearchView.as_view(), name='search'),
+    # path('searchs/', views.SearchView.as_view(), name='search'),
 ]

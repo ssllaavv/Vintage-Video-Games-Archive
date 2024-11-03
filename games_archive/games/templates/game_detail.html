@@ -3,6 +3,7 @@
 
 {% block content %}
     <section id="banner" class="fake">
+    <a href="{% url 'game_list' %}" class="button small">Show all games</a>
     </section>
 
     <section class="wrapper alt style1">
@@ -230,35 +231,65 @@
                         </div>
                     {% endif %}
                     <h3 class="major" id="game-comments-{{ game.pk }}">Comments</h3>
-                 {% if comments %}
-                    {% for comment in comments %}
-                        <div class="box alt comment">
-
-                     <div class="uploaded-by">
+{#                 {% if comments %}#}
+{#                    {% for comment in comments %}#}
+{#                        <div class="box alt comment">#}
+{##}
+{#                     <div class="uploaded-by">#}
 {#                        {% if comment.from_user.profile_picture %}#}
-                            <div class="thumbnail-container">
-                                <img class="thumbnail-profile" src="{{ comment.from_user.get_profile_picture_or_default }}"
-                                     alt="profile picture">
-                            </div>
+{#                            <div class="thumbnail-container">#}
+{#                                <img class="thumbnail-profile" src="{{ comment.from_user.get_profile_picture_or_default }}"#}
+{#                                     alt="profile picture">#}
+{#                            </div>#}
 {#                        {% endif %}#}
-                        <div class="username" id="id_username">
-                            <a href="{% url 'profile details' comment.from_user.pk %}">
-                                {{ comment.from_user.get_user_name }}
-                            </a>
-                        </div>
+{#                        <div class="username" id="id_username">#}
+{#                            <a href="{% url 'profile details' comment.from_user.pk %}">#}
+{#                                {{ comment.from_user.get_user_name }}#}
+{#                            </a>#}
+{#                        </div>#}
+{#                    </div>#}
+{##}
+{##}
+{#                            <blockquote>{{ comment.comment|linebreaksbr }}</blockquote>#}
+{#                            <p class="date-of-publication">{{ comment.created_on }}</p>#}
+{#                        </div>#}
+{#                    {% endfor %}#}
+{#                {% else %}#}
+{#                    <div class="box alt">#}
+{##}
+{#                        <p>No comments yet...</p>#}
+{#                    </div>#}
+{#                {% endif %}#}
+                    {% if comments %}
+                    <div class="comments-container">
+                        {% for comment in comments %}
+                            <div class="box alt comment" id="comment-{{ comment.pk }}">
+                                <div class="uploaded-by">
+                                    <div class="thumbnail-container">
+                                        <img class="thumbnail-profile" src="{{ comment.from_user.get_profile_picture_or_default }}" alt="profile picture">
+                                    </div>
+                                    <div class="username">
+                                        <a href="{% url 'profile details' comment.from_user.pk %}">{{ comment.from_user.get_user_name }}</a>
+                                    </div>
+                                </div>
+                                <blockquote>{{ comment.comment|linebreaksbr }}</blockquote>
+                                <p class="date-of-publication">{{ comment.created_on }}</p>
+                            </div>
+                        {% endfor %}
                     </div>
 
-
-                            <blockquote>{{ comment.comment|linebreaksbr }}</blockquote>
-                            <p class="date-of-publication">{{ comment.created_on }}</p>
-                        </div>
-                    {% endfor %}
+                    <!-- Show/hide buttons -->
+                    {% if comments|length > 4 %}
+                        <a href="#" class="special" id="show-more-comments">Show all comments</a>
+                        <a href="#" class="special" id="show-less-comments" style="display: none;">Show less comments</a>
+                    {% endif %}
                 {% else %}
                     <div class="box alt">
-
                         <p>No comments yet...</p>
                     </div>
                 {% endif %}
+
+
                 </section>
         </div>
      </section>

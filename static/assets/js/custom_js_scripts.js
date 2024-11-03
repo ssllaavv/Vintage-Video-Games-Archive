@@ -305,3 +305,43 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+
+/* scripts for comments - show/hide more*/
+document.addEventListener('DOMContentLoaded', function () {
+    const comments = document.querySelectorAll('.comment');
+    const showMoreBtn = document.getElementById('show-more-comments');
+    const showLessBtn = document.getElementById('show-less-comments');
+
+    // Display only the first 4 comments initially
+    if (comments.length > 4) {
+        comments.forEach((comment, index) => {
+            if (index >= 4) {
+                comment.style.display = 'none';
+            }
+        });
+
+        // Show the "Show all" button
+        showMoreBtn.style.display = 'inline-block';
+
+        // Event listener for "Show all" button
+        showMoreBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            comments.forEach(comment => comment.style.display = 'block'); // Show all comments
+            showMoreBtn.style.display = 'none';
+            showLessBtn.style.display = 'inline-block';
+        });
+
+        // Event listener for "Show less" button
+        showLessBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            comments.forEach((comment, index) => {
+                if (index >= 4) {
+                    comment.style.display = 'none'; // Hide comments after the 4th one
+                }
+            });
+            showLessBtn.style.display = 'none';
+            showMoreBtn.style.display = 'inline-block';
+        });
+    }
+});

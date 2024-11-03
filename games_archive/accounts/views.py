@@ -3,10 +3,9 @@ from django.shortcuts import redirect
 from django.views.generic import CreateView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from .models import GamesArchiveUser
 from .forms import UserRegistrationForm, UserProfileForm, UserLoginForm
 from django.views import generic as views
-from django.templatetags.static import static
+
 
 from ..common.forms import GameCommentForm
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -30,9 +29,7 @@ class UserRegisterView(CreateView):
 
     def get_success_url(self):
         result = self.request.POST.get('next', None)
-        # print(result)
         if result == 'None' or result.includs('register'):
-            # print('There is NO next!')
             return self.success_url
         return result
 
@@ -74,28 +71,17 @@ class UserEditView(LoginRequiredMixin, UpdateView):
 class UserDetailView(DetailView):
     model = get_user_model()
     template_name = 'profile-details.html'
-    # context_object_name = 'user'
-
-    # def get_object(self, queryset=None):
-    #     return self.request.user
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         comments_count = self.object.gamecomment_set.count() + self.object.consolecomment_set.count()
-        # profile_image = static('/images/added/person.png')
-        # if self.object.profile_picture not in ['', None]:
-        #     profile_image = self.object.profile_picture.url
-
         rates = self.object.gamerating_set.count() + self.object.consolerating_set.count()
 
         context.update({
             'comments_count': comments_count,
-            # 'profile_image': profile_image,
             'game_comment_form': GameCommentForm(),
             'rates': rates,
         })
-
-        # print(comments_count)
 
         return context
 

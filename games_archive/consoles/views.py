@@ -14,16 +14,19 @@ class ConsoleListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
+        # Get base queryset
         queryset = super().get_queryset()
-        search_query = self.request.GET.get('search', '').strip()
 
-        if search_query:
+        # Store search query as instance variable
+        self.search_query = self.request.GET.get('search', '').strip()
 
+        if self.search_query:
+            # Apply all filters at once
             queryset = queryset.filter(
-                Q(name__icontains=search_query) |
-                Q(description__icontains=search_query) |
-                Q(manufacturer__icontains=search_query)
-            ).distinct()
+                Q(name__icontains=self.search_query) |
+                Q(description__icontains=self.search_query) |
+                Q(manufacturer__icontains=self.search_query)
+            ).distinct().order_by('-id')  # Add explicit ordering to ensure consistent pagination
 
         return queryset
 
@@ -31,14 +34,7 @@ class ConsoleListView(ListView):
         context = super().get_context_data(**kwargs)
         context['console_comment_form'] = ConsoleCommentForm()
         context['search_form'] = ConsoleSearchForm(self.request.GET)
-        context['search_query'] = self.request.GET.get('search', '')
-
-        if 'search' in self.request.GET:
-            current_url = f"{self.request.path}"
-            if self.request.GET.urlencode():
-                current_url += f"?{self.request.GET.urlencode()}"
-            current_url += "#consoles-list"
-            context['current_url'] = current_url
+        context['search_query'] = self.search_query  # Use the instance variable instead of getting from request again
 
         return context
 

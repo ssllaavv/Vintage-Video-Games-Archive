@@ -18,6 +18,51 @@ from django.views.decorators.csrf import csrf_exempt
 from ..consoles.models import Console
 
 
+# class GameListView(ListView):
+#     model = Game
+#     template_name = 'game_list.html'
+#     context_object_name = 'games'
+#     paginate_by = 1
+#
+#     def get_queryset(self):
+#         queryset = super().get_queryset()
+#         search_query = self.request.GET.get('search', '').strip()
+#
+#         if search_query:
+#             # First, get console IDs that match the search query
+#             console_ids = Console.objects.filter(
+#                 name__icontains=search_query
+#             ).values_list('id', flat=True)
+#
+#             queryset = queryset.filter(
+#                 Q(title__icontains=search_query) |
+#                 Q(description__icontains=search_query) |
+#                 Q(developer__icontains=search_query) |
+#                 Q(to_consoles__in=console_ids) |
+#                 Q(to_user__first_name__icontains=search_query) |
+#                 Q(to_user__last_name__icontains=search_query) |
+#                 Q(to_user__username__icontains=search_query)
+#             ).distinct()
+#
+#         return queryset
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['game_comment_form'] = GameCommentForm()
+#         context['search_form'] = GameSearchForm(self.request.GET)
+#         context['search_query'] = self.request.GET.get('search', '')
+#
+#         # Add the fragment identifier if the form was submitted (even with empty search)
+#         if 'search' in self.request.GET:
+#             current_url = f"{self.request.path}"
+#             if self.request.GET.urlencode():
+#                 current_url += f"?{self.request.GET.urlencode()}"
+#             current_url += "#games-list"
+#             context['current_url'] = current_url
+#
+#         return context
+#
+
 class GameListView(ListView):
     model = Game
     template_name = 'game_list.html'
@@ -25,24 +70,28 @@ class GameListView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
+        # Get base queryset
         queryset = super().get_queryset()
-        search_query = self.request.GET.get('search', '').strip()
 
-        if search_query:
+        # Store search query as instance variable
+        self.search_query = self.request.GET.get('search', '').strip()
+
+        if self.search_query:
             # First, get console IDs that match the search query
             console_ids = Console.objects.filter(
-                name__icontains=search_query
+                name__icontains=self.search_query
             ).values_list('id', flat=True)
 
+            # Apply all filters at once
             queryset = queryset.filter(
-                Q(title__icontains=search_query) |
-                Q(description__icontains=search_query) |
-                Q(developer__icontains=search_query) |
+                Q(title__icontains=self.search_query) |
+                Q(description__icontains=self.search_query) |
+                Q(developer__icontains=self.search_query) |
                 Q(to_consoles__in=console_ids) |
-                Q(to_user__first_name__icontains=search_query) |
-                Q(to_user__last_name__icontains=search_query) |
-                Q(to_user__username__icontains=search_query)
-            ).distinct()
+                Q(to_user__first_name__icontains=self.search_query) |
+                Q(to_user__last_name__icontains=self.search_query) |
+                Q(to_user__username__icontains=self.search_query)
+            ).distinct().order_by('-pk')  # Add explicit ordering to ensure consistent pagination
 
         return queryset
 
@@ -50,16 +99,7 @@ class GameListView(ListView):
         context = super().get_context_data(**kwargs)
         context['game_comment_form'] = GameCommentForm()
         context['search_form'] = GameSearchForm(self.request.GET)
-        context['search_query'] = self.request.GET.get('search', '')
-
-        # Add the fragment identifier if the form was submitted (even with empty search)
-        if 'search' in self.request.GET:
-            current_url = f"{self.request.path}"
-            if self.request.GET.urlencode():
-                current_url += f"?{self.request.GET.urlencode()}"
-            current_url += "#games-list"
-            context['current_url'] = current_url
-
+        context['search_query'] = self.search_query
         return context
 
 
@@ -119,27 +159,6 @@ class GameDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return result
 
 
-# class AddScreenshotView(LoginRequiredMixin, CreateView):
-#     model = Screenshot
-#     form_class = ScreenshotForm
-#     template_name = 'screenshot_form.html'
-#
-#     def form_valid(self, form):
-#         form.instance.from_user = self.request.user
-#         form.instance.to_game = Game.objects.get(pk=self.kwargs['game_id'])
-#         return super().form_valid(form)
-
-
-# class AddReviewView(LoginRequiredMixin, CreateView):
-#     model = GameReview
-#     form_class = GameReviewForm
-#     template_name = 'review_form.html'
-#
-#     def form_valid(self, form):
-#         form.instance.from_user = self.request.user
-#         form.instance.to_game = Game.objects.get(pk=self.kwargs['game_id'])
-#         return super().form_valid(form)
-
 class AddOrUpdateReviewView(LoginRequiredMixin, View):
     template_name = 'review_form.html'
     form_class = GameReviewForm
@@ -193,22 +212,6 @@ class DeleteReviewView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return reverse_lazy('game_detail', kwargs={'pk': self.kwargs['game_id']})
 
 
-# @login_required
-# def add_game_screenshot(request, game_id):
-#     if request.method == 'POST':
-#         game = Game.objects.get(pk=game_id)
-#         form = ScreenshotForm(request.POST)
-#         if form.is_valid():
-#             screenshot = form.save(commit=False)
-#             screenshot.to_game = game
-#             screenshot.from_user = request.user
-#             screenshot.save()
-#             return redirect(request.META['HTTP_REFERER'] + f'#screenshot--{screenshot.pk}')
-#
-#     # return redirect(request.META['HTTP_REFERER'] + f'#game-{game_id}')
-#
-
-
 @login_required
 def add_game_screenshot(request, game_id):
     game = get_object_or_404(Game, pk=game_id)
@@ -249,7 +252,7 @@ class DeleteScreenshotView(LoginRequiredMixin, UserPassesTestMixin, View):
             pk__lt=screenshot.pk
         ).order_by('-pk').first()
 
-        # Get the next screenshot's ID if previous doesn't exist
+        # Get the next screenshot'ss ID if previous doesn't exist
         next_screenshot = Screenshot.objects.filter(
             to_game=screenshot.to_game,
             pk__gt=screenshot.pk

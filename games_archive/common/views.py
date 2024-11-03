@@ -1,19 +1,15 @@
 import re
 
 from django.contrib.auth.decorators import login_required
-from django.views.generic import TemplateView, CreateView, ListView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView, ListView
 from django.db.models import Q
-from .models import GameRating, ConsoleRating, GameComment, ConsoleComment
-from games_archive.games.models import Game
+from .models import ConsoleRating
 from games_archive.consoles.models import Console
 from .forms import GameCommentForm, ConsoleCommentForm
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 import json
-
 from django.shortcuts import get_object_or_404, redirect, render
-from django.views.generic.edit import FormView
 from .models import GameRating, Game
 
 
@@ -44,7 +40,7 @@ def add_game_rating(request, game_pk):
             defaults={'rating': rating_value}
         )
 
-        message = 'Rating created successfully' if created else 'Rating updated successfully'
+        message = 'Rating created successfully' if created else 'Rating successfully updated'
         return JsonResponse({
             'message': message,
             'rating': rating_value,
@@ -72,7 +68,6 @@ def get_user_rating_to_game(request, game_pk):
         })
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-
 
 
 @require_http_methods(["POST"])
@@ -163,17 +158,17 @@ def add_console_comment(request, console_pk):
         else:
             return redirect(request.META['HTTP_REFERER'] + f'#console-{ console.pk }')
 
-
-class SearchView(ListView):
-    template_name = 'search_results.html'
-    context_object_name = 'results'
-    paginate_by = 20
-
-    def get_queryset(self):
-        query = self.request.GET.get('q')
-        if query:
-            game_results = Game.objects.filter(Q(title__icontains=query) | Q(description__icontains=query))
-            console_results = Console.objects.filter(Q(name__icontains=query) | Q(description__icontains=query))
-            return list(game_results) + list(console_results)
-        return []
-
+#
+# class SearchView(ListView):
+#     template_name = 'search_results.html'
+#     context_object_name = 'results'
+#     paginate_by = 20
+#
+#     def get_queryset(self):
+#         query = self.request.GET.get('q')
+#         if query:
+#             game_results = Game.objects.filter(Q(title__icontains=query) | Q(description__icontains=query))
+#             console_results = Console.objects.filter(Q(name__icontains=query) | Q(description__icontains=query))
+#             return list(game_results) + list(console_results)
+#         return []
+#
