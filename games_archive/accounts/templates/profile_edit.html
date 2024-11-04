@@ -3,33 +3,19 @@
 
 {% block content %}
     <section id="banner" class="small-banner">
-{#    <div class="inner">#}
-{#        <h2>Game Library</h2>#}
-{#        <p>Explore our collection of vintage video games</p>#}
-{#    </div>#}
-          <div class="edit-profile-header logo">
-                {% if object.profile_picture %}
-                    <a href="{{ object.profile_picture.url }}" class="profile-picture-container" target="_blank">
-                        <img class="profile-picture-small" src=" {{ object.profile_picture.url }}" alt="Profile picture">
-                    </a>
-                {% endif %}
-                <h2 class="major">Profile Edit</h2>
-          </div>
+        <div class="edit-profile-header logo">
+            {% if object.profile_picture %}
+                <a href="{{ object.profile_picture.url }}" class="profile-picture-container" target="_blank">
+                    <img class="profile-picture-small" src=" {{ object.profile_picture.url }}" alt="Profile picture">
+                </a>
+            {% endif %}
+            <h2 class="major">Profile Edit</h2>
+        </div>
     </section>
 
-
     <div class="wrapper">
-
         <div class="inner">
             <section>
-{#                <div class="edit-profile-header">#}
-{#                {% if object.profile_picture %}#}
-{#                    <a href="{{ object.profile_picture.url }}" class="profile-picture-container" target="_blank">#}
-{#                        <img class="profile-picture-small" src=" {{ object.profile_picture.url }}" alt="Profile picture">#}
-{#                    </a>#}
-{#                {% endif %}#}
-{#                <h2 class="major">Profile Edit</h2>#}
-{#                </div>#}
                 <form class="custom-form" method="post" enctype="multipart/form-data">
 
                     {% csrf_token %}
@@ -42,28 +28,22 @@
                             <div class="col-6 col-12-xsmall">
                                 <label>{{ field.label }}</label>
                                 {% if field.label == 'Profile picture' %}
-                                <div>
-                                  <label for="id_profile_picture" class="custom-file-label">Choose File</label>
-                                </div>
-
+                                    <div>
+                                        <label for="id_profile_picture" class="custom-file-label">Choose File</label>
+                                    </div>
 
                                 {% endif %}
-
                                 {{ field }}
 
                                 {% if form.errors %}
-
                                     <ul class="error">
                                         {% for error in field.errors %}
                                             <li>{{ error }}</li>
                                         {% endfor %}
                                     </ul>
-
                                 {% endif %}
 
-
                             </div>
-
                         {% endfor %}
 
                         {% if form.non_field_errors %}
@@ -82,14 +62,9 @@
                             </ul>
                         </div>
                     </div>
-
                 </form>
-
             </section>
         </div>
     </div>
-
-
-
 
 {% endblock %}

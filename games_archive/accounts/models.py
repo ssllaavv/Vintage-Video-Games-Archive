@@ -3,7 +3,7 @@ from django.db import models
 from django.core import validators
 from django.templatetags.static import static
 
-from .custom_validators import validate_name
+from games_archive.custom_validators import validate_name
 
 
 class GamesArchiveUser(AbstractUser):

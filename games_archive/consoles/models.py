@@ -1,15 +1,6 @@
 from django.db import models
-
 from games_archive.accounts.models import GamesArchiveUser
 from games_archive.custom_widgets.custom_widgets import get_star_rating_html
-
-
-class Supplier(models.Model):
-    name = models.CharField(max_length=100)
-    logo = models.ImageField(upload_to='suppliers_logos/')
-
-    def __str__(self):
-        return self.name
 
 
 class Console(models.Model):
@@ -51,5 +42,9 @@ class Console(models.Model):
         return self.name
 
 
+class Supplier(models.Model):
+    name = models.CharField(max_length=100)
+    logo = models.ImageField(upload_to='suppliers_logos/')
 
-
+    def __str__(self):
+        return self.name

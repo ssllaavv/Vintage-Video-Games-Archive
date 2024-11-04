@@ -157,18 +157,3 @@ def add_console_comment(request, console_pk):
             return redirect(request.META['HTTP_REFERER'] + f'#console-comments-{console_pk}')
         else:
             return redirect(request.META['HTTP_REFERER'] + f'#console-{ console.pk }')
-
-#
-# class SearchView(ListView):
-#     template_name = 'search_results.html'
-#     context_object_name = 'results'
-#     paginate_by = 20
-#
-#     def get_queryset(self):
-#         query = self.request.GET.get('q')
-#         if query:
-#             game_results = Game.objects.filter(Q(title__icontains=query) | Q(description__icontains=query))
-#             console_results = Console.objects.filter(Q(name__icontains=query) | Q(description__icontains=query))
-#             return list(game_results) + list(console_results)
-#         return []
-#

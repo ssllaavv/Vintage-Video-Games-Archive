@@ -79,7 +79,7 @@
                                     <img src="{{ game.cover_image.url }}" alt="{{ game.title }}"/>
                                 </a>
                             {% else %}
-
+{#TODO add game default image  #}
                             {% endif %}
 
                             <div class="game-header small">
@@ -99,13 +99,15 @@
                                 </div>
                             </div>
 
-                            {% if game.developer_logo %}
+                            {% if game.developer_logo != None %}
                                 <img src="{{ game.developer_logo.url }}" class="thumbnail small" alt="developer logo">
                             {% endif %}
-
+                            {% if game.release_year != None %}
                             <div class="release-year">{{ game.release_year }}</div>
-                            <div>By {{ game.developer }} &reg;</div>
-
+                            {% endif %}
+                            {% if game.developer != None %}
+                            <div>By {{ game.developer }}&reg;</div>
+                            {% endif %}
                             {% if user.is_authenticated %}
 
                                 <div class="rating-widget">

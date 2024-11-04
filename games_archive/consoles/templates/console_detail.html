@@ -3,174 +3,147 @@
 
 {% block content %}
 
-<section id="banner" class="fake">
-<a href="{% url 'console_list' %}" class="button small">Show all consoles</a>
-</section>
+    <section id="banner" class="fake">
+        <a href="{% url 'console_list' %}" class="button small">Show all consoles</a>
+    </section>
 
-<section class="wrapper alt style1">
-    <div class="inner">
-        <h2 class="major">{{ console.name }}</h2>
-        <section class="features-my">
-            <article id="console-{{ console.pk }}">
-                {% if console.cover_image %}
-                    <img src="{{ console.cover_image.url }}" alt="{{ console.name }}"/>
+    <section class="wrapper alt style1">
+        <div class="inner">
+            <h2 class="major">{{ console.name }}</h2>
+            <section class="features-my">
+                <article id="console-{{ console.pk }}">
+                    {% if console.cover_image %}
+                        <img src="{{ console.cover_image.url }}" alt="{{ console.name }}"/>
 
-                {% endif %}
-                <div class="console-details">
+                    {% endif %}
+                    <div class="console-details">
 
-                    <h3 class="major">
-                         {% if console.logo  %}
-                        <img src="{{ console.logo.url }}" class="thumbnail big" alt="console logo">
+                        <h3 class="major">
+                            {% if console.logo %}
+                                <img src="{{ console.logo.url }}" class="thumbnail big" alt="console logo">
 
-                        {% elif console.manufacturer_logo %}
-                        <img src="{{ console.manufacturer_logo.url }}" class="thumbnail big" alt="manufacturer logo">
+                            {% elif console.manufacturer_logo != None  %}
+                                <img src="{{ console.manufacturer_logo.url }}" class="thumbnail big"
+                                     alt="manufacturer logo">
+                            {% endif %}
+                            {% if console.manufacturer != None %}
+                            <span class="console-by-manufacturer"> By {{ console.manufacturer }}&reg;</span>
+                            {% endif %}
+                        </h3>
+                        {% if console.release_year != None %}
+                        <div class="release-year">{{ console.release_year }}</div>
                         {% endif %}
-                        <span class="console-by-manufacturer"> By {{ console.manufacturer }}&reg;</span>
-                    </h3>
-
-                    <div class="release-year">{{ console.release_year }}</div>
-                    <div>
-                        {% if console.logo and console.manufacturer_logo %}
                         <div>
-                             <img src="{{ console.manufacturer_logo.url }}" class="thumbnail big" alt="manufacturer logo">
+                            {% if console.logo and console.manufacturer_logo != None %}
+                                <div>
+                                    <img src="{{ console.manufacturer_logo.url }}" class="thumbnail big"
+                                         alt="manufacturer logo">
+                                </div>
+                            {% endif %}
                         </div>
+
+                        {% if user.is_authenticated %}
+
+                            <div class="rating-widget">
+                                <div class="current-rating">
+                                    <a href="#"><span class="rating">{{ console.stars_rating_html|safe }}</span></a>
+                                </div>
+                                <div hidden="hidden" class="your-rating">
+                                    <div>Choose your rating:</div>
+                                    {% include 'partials/console_rating_stars.html' %}
+                                    <a class="button small" href="#">close</a>
+                                </div>
+                            </div>
+
+                        {% else %}
+                            <span class="rating">{{ console.stars_rating_html|safe }}</span>
+
                         {% endif %}
 
+                        <ul class="actions">
+                            {% if console.to_user == request.user or user.is_staff %}
+                                <li><a href="{% url 'console_update' console.pk %}" class="button primary small">Edit
+                                    console</a>
+                                </li>
+                            {% endif %}
+                            {% if user.is_staff %}
+                                <li><a href="{% url 'console_delete' console.pk %}" class="button small">Delete
+                                    Console</a>
+                                </li>
+                            {% endif %}
+                        </ul>
                     </div>
+                </article>
 
-                    {% if user.is_authenticated %}
+            </section>
+            <section>
+                <h3 class="major">Description</h3>
+                {% if console.description %}
+                    <div class="box alt">
+                        <p>{{ console.description }}</p>
+                    </div>
+                {% else %}
+                    <div class="box alt">
+                        <p>No description yet...</p>
+                    </div>
+                {% endif %}
+            </section>
 
-                       <div class="rating-widget">
-                            <div class="current-rating">
-                                <a href="#" ><span class="rating">{{ console.stars_rating_html|safe }}</span></a>
-                            </div>
-                            <div hidden="hidden" class="your-rating">
-                                <div>Choose your rating:</div>
-                                {% include 'partials/console_rating_stars.html' %}
-                                <a class="button small" href="#">close</a>
-                            </div>
-                        </div>
+        </div>
+    </section>
 
-                    {% else  %}
+    <section class="wrapper style2">
+        <div class="inner">
+            <h3 class="major">{{ console.name }} popular games</h3>
+            {% if popular_games %}
+                <div class="row gtr-uniform">
 
-                            <span class="rating">{{ game.stars_rating_html|safe }}</span>
-
-                    {% endif %}
-
-
-                         <ul class="actions">
-
-                    {% if console.to_user == request.user or user.is_staff %}
-                            <li><a href="{% url 'console_update' console.pk %}" class="button primary small">Edit
-                                console</a>
-                            </li>
-                    {% endif %}
-                    {% if user.is_staff %}
-                            <li><a href="{% url 'console_delete' console.pk %}" class="button small">Delete
-                                Console</a>
-                            </li>
-                     {% endif %}
-                         </ul>
-                </div>
-            </article>
-
-        </section>
-        <section>
-            <h3 class="major">Description</h3>
-            {% if console.description %}
-                <div class="box alt">
-                    <p>{{ console.description }}</p>
-                </div>
-            {% else %}
-                <div class="box alt">
-                    <p>No description yet...</p>
-                </div>
-            {% endif %}
-        </section>
-
-    </div>
-</section>
-
-
-<section class="wrapper style2">
-    <div class="inner">
-
-        <h3 class="major">{{ console.name }} popular games</h3>
-        {% if popular_games %}
-         <div class="row gtr-uniform">
-
-             {% for game in popular_games %}
-             <div class="col-4">
+                    {% for game in popular_games %}
+                        <div class="col-4">
                     <span class="image fit">
-                          <a href="{% url 'game_detail' game.pk %}" >
+                          <a href="{% url 'game_detail' game.pk %}">
                               <div class="game-title">
                                   {{ game.title }}
                               </div>
                               {% if game.cover_image %}
-                                <img src="{{ game.cover_image.url }}" alt="">
+                                  <img src="{{ game.cover_image.url }}" alt="">
                               {% endif %}
                           </a>
                     </span>
+                        </div>
+                    {% endfor %}
                 </div>
-            {% endfor %}
-         </div>
-        {% else  %}
-            <p>
-                No games for {{ console.name }} yet...
-            </p>
-        {% endif %}
-    </div>
-</section>
-<section class="wrapper alt style3">
-    <div class="inner">
-            <section>
-            {% if user.is_authenticated %}
-            <div>
-                <form method="POST" action="{% url 'comment_console' console.pk %}">
-                    {% csrf_token %}
-                    {{ console_comment_form.as_p }}
-                    <button type="submit" class="button primary small">comment</button>
-                </form>
-            </div>
+            {% else %}
+                <p>
+                    No games for {{ console.name }} yet...
+                </p>
             {% endif %}
+        </div>
+    </section>
+    <section class="wrapper alt style3">
+        <div class="inner">
+            <section>
+                {% if user.is_authenticated %}
+                    <div>
+                        <form method="POST" action="{% url 'comment_console' console.pk %}">
+                            {% csrf_token %}
+                            {{ console_comment_form.as_p }}
+                            <button type="submit" class="button primary small">comment</button>
+                        </form>
+                    </div>
+                {% endif %}
 
-            <h3 class="major" id="console-comments-{{ console.pk }}">Comments</h3>
+                <h3 class="major" id="console-comments-{{ console.pk }}">Comments</h3>
 
-{#               {% if comments %}#}
-{#                    {% for comment in comments %}#}
-{#                        <div class="box alt comment" id="comment-{{ comment.pk }}">#}
-{##}
-{#                     <div class="uploaded-by">#}
-{#                        {% if comment.from_user.profile_picture %}#}
-{#                            <div class="thumbnail-container">#}
-{#                                <img class="thumbnail-profile" src="{{ comment.from_user.get_profile_picture_or_default }}"#}
-{#                                     alt="profile picture">#}
-{#                            </div>#}
-{#                        {% endif %}#}
-{#                        <div class="username" id="id_username">#}
-{#                            <a href="{% url 'profile details' comment.from_user.pk %}">#}
-{#                                {{ comment.from_user.get_user_name }}#}
-{#                            </a>#}
-{#                        </div>#}
-{#                    </div>#}
-{##}
-{#                            <blockquote>{{ comment.comment|linebreaksbr }}</blockquote>#}
-{#                            <p class="date-of-publication">{{ comment.created_on }}</p>#}
-{#                        </div>#}
-{#                    {% endfor %}#}
-{#                {% else %}#}
-{#                    <div class="box alt">#}
-{##}
-{#                        <p>No comments yet...</p>#}
-{#                    </div>#}
-{#                {% endif %}#}
-                    {% if comments %}
+                {% if comments %}
                     <div class="comments-container">
                         {% for comment in comments %}
                             <div class="box alt comment" id="comment-{{ comment.pk }}">
                                 <div class="uploaded-by">
                                     <div class="thumbnail-container">
-                                        <img class="thumbnail-profile" src="{{ comment.from_user.get_profile_picture_or_default }}" alt="profile picture">
+                                        <img class="thumbnail-profile"
+                                             src="{{ comment.from_user.get_profile_picture_or_default }}"
+                                             alt="profile picture">
                                     </div>
                                     <div class="username">
                                         <a href="{% url 'profile details' comment.from_user.pk %}">{{ comment.from_user.get_user_name }}</a>
@@ -185,15 +158,15 @@
                     <!-- Show/hide buttons -->
                     {% if comments|length > 4 %}
                         <a href="#" class="special" id="show-more-comments">Show all comments</a>
-                        <a href="#" class="special" id="show-less-comments" style="display: none;">Show less comments</a>
+                        <a href="#" class="special" id="show-less-comments" style="display: none;">Show less
+                            comments</a>
                     {% endif %}
                 {% else %}
                     <div class="box alt">
                         <p>No comments yet...</p>
                     </div>
                 {% endif %}
-        </section>
-    </div>
-</section>
-
+            </section>
+        </div>
+    </section>
 {% endblock %}

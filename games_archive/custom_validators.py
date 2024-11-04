@@ -19,5 +19,10 @@ def validate_name(value):
     validate_name_is_longer_than_2_characters(value)
 
 
+def validate_unique_game_title():
+    pass
 
+
+def validate_unique_console_title():
+    pass
 

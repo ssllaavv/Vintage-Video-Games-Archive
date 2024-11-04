@@ -6,17 +6,15 @@
     <!-- Banner -->
     <section id="banner">
         <div class="inner">
-            <div class="logo big-icon"><img src="{% static "images/added/space-invadors.png" %}" id="gif-icon" alt=""></div>
+            <div class="logo big-icon"><img src="{% static "images/added/space-invadors.png" %}" id="gif-icon" alt="">
+            </div>
             {% if user.is_authenticated %}
-
                 <h2>Welcome to Video Games Archive, {{ user.get_user_name }}</h2>
 
             {% else %}
-
                 <h2>Welcome to Video Games Archive</h2>
 
             {% endif %}
-
             <p>Explore the history of gaming through our extensive collection of vintage games and consoles.</p>
         </div>
     </section>
@@ -32,23 +30,28 @@
             <div class="content">
                 <h2 class="major">Latest Games</h2>
                 <div class="home-thumbnails-container">
+                    {% if latest_games %}
                     {% for game in latest_games %}
                         <div>
                             <a href="{% url 'game_detail' game.id %}">
                                 <div class="thumbnail-text">{{ game.title }}</div>
+                                {% if game.cover_image %}
                                 <img class="thumbnail-home" src="{{ game.cover_image.url }}" alt="game">
-
+                                {% endif %}
                             </a>
                         </div>
                     {% endfor %}
+                    {% else %}
+                        <div>No games yet..</div>
+                    {% endif %}
+
                 </div>
                 <div class="view-all">
-                <a href="{% url 'game_list' %}" class="special">View All Games</a>
+                    <a href="{% url 'game_list' %}" class="special">View All Games</a>
                 </div>
             </div>
         </div>
     </section>
-
 
     <section id="two" class="wrapper alt spotlight style2">
         <div class="inner">
@@ -56,37 +59,31 @@
                 <div class="spotlight-img-container">
                     <img src="{% static 'images/added/consoles-colage.jpg' %}" alt=""/>
                 </div>
-
             </a>
-{#            <div class="content">#}
-{#                <h2 class="major">Latest Consoles</h2>#}
-{##}
-{#                {% for console in latest_consoles %}#}
-{#                    <div><a href="{% url 'console_detail' console.id %}">#}
-{#                        {{ console.name }}#}
-{#                    </a></div>#}
-{#                {% endfor %}#}
-{##}
-{#                <a href="{% url 'console_list' %}" class="special">View All Consoles</a>#}
-{#            </div>#}
             <div class="content">
                 <h2 class="major">Latest Games</h2>
                 <div class="home-thumbnails-container">
+                    {% if latest_consoles %}
                     {% for console in latest_consoles %}
                         <div>
                             <a href="{% url 'console_detail' console.id %}">
                                 <div class="thumbnail-text">{{ console.name }}</div>
+                                {% if console.default_image != None %}
                                 <img class="thumbnail-home" src="{{ console.default_image.url }}" alt="console">
+                                {% endif %}
 
                             </a>
                         </div>
                     {% endfor %}
+                    {% else %}
+                        <div>No consoles yet..</div>
+                    {% endif %}
                 </div>
                 <div class="view-all">
-                <a href="{% url 'console_list' %}" class="special">View All Consoles</a>
+                    <a href="{% url 'console_list' %}" class="special">View All Consoles</a>
                 </div>
-</div>
+            </div>
         </div>
     </section>
-    {#</section>#}
+
 {% endblock %}

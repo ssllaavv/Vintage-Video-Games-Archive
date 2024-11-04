@@ -13,14 +13,14 @@
                 <form class="custom-form" method="post">
 
                     {% csrf_token %}
-                   <input type="hidden" name="next" value="{{ request.GET.next|default:'' }}">
+                    <input type="hidden" name="next" value="{{ request.GET.next|default:'' }}">
 
                     <div class="row gtr-uniform">
                         <div class="col-6 col-12-xsmall">
                             <label>Username</label>
 
                             {{ form.username }}
-                             {% if form.username.errors %}
+                            {% if form.username.errors %}
                                 <div class="error">
                                     <ul>
                                         {% for error in form.username.errors %}
@@ -45,15 +45,15 @@
                             {% endif %}
                         </div>
                         <div>
-                        {% if form.non_field_errors %}
-                            <div class="error">
-                                <ul>
-                                    {% for error in form.non_field_errors %}
-                                        <li>{{ error }}</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        {% endif %}
+                            {% if form.non_field_errors %}
+                                <div class="error">
+                                    <ul>
+                                        {% for error in form.non_field_errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
                         </div>
 
                         <div class="col-12">
@@ -66,13 +66,11 @@
 
                 </form>
                 <div class="second-option">
-
                     <!-- Link to Login Page -->
                     <p>Don't have an account? <a href="{% url 'register' %}"><b>Register</b></a></p>
                 </div>
             </section>
         </div>
     </div>
-
 
 {% endblock %}

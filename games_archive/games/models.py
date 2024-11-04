@@ -7,11 +7,11 @@ from games_archive.custom_widgets.custom_widgets import get_star_rating_html
 
 
 class Game(models.Model):
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=100)
     release_year = models.IntegerField(blank=True, null=True)
     developer = models.CharField(max_length=100, blank=True, null=True)
     genre = models.CharField(max_length=50, blank=True, null=True)
-    description = models.TextField()
+    description = models.TextField(blank=True, null=True)
     cover_image = models.ImageField(upload_to='game_covers/', blank=True, null=True)
     to_consoles = models.ManyToManyField(Console, blank=True,)
     to_user = models.ForeignKey(GamesArchiveUser, on_delete=models.DO_NOTHING)

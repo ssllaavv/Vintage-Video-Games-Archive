@@ -32,15 +32,14 @@
                     <div class="user-name-nav-small" hidden="hidden">
                         <a href="{% url 'profile details' user.pk %}">{{ user.get_user_name }}</a>
                     </div>
-
                 </h1>
 
-
-
             {% else %}
-                <a class="small-icon" href="{% url 'home' %}">
-                    <img src="{% static "images/added/space-invadors.png" %}" id="gif-icon" alt="">
-                </a>
+                 <h1 class="h1-flex">
+                    <a class="small-icon" href="{% url 'home' %}">
+                        <img src="{% static "images/added/space-invadors.png" %}" id="gif-icon" alt="">
+                    </a>
+                 </h1>
 
             {% endif %}
 

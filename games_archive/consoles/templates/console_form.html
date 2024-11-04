@@ -3,15 +3,18 @@
 
 {% block content %}
     <section id="banner" class="small-banner">
-
-          <div class="edit-profile-header">
+        <div class="edit-profile-header">
+            {% if object %}
                 {% if object.cover_image %}
                     <a href="{{ object.cover_image.url }}" class="cover-picture-container" target="_blank">
-                    <img class="cover-picture-small" src=" {{ object.cover_image.url }}" alt="Profile picture">
+                        <img class="cover-picture-small" src=" {{ object.cover_image.url }}" alt="Profile picture">
                     </a>
                 {% endif %}
-                <h2 class="major">{{ object.title }}</h2>
-          </div>
+                <h3 class="major">{{ object.name }}</h3>
+            {% else %}
+                <h2>Add console</h2>
+            {% endif %}
+        </div>
     </section>
 
 
@@ -20,20 +23,17 @@
         <div class="inner">
             <section>
                 <form class="custom-form" method="post" enctype="multipart/form-data">
-
                     {% csrf_token %}
-                    <input type="hidden" name="next" value= {{ next }}>
 
+                    <input type="hidden" name="next" value= {{ next }}>
                     <div class="row gtr-uniform">
 
                         {% for field in form %}
-
                             <div class="col-6 col-12-xsmall">
                                 <label>{{ field.label }}</label>
                                 {{ field }}
 
                                 {% if form.errors %}
-
                                     <ul class="error">
                                         {% for error in field.errors %}
                                             <li>{{ error }}</li>
@@ -41,10 +41,7 @@
                                     </ul>
 
                                 {% endif %}
-
-
                             </div>
-
                         {% endfor %}
 
                         {% if form.non_field_errors %}
@@ -63,11 +60,8 @@
                             </ul>
                         </div>
                     </div>
-
                 </form>
-
             </section>
         </div>
     </div>
-
 {% endblock %}

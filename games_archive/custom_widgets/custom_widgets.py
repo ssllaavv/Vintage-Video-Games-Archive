@@ -35,7 +35,6 @@ class ConsoleSelectMultiple(SelectMultiple):
 
 class CustomImageUploadWidget(ClearableFileInput):
     template_name = 'partials/custom_image_upload.html'
-
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
         context['widget'].update({

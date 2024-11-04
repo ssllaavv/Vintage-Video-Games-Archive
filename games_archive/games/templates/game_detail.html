@@ -3,7 +3,7 @@
 
 {% block content %}
     <section id="banner" class="fake">
-    <a href="{% url 'game_list' %}" class="button small">Show all games</a>
+        <a href="{% url 'game_list' %}" class="button small">Show all games</a>
     </section>
 
     <section class="wrapper alt style1">
@@ -12,12 +12,12 @@
             <div class="game-header">
                 <h2>{{ game.title }}</h2>
                 <div class="uploaded-by">
-{#                    {% if game.to_user.profile_picture %}#}
-                        <div class="thumbnail-container">
-                            <img class="thumbnail-profile" src="{{ game.to_user.get_profile_picture_or_default }}"
-                                 alt="profile picture">
-                        </div>
-{#                    {% endif %}#}
+                    {#                    {% if game.to_user.profile_picture %}#}
+                    <div class="thumbnail-container">
+                        <img class="thumbnail-profile" src="{{ game.to_user.get_profile_picture_or_default }}"
+                             alt="profile picture">
+                    </div>
+                    {#                    {% endif %}#}
                     <div class="username">
                         <a href="{% url 'profile details' game.to_user.pk %}">
                             {{ game.to_user.get_user_name }}
@@ -30,39 +30,41 @@
                 <article id="game-{{ game.pk }}">
                     {% if game.cover_image %}
                         <img src="{{ game.cover_image.url }}" alt="{{ game.title }}"/>
-
                     {% endif %}
 
                     <div class="game-details">
-
+                        {% if game.release_year != None %}
                         <div class="release-year big">{{ game.release_year }}</div>
-                        {% if game.developer_logo %}
+                        {% endif %}
+                        {% if game.developer_logo != None %}
                             <div>
                                 <img src="{{ game.developer_logo.url }}" class="thumbnail big" alt="developer logo">
                             </div>
                         {% endif %}
-                        <div>By: {{ game.developer }} &reg;</div>
+                        {% if game.developer != None %}
+                        <div>By: {{ game.developer }}&reg;</div>
+                        {% endif %}
 
-
+                        {% if aame.genre != None %}
                         <div class="genre">{{ game.genre }}</div>
                         <div>
-{#                            <div class="consoles-text">#}
-{#                                Consoles:#}
-{#                            </div>#}
+                        {% endif %}
                             <ul class="consoles-list">
                                 {% for console in game.to_consoles.all %}
                                     <li><a href="{% url 'console_detail' console.pk %}">
 
                                         {% if console.logo %}
 
-                                         <img src="{{ console.logo.url }}" class="thumbnail" alt="console image">
+                                            <img src="{{ console.logo.url }}" class="thumbnail" alt="console image">
 
-                                        {% elif console.manufacturer_logo.url %}
-                                         <img src="{{ console.manufacturer_logo.url }}" class="thumbnail" alt="console image">
+                                        {% elif console.manufacturer_logo.url != None %}
+                                            <img src="{{ console.manufacturer_logo.url }}" class="thumbnail"
+                                                 alt="console image">
 
 
-                                         {% elif console.cover_image.url %}
-                                        <img src="{{ console.cover_image.url }}" class="thumbnail" alt="console image">
+                                        {% elif console.cover_image  %}
+                                            <img src="{{ console.cover_image.url }}" class="thumbnail"
+                                                 alt="console image">
 
                                         {% endif %}
                                         {{ console.name }}
@@ -128,7 +130,7 @@
                         <p>No review yet...</p>
                     </div>
                 {% endif %}
-                 {% if game.to_user == request.user %}
+                {% if game.to_user == request.user %}
                     <ul class="actions">
                         <li><a href="{% url 'add_review' game.pk %}" class="button primary small">
                             {% if review %}
@@ -139,10 +141,10 @@
                         </a>
                         </li>
                         {% if review %}
-                        <li><a href="{% url 'delete_review' game.pk %}" class="button small">
-                            Delete review
-                        </a>
-                        </li>
+                            <li><a href="{% url 'delete_review' game.pk %}" class="button small">
+                                Delete review
+                            </a>
+                            </li>
                         {% endif %}
 
                     </ul>
@@ -152,9 +154,9 @@
 
         </div>
     </section>
-     <section class="wrapper style2">
+    <section class="wrapper style2">
         <div class="inner">
-           <section>
+            <section>
                 <h3 class="major">Screenshots</h3>
                 {% if screenshots %}
                     <div class="box alt">
@@ -162,20 +164,20 @@
                         {% for screenshot in  screenshots %}
                             <div class="col-4">
                                 <div class="screenshot-container" id="screenshot-{{ screenshot.pk }}">
-                                <div class="image fit">
-                                      <a href="{{ screenshot.picture.url }}" target="_blank">
+                                    <div class="image fit">
+                                        <a href="{{ screenshot.picture.url }}" target="_blank">
                                             <img src="{{ screenshot.picture.url }}" alt="">
-                                      </a>
-                                </div>
-                                 {% if screenshot.from_user == request.user %}
-                                <div class="screenshot-delete-btn">
-                                    <a href="#" class="button primary small" id="delete-screenshot">
-                                        Delete
-                                    </a>
-                                </div>
+                                        </a>
+                                    </div>
+                                    {% if screenshot.from_user == request.user %}
+                                        <div class="screenshot-delete-btn">
+                                            <a href="#" class="button primary small" id="delete-screenshot">
+                                                Delete
+                                            </a>
+                                        </div>
 
-                                {% endif %}
-                            </div>
+                                    {% endif %}
+                                </div>
                             </div>
                         {% endfor %}
 
@@ -186,15 +188,16 @@
                     </div>
                 {% endif %}
                 {% if user.is_authenticated %}
-                <div id="add_screenshot">
+                    <div id="add_screenshot">
                         <h3>Add screenshot</h3>
-                        <form method="POST" action="{% url 'add_screenshot' game.pk %}" enctype="multipart/form-data" class="screenshot-form">
+                        <form method="POST" action="{% url 'add_screenshot' game.pk %}" enctype="multipart/form-data"
+                              class="screenshot-form">
                             {% csrf_token %}
                             {{ add_screenshot_form.picture }}
                             <button type="submit" class="button primary small">Confirm</button>
                         </form>
 
-                </div>
+                    </div>
                     {# Display messages #}
                     {% if messages %}
                         <div class="messages error">
@@ -206,67 +209,34 @@
                         </div>
                     {% endif %}
                 {% endif %}
-{#                {% if user.is_authenticated %}#}
-{#                    <form method="post" action="{% url 'add_screenshot' game.pk %}" enctype="multipart/form-data" class="screenshot-form">#}
-{#                        {% csrf_token %}#}
-{#                        {{ add_screenshot_form.picture }}#}
-{#                        <button type="submit" class="button primary small">Upload Screenshot</button>#}
-{#                    </form>#}
-{#                {% endif %}#}
 
                 </div>
             </section>
         </div>
-     </section>
-     <section class="wrapper alt style3">
+    </section>
+    <section class="wrapper alt style3">
         <div class="inner">
             <section>
-                    {% if user.is_authenticated %}
-                        <div>
-                            <form method="POST" action="{% url 'comment_game' game.pk %}">
-                                {% csrf_token %}
-                                {{ game_comment_form.as_p }}
-                                <button type="submit" class="button primary small">Comment</button>
-                            </form>
-                        </div>
-                    {% endif %}
-                    <h3 class="major" id="game-comments-{{ game.pk }}">Comments</h3>
-{#                 {% if comments %}#}
-{#                    {% for comment in comments %}#}
-{#                        <div class="box alt comment">#}
-{##}
-{#                     <div class="uploaded-by">#}
-{#                        {% if comment.from_user.profile_picture %}#}
-{#                            <div class="thumbnail-container">#}
-{#                                <img class="thumbnail-profile" src="{{ comment.from_user.get_profile_picture_or_default }}"#}
-{#                                     alt="profile picture">#}
-{#                            </div>#}
-{#                        {% endif %}#}
-{#                        <div class="username" id="id_username">#}
-{#                            <a href="{% url 'profile details' comment.from_user.pk %}">#}
-{#                                {{ comment.from_user.get_user_name }}#}
-{#                            </a>#}
-{#                        </div>#}
-{#                    </div>#}
-{##}
-{##}
-{#                            <blockquote>{{ comment.comment|linebreaksbr }}</blockquote>#}
-{#                            <p class="date-of-publication">{{ comment.created_on }}</p>#}
-{#                        </div>#}
-{#                    {% endfor %}#}
-{#                {% else %}#}
-{#                    <div class="box alt">#}
-{##}
-{#                        <p>No comments yet...</p>#}
-{#                    </div>#}
-{#                {% endif %}#}
-                    {% if comments %}
+                {% if user.is_authenticated %}
+                    <div>
+                        <form method="POST" action="{% url 'comment_game' game.pk %}">
+                            {% csrf_token %}
+                            {{ game_comment_form.as_p }}
+                            <button type="submit" class="button primary small">Comment</button>
+                        </form>
+                    </div>
+                {% endif %}
+                <h3 class="major" id="game-comments-{{ game.pk }}">Comments</h3>
+
+                {% if comments %}
                     <div class="comments-container">
                         {% for comment in comments %}
                             <div class="box alt comment" id="comment-{{ comment.pk }}">
                                 <div class="uploaded-by">
                                     <div class="thumbnail-container">
-                                        <img class="thumbnail-profile" src="{{ comment.from_user.get_profile_picture_or_default }}" alt="profile picture">
+                                        <img class="thumbnail-profile"
+                                             src="{{ comment.from_user.get_profile_picture_or_default }}"
+                                             alt="profile picture">
                                     </div>
                                     <div class="username">
                                         <a href="{% url 'profile details' comment.from_user.pk %}">{{ comment.from_user.get_user_name }}</a>
@@ -281,7 +251,8 @@
                     <!-- Show/hide buttons -->
                     {% if comments|length > 4 %}
                         <a href="#" class="special" id="show-more-comments">Show all comments</a>
-                        <a href="#" class="special" id="show-less-comments" style="display: none;">Show less comments</a>
+                        <a href="#" class="special" id="show-less-comments" style="display: none;">Show less
+                            comments</a>
                     {% endif %}
                 {% else %}
                     <div class="box alt">
@@ -290,8 +261,8 @@
                 {% endif %}
 
 
-                </section>
+            </section>
         </div>
-     </section>
+    </section>
 
 {% endblock %}

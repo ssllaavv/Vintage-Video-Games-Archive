@@ -2,7 +2,6 @@
 {% load static %}
 <script src="{% static 'assets/js/jquery.min.js' %}"></script>
 
-
 {% block content %}
     <!-- Banner -->
     <section id="banner">
@@ -10,7 +9,7 @@
             <h2>Game Library</h2>
             <p>Explore our collection of vintage video games</p>
             {% if user.is_authenticated %}
-            <a href="{% url "game_create" %}" class="button logo">Add game</a>
+                <a href="{% url "game_create" %}" class="button logo">Add game</a>
             {% endif %}
         </div>
     </section>
@@ -19,124 +18,118 @@
         <div class="inner">
             <h2 class="major">Games</h2>
 
-                <form method="get" class="mb-4">
-                    <div class="search-form">
-                        {{ search_form.search }}
-                        <button type="submit" class="button">Search</button>
-                    </div>
-                    {% if search_query %}
-                        <a href="{% url 'game_list' %}#games-list" class="btn btn-secondary">Clear</a>
-                    {% endif %}
-                </form>
-
+            <form method="get" class="mb-4">
+                <div class="search-form">
+                    {{ search_form.search }}
+                    <button type="submit" class="button">Search</button>
+                </div>
                 {% if search_query %}
-                    <p>Search results for: "{{ search_query }}"</p>
+                    <a href="{% url 'game_list' %}#games-list" class="btn btn-secondary">Clear</a>
                 {% endif %}
+            </form>
 
-                {% if current_url %}
+            {% if search_query %}
+                <p>Search results for: "{{ search_query }}"</p>
+            {% endif %}
+
+            {% if current_url %}
                 <script>
                     // Redirect to the URL with fragment after page load
                     window.location.href = "{{ current_url|safe }}";
                 </script>
-                {% endif %}
+            {% endif %}
 
             <section class="features">
                 {% if games %}
-                {% for game in games %}
-                    <article id="game-{{ game.pk }}">
-                    {% if game.cover_image %}
-                        <a href="{% url 'game_detail' game.id %}" class="image">
-                            <img src="{{ game.cover_image.url }}" alt="{{ game.title }}"/>
-                        </a>
-                    {% else  %}
-
-                    {% endif %}
-{#                        <h3 class="major">#}
-{#                            {{ game.title }}#}
-{#                        </h3>#}
-                    <div class="game-header small">
-                        <h2>{{ game.title }}</h2>
-                        <div class="uploaded-by">
-                                <div class="thumbnail-container">
-                                    <img class="thumbnail-profile" src="{{ game.to_user.get_profile_picture_or_default }}"
-                                         alt="profile picture">
-                                </div>
-                            <div class="username">
-                                <a href="{% url 'profile details' game.to_user.pk %}">
-                                    {{ game.to_user.get_user_name }}
+                    {% for game in games %}
+                        <article id="game-{{ game.pk }}">
+                            {% if game.cover_image %}
+                                <a href="{% url 'game_detail' game.id %}" class="image">
+                                    <img src="{{ game.cover_image.url }}" alt="{{ game.title }}"/>
                                 </a>
+                            {% else %}
+{#   TODO default game uimage    #}
+                            {% endif %}
+                            <div class="game-header small">
+                                <h2>{{ game.title }}</h2>
+                                <div class="uploaded-by">
+                                    <div class="thumbnail-container">
+                                        <img class="thumbnail-profile"
+                                             src="{{ game.to_user.get_profile_picture_or_default }}"
+                                             alt="profile picture">
+                                    </div>
+                                    <div class="username">
+                                        <a href="{% url 'profile details' game.to_user.pk %}">
+                                            {{ game.to_user.get_user_name }}
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
 
-                            {% if game.developer_logo %}
-                            <img src="{{ game.developer_logo.url }}" class="thumbnail small" alt="developer logo">
+                            {% if game.developer_logo != None %}
+                                <img src="{{ game.developer_logo.url }}" class="thumbnail small" alt="developer logo">
                             {% endif %}
 
-                                <div class="release-year">{{ game.release_year }}</div>
-                                <div>By  {{ game.developer }} &reg;</div>
+                            {% if game.release_year != None %}
+                            <div class="release-year">{{ game.release_year }}</div>
+                            {% endif %}
+                            {% if game.developer != None %}
+                            <div>By {{ game.developer }}&reg;</div>
+                            {% endif %}
 
-                                {% if user.is_authenticated %}
+                            {% if user.is_authenticated %}
 
-                                   <div class="rating-widget">
-                                        <div class="current-rating">
-                                            <a href="#" ><span class="rating">{{ game.stars_rating_html|safe }}</span></a>
-                                        </div>
-                                        <div hidden="hidden" class="your-rating">
-                                            <div>Choose your rating:</div>
-                                            {% include 'partials/game_rating_stars.html' %}
-                                            <a class="button small" href="#">close</a>
-                                        </div>
+                                <div class="rating-widget">
+                                    <div class="current-rating">
+                                        <a href="#"><span class="rating">{{ game.stars_rating_html|safe }}</span></a>
                                     </div>
+                                    <div hidden="hidden" class="your-rating">
+                                        <div>Choose your rating:</div>
+                                        {% include 'partials/game_rating_stars.html' %}
+                                        <a class="button small" href="#">close</a>
+                                    </div>
+                                </div>
 
-                                {% else  %}
+                            {% else %}
+                                <span class="rating">{{ game.stars_rating_html|safe }}</span>
 
-                                        <span class="rating">{{ game.stars_rating_html|safe }}</span>
+                            {% endif %}
 
-                                {% endif %}
+                            <p>{{ game.description|truncatechars:200 }}</p>
+                            <div class="uploaded-by">
 
-                        <p>{{ game.description|truncatechars:200 }}</p>
-                        <div class="uploaded-by">
+                            </div>
+                            <a href="{% url 'game_detail' game.id %}" class="special">Learn more</a>
 
-                        </div>
-                        <a href="{% url 'game_detail' game.id %}" class="special">Learn more</a>
+                            {% if user.is_authenticated %}
 
-                        {% if user.is_authenticated %}
+                                <div>
+                                    <form method="POST" action="{% url 'comment_game' game.pk %}">
+                                        {% csrf_token %}
+                                        {{ game_comment_form.as_p }}
+                                        <button type="submit" class="button primary small">Comment</button>
+                                    </form>
 
-                        <div>
-                            <form method="POST" action="{% url 'comment_game' game.pk %}">
-                                {% csrf_token %}
-                                {{ game_comment_form.as_p }}
-                                <button type="submit" class="button primary small">Comment</button>
-                            </form>
+                                </div>
 
-                        </div>
+                            {% endif %}
 
-                        {% endif %}
-
-                    </article>
-                {% endfor %}
-                {% else  %}
+                        </article>
+                    {% endfor %}
+                {% else %}
                     <div>
                         No games yet..
                     </div>
                 {% endif %}
             </section>
-{#            {% if is_paginated %}#}
-{#                <ul class="actions">#}
-{#                    {% if page_obj.has_previous %}#}
-{#                        <li><a href="?page={{ page_obj.previous_page_number }}" class="button">Previous</a></li>#}
-{#                    {% endif %}#}
-{#                    {% if page_obj.has_next %}#}
-{#                        <li><a href="?page={{ page_obj.next_page_number }}" class="button">Next</a></li>#}
-{#                    {% endif %}#}
-{#                </ul>#}
-{#            {% endif %}#}
-                {% if is_paginated %}
+
+            {% if is_paginated %}
                 <ul class="pagination">
                     {# Previous button #}
                     {% if page_obj.has_previous %}
-                        <li><a href="?{% if search_query %}search={{ search_query|urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}#games-list" class="button small">Prev</a></li>
+                        <li>
+                            <a href="?{% if search_query %}search={{ search_query|urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}#games-list"
+                               class="button small">Prev</a></li>
                     {% else %}
                         <li><span class="button small disabled">Prev</span></li>
                     {% endif %}
@@ -144,20 +137,26 @@
                     {# Page numbers #}
                     {% for i in page_obj.paginator.page_range %}
                         {% if page_obj.number == i %}
-                            <li><a href="?{% if search_query %}search={{ search_query|urlencode }}&{% endif %}page={{ i }}#games-list" class="page active">{{ i }}</a></li>
+                            <li>
+                                <a href="?{% if search_query %}search={{ search_query|urlencode }}&{% endif %}page={{ i }}#games-list"
+                                   class="page active">{{ i }}</a></li>
                         {% else %}
-                            <li><a href="?{% if search_query %}search={{ search_query|urlencode }}&{% endif %}page={{ i }}#games-list" class="page">{{ i }}</a></li>
+                            <li>
+                                <a href="?{% if search_query %}search={{ search_query|urlencode }}&{% endif %}page={{ i }}#games-list"
+                                   class="page">{{ i }}</a></li>
                         {% endif %}
                     {% endfor %}
 
                     {# Next button #}
                     {% if page_obj.has_next %}
-                        <li><a href="?{% if search_query %}search={{ search_query|urlencode }}&{% endif %}page={{ page_obj.next_page_number }}#games-list" class="button small">Next</a></li>
+                        <li>
+                            <a href="?{% if search_query %}search={{ search_query|urlencode }}&{% endif %}page={{ page_obj.next_page_number }}#games-list"
+                               class="button small">Next</a></li>
                     {% else %}
                         <li><span class="button small disabled">Next</span></li>
                     {% endif %}
                 </ul>
-                {% endif %}
+            {% endif %}
         </div>
     </section>
 

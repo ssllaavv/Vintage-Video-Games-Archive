@@ -1,4 +1,3 @@
-import re
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -17,51 +16,6 @@ from django.views.decorators.csrf import csrf_exempt
 
 from ..consoles.models import Console
 
-
-# class GameListView(ListView):
-#     model = Game
-#     template_name = 'game_list.html'
-#     context_object_name = 'games'
-#     paginate_by = 1
-#
-#     def get_queryset(self):
-#         queryset = super().get_queryset()
-#         search_query = self.request.GET.get('search', '').strip()
-#
-#         if search_query:
-#             # First, get console IDs that match the search query
-#             console_ids = Console.objects.filter(
-#                 name__icontains=search_query
-#             ).values_list('id', flat=True)
-#
-#             queryset = queryset.filter(
-#                 Q(title__icontains=search_query) |
-#                 Q(description__icontains=search_query) |
-#                 Q(developer__icontains=search_query) |
-#                 Q(to_consoles__in=console_ids) |
-#                 Q(to_user__first_name__icontains=search_query) |
-#                 Q(to_user__last_name__icontains=search_query) |
-#                 Q(to_user__username__icontains=search_query)
-#             ).distinct()
-#
-#         return queryset
-#
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context['game_comment_form'] = GameCommentForm()
-#         context['search_form'] = GameSearchForm(self.request.GET)
-#         context['search_query'] = self.request.GET.get('search', '')
-#
-#         # Add the fragment identifier if the form was submitted (even with empty search)
-#         if 'search' in self.request.GET:
-#             current_url = f"{self.request.path}"
-#             if self.request.GET.urlencode():
-#                 current_url += f"?{self.request.GET.urlencode()}"
-#             current_url += "#games-list"
-#             context['current_url'] = current_url
-#
-#         return context
-#
 
 class GameListView(ListView):
     model = Game

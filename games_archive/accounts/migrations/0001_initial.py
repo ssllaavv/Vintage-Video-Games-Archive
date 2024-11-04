@@ -4,7 +4,7 @@ import django.contrib.auth.models
 import django.contrib.auth.validators
 import django.core.validators
 import django.utils.timezone
-import games_archive.accounts.custom_validators
+import games_archive.custom_validators
 from django.db import migrations, models
 
 
@@ -29,8 +29,10 @@ class Migration(migrations.Migration):
                 ('is_active', models.BooleanField(default=True, help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.', verbose_name='active')),
                 ('date_joined', models.DateTimeField(default=django.utils.timezone.now, verbose_name='date joined')),
                 ('email', models.EmailField(max_length=254, unique=True, validators=[django.core.validators.EmailValidator])),
-                ('first_name', models.CharField(blank=True, max_length=50, null=True, validators=[games_archive.accounts.custom_validators.validate_name])),
-                ('last_name', models.CharField(blank=True, max_length=50, null=True, validators=[games_archive.accounts.custom_validators.validate_name])),
+                ('first_name', models.CharField(blank=True, max_length=50, null=True, validators=[
+                    games_archive.custom_validators.validate_name])),
+                ('last_name', models.CharField(blank=True, max_length=50, null=True, validators=[
+                    games_archive.custom_validators.validate_name])),
                 ('profile_picture', models.ImageField(blank=True, null=True, upload_to='profile-pictures/')),
                 ('gender', models.CharField(blank=True, max_length=15, null=True)),
                 ('age', models.IntegerField(blank=True, null=True, validators=[django.core.validators.MinValueValidator(0)])),
