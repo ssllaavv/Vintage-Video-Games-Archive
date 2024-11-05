@@ -6,14 +6,14 @@ from django.http import JsonResponse
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.urls import reverse_lazy, reverse
-from .models import Game, Screenshot, GameReview
-from .forms import GameForm, ScreenshotForm, GameReviewForm, GameSearchForm
-from ..common.forms import GameCommentForm
+from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
+from .models import Game, Screenshot, GameReview
+from .forms import GameForm, ScreenshotForm, GameReviewForm, GameSearchForm
+from ..common.forms import GameCommentForm
 from ..consoles.models import Console
 
 
@@ -31,7 +31,7 @@ class GameListView(ListView):
         self.search_query = self.request.GET.get('search', '').strip()
 
         if self.search_query:
-            # First, get console IDs that match the search query
+            # Get console IDs that match the search query
             console_ids = Console.objects.filter(
                 name__icontains=self.search_query
             ).values_list('id', flat=True)
@@ -49,9 +49,40 @@ class GameListView(ListView):
 
         return queryset
 
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['game_comment_form'] = GameCommentForm()
+    #     context['search_form'] = GameSearchForm(self.request.GET)
+    #     context['search_query'] = self.search_query
+    #     return context
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['game_comment_form'] = GameCommentForm()
+
+        # Create forms for each game
+        for game in context['games']:
+            # Check if this game had an invalid form submission
+            if (self.request.session.get('invalid_comment_form') and
+                    self.request.session.get('invalid_comment_game_pk') == game.pk):
+                # Create form with invalid data
+                form = GameCommentForm(self.request.session['invalid_comment_form'])
+                # Clear the session data
+                del self.request.session['invalid_comment_form']
+                del self.request.session['invalid_comment_game_pk']
+
+            elif (self.request.session.get('message') and
+                    self.request.session.get('message_game_pk') == game.pk):
+                form = GameCommentForm()
+                form.message = self.request.session.get('message')
+                del self.request.session['message']
+                del self.request.session['message_game_pk']
+            else:
+                # Create empty form
+                form = GameCommentForm()
+
+            # Store the form in the game object
+            game.comment_form = form
+
         context['search_form'] = GameSearchForm(self.request.GET)
         context['search_query'] = self.search_query
         return context
@@ -62,12 +93,33 @@ class GameDetailView(DetailView):
     template_name = 'game_detail.html'
     context_object_name = 'game'
 
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['screenshots'] = self.object.screenshot_set.all()
+    #     context['review'] = self.object.reviews.all().first()
+    #     context['comments'] = self.object.gamecomment_set.all()
+    #     context['game_comment_form'] = GameCommentForm()
+    #     context['add_screenshot_form'] = ScreenshotForm()
+    #     return context
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['screenshots'] = self.object.screenshot_set.all()
         context['review'] = self.object.reviews.all().first()
         context['comments'] = self.object.gamecomment_set.all()
-        context['game_comment_form'] = GameCommentForm()
+
+        # Check if there's an invalid form for this game
+        if (self.request.session.get('invalid_comment_form') and
+                self.request.session.get('invalid_comment_game_pk') == self.object.pk):
+            # Create form with invalid data
+            form = GameCommentForm(self.request.session['invalid_comment_form'])
+            # Clear the session data
+            del self.request.session['invalid_comment_form']
+            del self.request.session['invalid_comment_game_pk']
+        else:
+            form = GameCommentForm()
+
+        context['game_comment_form'] = form
         context['add_screenshot_form'] = ScreenshotForm()
         return context
 

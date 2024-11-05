@@ -2,6 +2,7 @@ from django.db.models import Q
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
+
 from .models import Console
 from .forms import ConsoleForm, ConsoleSearchForm
 from ..common.forms import ConsoleCommentForm
@@ -30,12 +31,43 @@ class ConsoleListView(ListView):
 
         return queryset
 
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['console_comment_form'] = ConsoleCommentForm()
+    #     context['search_form'] = ConsoleSearchForm(self.request.GET)
+    #     context['search_query'] = self.search_query  # Use the instance variable instead of getting from request again
+    #
+    #     return context
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['console_comment_form'] = ConsoleCommentForm()
-        context['search_form'] = ConsoleSearchForm(self.request.GET)
-        context['search_query'] = self.search_query  # Use the instance variable instead of getting from request again
 
+        # Create forms for each game
+        for console in context['consoles']:
+
+            if (self.request.session.get('invalid_comment_form') and
+                    self.request.session.get('invalid_comment_console_pk') == console.pk):
+                # Create form with invalid data
+                form = ConsoleCommentForm(self.request.session['invalid_comment_form'])
+                # Clear the session data
+                del self.request.session['invalid_comment_form']
+                del self.request.session['invalid_comment_console_pk']
+
+            elif (self.request.session.get('message') and
+                  self.request.session.get('message_console_pk') == console.pk):
+                form = ConsoleCommentForm()
+                form.message = self.request.session.get('message')
+                del self.request.session['message']
+                del self.request.session['message_console_pk']
+            else:
+                # Create empty form
+                form = ConsoleCommentForm()
+
+            # Store the form in the game object
+            console.comment_form = form
+
+        context['search_form'] = ConsoleSearchForm(self.request.GET)
+        context['search_query'] = self.search_query
         return context
 
 
@@ -47,7 +79,20 @@ class ConsoleDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['comments'] = self.object.consolecomment_set.all()
-        context['console_comment_form'] = ConsoleCommentForm()
+
+        # Check if there's an invalid form for this game
+        if (self.request.session.get('invalid_comment_form') and
+                self.request.session.get('invalid_comment_console_pk') == self.object.pk):
+            # Create form with invalid data
+            form = ConsoleCommentForm(self.request.session['invalid_comment_form'])
+            # Clear the session data
+            del self.request.session['invalid_comment_form']
+            del self.request.session['invalid_comment_console_pk']
+        else:
+            form = ConsoleCommentForm()
+
+        context['console_comment_form'] = form
+
         popular_games = sorted(
             self.object.game_set.all(),
             key=lambda game: game.rating,
@@ -56,6 +101,7 @@ class ConsoleDetailView(DetailView):
         if len(popular_games) > 6:
             popular_games = popular_games[:6]
         context['popular_games'] = popular_games
+
         return context
 
 

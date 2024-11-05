@@ -1,6 +1,7 @@
 from django import forms
+
 from .models import Console
-from ..custom_widgets.custom_widgets import CustomImageUploadWidget
+from ..custom_widgets import CustomImageUploadWidget
 
 
 class ConsoleForm(forms.ModelForm):

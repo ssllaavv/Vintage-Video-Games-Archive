@@ -1,5 +1,5 @@
 from django import forms
-from .models import ConsoleRating, GameComment, ConsoleComment
+from .models import GameComment, ConsoleComment
 
 
 class GameCommentForm(forms.ModelForm):

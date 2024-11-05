@@ -3,7 +3,7 @@ from django.template.defaultfilters import slugify
 
 from games_archive.accounts.models import GamesArchiveUser
 from games_archive.consoles.models import Console, Supplier
-from games_archive.custom_widgets.custom_widgets import get_star_rating_html
+from games_archive.custom_widgets import get_star_rating_html
 
 
 class Game(models.Model):
@@ -34,6 +34,9 @@ class Game(models.Model):
 
     def __str__(self):
         return self.title
+
+    class Meta:
+        ordering = ['-pk']
 
 
 class Screenshot(models.Model):

@@ -92,10 +92,31 @@
 
                             {% if user.is_authenticated %}
                                 <div>
-                                    <form method="POST" action="{% url 'comment_console' console.pk %}">
-                                        {% csrf_token %}
-                                        {{ console_comment_form.as_p }}
+                                    <form method="POST" action="{% url 'comment_console' console.pk %}" id="comment-{{ console.pk }}">
+{#                                        {% csrf_token %}#}
+{#                                        {{ console_comment_form.as_p }}#}
+{#                                        <button type="submit" class="button primary small">Comment</button>#}
+
+
+                                       {% csrf_token %}
+                                           <label>Comment</label>
+                                        <p>
+                                            {{ console.comment_form.comment}}
+                                        </p>
+                                        {% if console.comment_form.comment.errors %}
+                                        <div class="error">
+                                            {{ console.comment_form.comment.errors }}
+                                        </div>
+                                        {% endif %}
+
+                                        {% if  console.comment_form.message %}
+                                        <p class="success_message">
+                                             {{ console.comment_form.message }}
+                                        </p>
+                                        {% endif %}
+
                                         <button type="submit" class="button primary small">Comment</button>
+
                                     </form>
                                 </div>
                             {% endif %}

@@ -66,13 +66,13 @@
             </div>
         </div>
     </section>
-    <section class="wrapper alt style2">
+    <section class="wrapper alt style2" id="profile_games">
         <div class="inner">
             <h2 class="major">Games</h2>
             <section class="features">
-                {% if object.game_set.all %}
+                {% if games %}
 
-                    {% for game in object.game_set.all %}
+                    {% for game in games %}
                         <article id="game-{{ game.pk }}">
                             {% if game.cover_image %}
                                 <a href="{% url 'game_detail' game.id %}" class="image">
@@ -131,18 +131,6 @@
                             </div>
                             <a href="{% url 'game_detail' game.id %}" class="special">Learn more</a>
 
-                            {% if user.is_authenticated %}
-
-                                <div>
-                                    <form method="POST" action="{% url 'comment_game' game.pk %}">
-                                        {% csrf_token %}
-                                        {{ game_comment_form.as_p }}
-                                        <button type="submit" class="button primary small">Comment</button>
-                                    </form>
-                                </div>
-
-                            {% endif %}
-
                         </article>
                     {% endfor %}
                 {% else %}
@@ -152,16 +140,29 @@
                 {% endif %}
 
             </section>
-            {% if is_paginated %}
-                <ul class="actions">
-                    {% if page_obj.has_previous %}
-                        <li><a href="?page={{ page_obj.previous_page_number }}" class="button">Previous</a></li>
+
+        {% if is_paginated %}
+            <ul class="pagination">
+                {% if games.has_previous %}
+                    <li><a href="?page={{ games.previous_page_number }}#profile_games" class="button small">Prev</a></li>
+                {% else %}
+                    <li><span class="button small disabled">Prev</span></li>
+                {% endif %}
+                {% for num in games.paginator.page_range %}
+                    {% if games.number == num %}
+                        <li><a href="?page={{ num }}#profile_games" class="page active">{{ num }}</a></li>
+                    {% else %}
+                        <li><a href="?page={{ num }}#profile_games" class="page">{{ num }}</a></li>
                     {% endif %}
-                    {% if page_obj.has_next %}
-                        <li><a href="?page={{ page_obj.next_page_number }}" class="button">Next</a></li>
-                    {% endif %}
-                </ul>
-            {% endif %}
+                {% endfor %}
+                {% if games.has_next %}
+                    <li><a href="?page={{ games.next_page_number }}#profile_games" class="button small">Next</a></li>
+                {% else %}
+                    <li><span class="button small disabled">Next</span></li>
+                {% endif %}
+            </ul>
+        {% endif %}
+
         </div>
     </section>
 

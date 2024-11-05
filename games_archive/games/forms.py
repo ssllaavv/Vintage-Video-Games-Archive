@@ -1,7 +1,7 @@
 from django import forms
 
-from games_archive.custom_widgets.custom_widgets import ConsoleSelectMultiple, CustomImageUploadWidget
 from .models import Game, Screenshot, GameReview
+from ..custom_widgets import ConsoleSelectMultiple, CustomImageUploadWidget
 
 
 class GameForm(forms.ModelForm):

@@ -3,13 +3,14 @@
 
 {% block content %}
 
-    <section id="banner" class="fake">
+    <section id="banner" class="fake padding">
         <a href="{% url 'console_list' %}" class="button small">Show all consoles</a>
     </section>
 
     <section class="wrapper alt style1">
         <div class="inner">
-            <h2 class="major">{{ console.name }}</h2>
+        <div>Console</div>
+            <h2>{{ console.name }}</h2>
             <section class="features-my">
                 <article id="console-{{ console.pk }}">
                     {% if console.cover_image %}
@@ -126,10 +127,25 @@
                 {% if user.is_authenticated %}
                     <div>
                         <form method="POST" action="{% url 'comment_console' console.pk %}">
-                            {% csrf_token %}
-                            {{ console_comment_form.as_p }}
-                            <button type="submit" class="button primary small">comment</button>
+{#                            {% csrf_token %}#}
+{#                            {{ console_comment_form.as_p }}#}
+{#                            <button type="submit" class="button primary small">comment</button>#}
+
+                              {% csrf_token %}
+                            <label>Comment</label>
+                            <p>
+                                 {{ console_comment_form.comment }}
+                            </p>
+                            {% if  console_comment_form.comment.errors %}
+                            <div class="error">
+                                {{ console_comment_form.comment.errors }}
+                            </div>
+                            {% endif %}
+
+                            <button type="submit" class="button primary small">Comment</button>
+
                         </form>
+
                     </div>
                 {% endif %}
 

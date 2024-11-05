@@ -4,7 +4,6 @@ from games_archive.common.models import GameRating, ConsoleRating, GameComment, 
 
 
 # Register your models here.
-
 @admin.register(GameRating)
 class GameRatingAdmin(admin.ModelAdmin):
     pass

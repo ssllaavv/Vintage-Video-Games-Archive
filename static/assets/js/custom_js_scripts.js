@@ -345,3 +345,24 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+
+// acroll to the first element with class "error"
+
+// const firstErrorElement = document.querySelector('.error');
+// if (firstErrorElement) {
+//     firstErrorElement.scrollIntoView({ behavior: 'auto', block: 'center' });
+// }
+
+
+const firstErrorElement = document.querySelector('.error');
+if (firstErrorElement) {
+    const elementPosition = firstErrorElement.getBoundingClientRect().top + window.pageYOffset;
+    const offset = window.innerHeight / 2 - firstErrorElement.offsetHeight / 2; // Centering offset
+
+    window.scrollTo({
+        top: elementPosition - offset,
+        left: 0,
+        behavior: 'auto' // This ensures the scroll is instant
+    });
+}

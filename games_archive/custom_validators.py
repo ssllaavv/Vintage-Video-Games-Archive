@@ -26,3 +26,9 @@ def validate_unique_game_title():
 def validate_unique_console_title():
     pass
 
+
+def validate_file_size(size_mb=5):
+    def validator(image):
+        if image.size >= size_mb * 1048576:
+            raise ValidationError(f'The maximum file size to upload is {size_mb}MB')
+    return validator

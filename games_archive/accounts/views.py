@@ -1,10 +1,12 @@
 from django.contrib.auth import views as auth_views, login, get_user_model
+from django.core.paginator import Paginator
 from django.shortcuts import redirect
 from django.views.generic import CreateView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from .forms import UserRegistrationForm, UserProfileForm, UserLoginForm
 from django.views import generic as views
+
+from .forms import UserRegistrationForm, UserProfileForm, UserLoginForm
 
 
 from ..common.forms import GameCommentForm
@@ -77,10 +79,18 @@ class UserDetailView(DetailView):
         comments_count = self.object.gamecomment_set.count() + self.object.consolecomment_set.count()
         rates = self.object.gamerating_set.count() + self.object.consolerating_set.count()
 
+        # Paginate the games
+        games = self.object.game_set.all()
+        paginator = Paginator(games, 1)  # Show 6 games per page
+        page_number = self.request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
         context.update({
             'comments_count': comments_count,
             'game_comment_form': GameCommentForm(),
             'rates': rates,
+            'games': page_obj,
+            'is_paginated': paginator.num_pages > 1,
         })
 
         return context

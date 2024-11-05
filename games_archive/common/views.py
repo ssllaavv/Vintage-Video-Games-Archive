@@ -1,16 +1,16 @@
 import re
+import json
 
 from django.contrib.auth.decorators import login_required
-from django.views.generic import TemplateView, ListView
-from django.db.models import Q
+from django.views.generic import TemplateView
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from django.shortcuts import get_object_or_404, redirect
+
+from .models import GameRating, Game
 from .models import ConsoleRating
 from games_archive.consoles.models import Console
 from .forms import GameCommentForm, ConsoleCommentForm
-from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
-import json
-from django.shortcuts import get_object_or_404, redirect, render
-from .models import GameRating, Game
 
 
 class HomeView(TemplateView):
@@ -119,41 +119,59 @@ def get_user_rating_to_console(request, console_pk):
 
 @login_required
 def add_game_comment(request, game_pk):
-    if request.method == 'POST':
-        game = Game.objects.get(pk=game_pk)
-        form = GameCommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.to_game = game
-            comment.from_user = request.user
-            comment.save()
+    # if request.method == 'POST':
+    game = Game.objects.get(pk=game_pk)
+    form = GameCommentForm(request.POST or None)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.to_game = game
+        comment.from_user = request.user
+        comment.save()
+        request.session['message'] = 'Comment submitted successfully!'
+        request.session['message_game_pk'] = game_pk
 
-        referrer = request.META.get('HTTP_REFERER')
-        pattern = r".*games/\d+/.*"
-        match = re.search(pattern, referrer)
+    else:
+        # Store the invalid form data and game_pk in session
+        request.session['invalid_comment_form'] = request.POST
+        request.session['invalid_comment_game_pk'] = game_pk
 
-        if match:
-            return redirect(request.META['HTTP_REFERER'] + f'#game-comments-{game_pk}')
+    referrer = request.META.get('HTTP_REFERER')
+    pattern = r".*games/\d+/.*"
+    match = re.search(pattern, referrer)
 
-    return redirect(request.META['HTTP_REFERER'] + f'#game-{game_pk}')
+    if match and not request.session.get('invalid_comment_form', False):
+        return redirect(request.META['HTTP_REFERER'] + f'#game-comments-{game_pk}')
+    elif not match and not request.session.get('invalid_comment_form', False):
+        return redirect(request.META['HTTP_REFERER'] + f'#comment-{game_pk}')
+    return redirect(request.META['HTTP_REFERER'])
 
 
 @login_required
 def add_console_comment(request, console_pk):
-    if request.method == 'POST':
-        console = Console.objects.get(pk=console_pk)
-        form = ConsoleCommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.to_console = console
-            comment.from_user = request.user
-            comment.save()
+    # if request.method == 'POST':
+    console = Console.objects.get(pk=console_pk)
+    form = ConsoleCommentForm(request.POST or None)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.to_console = console
+        comment.from_user = request.user
+        comment.save()
+        request.session['message'] = 'Comment submitted successfully!'
+        request.session['message_console_pk'] = console_pk
 
-        referrer = request.META.get('HTTP_REFERER')
-        pattern = r".*consoles/\d+/.*"
-        match = re.search(pattern, referrer)
+    else:
+        # Store the invalid form data and game_pk in session
+        request.session['invalid_comment_form'] = request.POST
+        request.session['invalid_comment_console_pk'] = console_pk
 
-        if match:
-            return redirect(request.META['HTTP_REFERER'] + f'#console-comments-{console_pk}')
-        else:
-            return redirect(request.META['HTTP_REFERER'] + f'#console-{ console.pk }')
+    referrer = request.META.get('HTTP_REFERER')
+    pattern = r".*consoles/\d+/.*"
+    match = re.search(pattern, referrer)
+
+    if match and not request.session.get('invalid_comment_form', False):
+        return redirect(request.META['HTTP_REFERER'] + f'#console-comments-{console_pk}')
+    elif not match and not request.session.get('invalid_comment_form', False):
+        return redirect(request.META['HTTP_REFERER'] + f'#comment-{ console.pk }')
+
+    return redirect(request.META['HTTP_REFERER'])
+

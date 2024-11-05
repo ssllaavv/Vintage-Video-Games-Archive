@@ -3,7 +3,7 @@ from django.db import models
 from django.core import validators
 from django.templatetags.static import static
 
-from games_archive.custom_validators import validate_name
+from games_archive.custom_validators import validate_name, validate_file_size
 
 
 class GamesArchiveUser(AbstractUser):
@@ -39,6 +39,9 @@ class GamesArchiveUser(AbstractUser):
         null=True
     )
     profile_picture = models.ImageField(
+        validators=[
+            validate_file_size(2),
+        ],
         upload_to='profile-pictures/',
         blank=True,
         null=True,
@@ -52,7 +55,8 @@ class GamesArchiveUser(AbstractUser):
     )
     age = models.IntegerField(
         validators=[
-            validators.MinValueValidator(0)
+            validators.MinValueValidator(0),
+            validators.MaxValueValidator(120),
         ],
         blank=True,
         null=True

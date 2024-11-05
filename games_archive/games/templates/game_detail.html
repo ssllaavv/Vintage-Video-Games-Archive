@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-    <section id="banner" class="fake">
+    <section id="banner" class="fake padding">
         <a href="{% url 'game_list' %}" class="button small">Show all games</a>
     </section>
 
@@ -10,6 +10,7 @@
         <div class="inner">
 
             <div class="game-header">
+                <div>Game</div>
                 <h2>{{ game.title }}</h2>
                 <div class="uploaded-by">
                     {#                    {% if game.to_user.profile_picture %}#}
@@ -221,7 +222,16 @@
                     <div>
                         <form method="POST" action="{% url 'comment_game' game.pk %}">
                             {% csrf_token %}
-                            {{ game_comment_form.as_p }}
+                            <label>Comment</label>
+                            <p>
+                                 {{ game_comment_form.comment }}
+                            </p>
+                            {% if game_comment_form.comment.errors %}
+                            <div class="error">
+                                {{ game_comment_form.comment.errors }}
+                            </div>
+                            {% endif %}
+
                             <button type="submit" class="button primary small">Comment</button>
                         </form>
                     </div>

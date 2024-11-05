@@ -104,9 +104,25 @@
                             {% if user.is_authenticated %}
 
                                 <div>
-                                    <form method="POST" action="{% url 'comment_game' game.pk %}">
+                                    <form method="POST" action="{% url 'comment_game' game.pk %}" id="comment-{{ game.pk }}">
                                         {% csrf_token %}
-                                        {{ game_comment_form.as_p }}
+                                           <label>Comment</label>
+                                        <p>
+                                            {{ game.comment_form.comment}}
+                                        </p>
+                                        {% if game.comment_form.comment.errors %}
+                                        <div class="error">
+                                            {{ game.comment_form.comment.errors }}
+                                        </div>
+                                        {% endif %}
+
+                                        {% if  game.comment_form.message %}
+                                        <p class="success_message">
+                                             {{ game.comment_form.message }}
+                                        </p>
+                                        {% endif %}
+
+
                                         <button type="submit" class="button primary small">Comment</button>
                                     </form>
 

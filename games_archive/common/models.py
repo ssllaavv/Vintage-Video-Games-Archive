@@ -1,5 +1,5 @@
+from django.core.validators import MaxLengthValidator
 from django.db import models
-from django.core import validators
 
 from games_archive.accounts.models import GamesArchiveUser
 from games_archive.consoles.models import Console
@@ -51,7 +51,11 @@ class ConsoleRating(models.Model):
 
 
 class GameComment(models.Model):
-    comment = models.TextField()
+    comment = models.TextField(
+        validators=[
+            MaxLengthValidator(500),
+        ],
+    )
     to_game = models.ForeignKey(Game, on_delete=models.CASCADE)
     from_user = models.ForeignKey(GamesArchiveUser, on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
@@ -61,7 +65,11 @@ class GameComment(models.Model):
 
 
 class ConsoleComment(models.Model):
-    comment = models.TextField()
+    comment = models.TextField(
+        validators=[
+                MaxLengthValidator(500),
+            ],
+    )
     to_console = models.ForeignKey(Console, on_delete=models.CASCADE)
     from_user = models.ForeignKey(GamesArchiveUser, on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)

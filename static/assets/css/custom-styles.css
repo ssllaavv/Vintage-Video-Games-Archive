@@ -15,6 +15,21 @@
     padding: 40px;
 }
 
+#banner.fake.padding {
+    padding: 60px 0 80px 40px;
+}
+
+@media screen and (max-width: 1280px) {
+    #banner.fake.padding {
+        padding: 60px 0 160px 40px;
+    }
+}
+
+@media screen and (max-width: 736px) {
+    #banner.fake.padding {
+        padding: 60px 0 100px 40px;
+    }
+}
 
 
 .big-icon > img {
@@ -818,4 +833,11 @@ a.image {
 
 a#show-less-comments:not(.button):before {
     content: "\f068";
+}
+
+
+/*success comment message */
+
+.success_message {
+    color: green;
 }

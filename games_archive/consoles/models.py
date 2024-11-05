@@ -1,6 +1,7 @@
 from django.db import models
+
 from games_archive.accounts.models import GamesArchiveUser
-from games_archive.custom_widgets.custom_widgets import get_star_rating_html
+from games_archive.custom_widgets import get_star_rating_html
 
 
 class Console(models.Model):
@@ -40,6 +41,9 @@ class Console(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ['-pk']
 
 
 class Supplier(models.Model):
