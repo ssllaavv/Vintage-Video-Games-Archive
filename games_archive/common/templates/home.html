@@ -35,8 +35,8 @@
                         <div>
                             <a href="{% url 'game_detail' game.id %}">
                                 <div class="thumbnail-text">{{ game.title }}</div>
-                                {% if game.cover_image %}
-                                <img class="thumbnail-home" src="{{ game.cover_image.url }}" alt="game">
+                                {% if game.default_image %}
+                                <img class="thumbnail-home" src="{{ game.default_image }}" alt="game">
                                 {% endif %}
                             </a>
                         </div>

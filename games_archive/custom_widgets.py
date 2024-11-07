@@ -21,7 +21,7 @@ class ConsoleSelectMultiple(SelectMultiple):
             options.append({
                 'id': console.id,
                 'name': console.name,
-                'image_url': console.cover_image.url if console.cover_image else None,
+                'image_url': console.default_image if console.default_image else None,
                 'selected': str(console.id) in selected_values or console.id in selected_values
             })
 

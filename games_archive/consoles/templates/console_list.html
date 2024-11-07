@@ -43,9 +43,9 @@
                 {% if consoles %}
                     {% for console in consoles %}
                         <article id="console-{{ console.pk }}">
-                            {% if console.cover_image %}
+                            {% if console.default_image %}
                                 <a href="{% url 'console_detail' console.pk %}" class="image">
-                                    <img src="{{ console.cover_image.url }}" alt="{{ console.name }}"/>
+                                    <img src="{{ console.default_image }}" alt="{{ console.name }}"/>
                                 </a>
                             {% else %}
 {#TODO add console default image#}

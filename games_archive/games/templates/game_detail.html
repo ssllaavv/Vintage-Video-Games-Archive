@@ -32,8 +32,8 @@
 
             <section class="features-my">
                 <article id="game-{{ game.pk }}">
-                    {% if game.cover_image %}
-                        <img src="{{ game.cover_image.url }}" alt="{{ game.title }}"/>
+                    {% if game.default_image %}
+                        <img src="{{ game.default_image }}" alt="{{ game.title }}"/>
                     {% endif %}
 
                     <div class="game-details">

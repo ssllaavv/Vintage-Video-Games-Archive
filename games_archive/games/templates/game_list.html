@@ -43,12 +43,11 @@
                 {% if games %}
                     {% for game in games %}
                         <article id="game-{{ game.pk }}">
-                            {% if game.cover_image %}
+                            {% if game.default_image %}
                                 <a href="{% url 'game_detail' game.id %}" class="image">
-                                    <img src="{{ game.cover_image.url }}" alt="{{ game.title }}"/>
+                                    <img src="{{ game.default_image }}" alt="{{ game.title }}"/>
                                 </a>
                             {% else %}
-{#   TODO default game uimage    #}
                             {% endif %}
                             <div class="game-header small">
                                 <h2>{{ game.title }}</h2>

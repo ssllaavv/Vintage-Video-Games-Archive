@@ -6,12 +6,12 @@
 
         <div class="edit-profile-header logo">
             {% if object %}
-                {% if object.cover_image %}
-                    <a href="{{ object.cover_image.url }}" class="cover-picture-container" target="_blank">
-                        <img class="cover-picture-small" src=" {{ object.cover_image.url }}" alt="Profile picture">
+                {% if object.default_image %}
+                    <a href="{{ object.default_image }}" class="cover-picture-container" target="_blank">
+                        <img class="cover-picture-small" src=" {{ object.default_image }}" alt="Profile picture">
                     </a>
                 {% endif %}
-                <h3 class="major">{{ object.title }}</h3>
+                <h3 class="major">Edit game - {{ object.title }}</h3>
             {% else %}
                 <h2>Add game</h2>
             {% endif %}
@@ -22,6 +22,17 @@
         <div class="inner">
             <section>
                 <form class="custom-form" method="post" enctype="multipart/form-data">
+
+                    {% if form.non_field_errors %}
+                        <div class="error">
+                            <ul>
+                                {% for error in form.non_field_errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
                     {% csrf_token %}
                     <input type="hidden" name="next" value= {{ next }}>
                     <div class="row gtr-uniform">
@@ -30,7 +41,7 @@
                                 <label>{{ field.label }}</label>
                                 {{ field }}
 
-                                {% if form.errors %}
+                                {% if field.errors %}
                                     <ul class="error">
                                         {% for error in field.errors %}
                                             <li>{{ error }}</li>

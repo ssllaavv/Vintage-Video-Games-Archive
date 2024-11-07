@@ -14,8 +14,8 @@
             <h2>{{ console.name }}</h2>
             <section class="features-my">
                 <article id="console-{{ console.pk }}">
-                    {% if console.cover_image %}
-                        <img src="{{ console.cover_image.url }}" alt="{{ console.name }}"/>
+                    {% if console.default_image != None %}
+                        <img src="{{ console.default_image }}" alt="{{ console.name }}"/>
 
                     {% endif %}
                     <div class="console-details">
@@ -107,8 +107,8 @@
                               <div class="game-title">
                                   {{ game.title }}
                               </div>
-                              {% if game.cover_image %}
-                                  <img src="{{ game.cover_image.url }}" alt="">
+                              {% if game.default_image %}
+                                  <img src="{{ game.default_image }}" alt="">
                               {% endif %}
                           </a>
                     </span>
