@@ -35,6 +35,8 @@ INSTALLED_APPS = [
     'games_archive.consoles',
     'games_archive.accounts',
     'games_archive.common',
+
+    'games_archive',
 ]
 
 MIDDLEWARE = [

@@ -1,4 +1,4 @@
-% extends 'base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block content %}
@@ -33,14 +33,14 @@
                                 <label>{{ field.label }}</label>
                                 {{ field }}
 
-                                {% if form.errors %}
+                                {% if fleld.errors %}
                                     <ul class="error">
                                         {% for error in field.errors %}
                                             <li>{{ error }}</li>
                                         {% endfor %}
                                     </ul>
-
                                 {% endif %}
+
                             </div>
                         {% endfor %}
 

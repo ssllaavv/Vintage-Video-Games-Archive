@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.files.storage import default_storage
 from django.db import models
 from django.core import validators
 from django.templatetags.static import static
@@ -40,7 +41,7 @@ class GamesArchiveUser(AbstractUser):
     )
     profile_picture = models.ImageField(
         validators=[
-            validate_file_size(2),
+            validate_file_size,
         ],
         upload_to='profile-pictures/',
         blank=True,
@@ -56,7 +57,7 @@ class GamesArchiveUser(AbstractUser):
     age = models.IntegerField(
         validators=[
             validators.MinValueValidator(0),
-            validators.MaxValueValidator(120),
+            validators.MaxValueValidator(150),
         ],
         blank=True,
         null=True
@@ -85,6 +86,6 @@ class GamesArchiveUser(AbstractUser):
 
     @property
     def get_profile_picture_or_default(self):
-        if self.profile_picture not in ['', None]:
+        if self.profile_picture.name and default_storage.exists(self.profile_picture.name):
             return self.profile_picture.url
         return self.DEFAULT_PROFILE_PICTURE

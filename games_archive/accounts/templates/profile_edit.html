@@ -27,12 +27,7 @@
 
                             <div class="col-6 col-12-xsmall">
                                 <label>{{ field.label }}</label>
-                                {% if field.label == 'Profile picture' %}
-                                    <div>
-                                        <label for="id_profile_picture" class="custom-file-label">Choose File</label>
-                                    </div>
 
-                                {% endif %}
                                 {{ field }}
 
                                 {% if form.errors %}

@@ -69,7 +69,7 @@
                             <a href="{% url 'console_detail' console.id %}">
                                 <div class="thumbnail-text">{{ console.name }}</div>
                                 {% if console.default_image != None %}
-                                <img class="thumbnail-home" src="{{ console.default_image.url }}" alt="console">
+                                <img class="thumbnail-home" src="{{ console.default_image }}" alt="console">
                                 {% endif %}
 
                             </a>

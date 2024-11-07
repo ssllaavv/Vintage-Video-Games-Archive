@@ -28,6 +28,9 @@ class GameRating(models.Model):
     from_user = models.ForeignKey(GamesArchiveUser, on_delete=models.DO_NOTHING)
     to_game = models.ForeignKey(Game, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.rating} stars from user {self.from_user.pk} to game {self.to_game.pk} (rating pk {self.pk})"
+
     class Meta:
         unique_together = ('from_user', 'to_game')
 
@@ -46,6 +49,9 @@ class ConsoleRating(models.Model):
     from_user = models.ForeignKey(GamesArchiveUser, on_delete=models.DO_NOTHING)
     to_console = models.ForeignKey(Console, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.rating} stars from user {self.from_user.pk} to console {self.to_console.pk} (rating pk {self.pk})"
+
     class Meta:
         unique_together = ('from_user', 'to_console')
 
@@ -53,12 +59,15 @@ class ConsoleRating(models.Model):
 class GameComment(models.Model):
     comment = models.TextField(
         validators=[
-            MaxLengthValidator(500),
+            MaxLengthValidator(700),
         ],
     )
     to_game = models.ForeignKey(Game, on_delete=models.CASCADE)
     from_user = models.ForeignKey(GamesArchiveUser, on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Comment {self.pk} form user {self.from_user.pk} to game {self.to_game.pk} {self.created_on}'
 
     class Meta:
         ordering = ['-created_on']
@@ -67,12 +76,15 @@ class GameComment(models.Model):
 class ConsoleComment(models.Model):
     comment = models.TextField(
         validators=[
-                MaxLengthValidator(500),
+                MaxLengthValidator(700),
             ],
     )
     to_console = models.ForeignKey(Console, on_delete=models.CASCADE)
     from_user = models.ForeignKey(GamesArchiveUser, on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Comment {self.pk} form user {self.from_user.pk} to console {self.to_console.pk} {self.created_on}'
 
     class Meta:
         ordering = ['-created_on']

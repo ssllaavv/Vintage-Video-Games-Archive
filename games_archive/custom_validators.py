@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 import re
+from datetime import datetime
 
 
 def validate_name_is_longer_than_2_characters(value):
@@ -19,16 +20,34 @@ def validate_name(value):
     validate_name_is_longer_than_2_characters(value)
 
 
-def validate_unique_game_title():
-    pass
+# def validate_unique_game_title_unique(value):
+#     match = Game.objects.filter(title__iexact=value).first()
+#     if match:
+#         raise ValidationError(f'Game with title {value} is already registered')
+#
+#
+# def validate_unique_console_name_unique(value):
+#     match = Console.objects.filtr(name__iexact=value).first()
+#     if match:
+#         raise ValidationError(f'Console {value} is already registered')
 
 
-def validate_unique_console_title():
-    pass
+def validate_file_size(value):
+    if value.size >= 5 * 1024 * 1024:
+        raise ValidationError('The maximum file size to upload is 5MB')
 
 
-def validate_file_size(size_mb=5):
-    def validator(image):
-        if image.size >= size_mb * 1048576:
-            raise ValidationError(f'The maximum file size to upload is {size_mb}MB')
-    return validator
+def validate_year_less_than_current_year(value):
+    current_year = datetime.now().year
+    if value > current_year:
+        raise ValidationError(f'The year {value} is later than the current year ({current_year}).')
+
+
+def validate_year_more_than_1940r(value):
+    if value < 1940:
+        raise ValidationError('Please, enter year after 1940.')
+
+
+def validate_release_year(value):
+    validate_year_more_than_1940r(value)
+    validate_year_less_than_current_year(value)

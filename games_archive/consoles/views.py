@@ -133,6 +133,9 @@ class ConsoleUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         console = self.get_object()
         return self.request.user == console.to_user or self.request.user.is_staff
 
+    # def form_invalid(self, form):
+    #     return super().form_invalid(form)
+
 
 class ConsoleDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Console

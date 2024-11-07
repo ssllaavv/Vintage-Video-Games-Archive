@@ -366,3 +366,14 @@ if (firstErrorElement) {
         behavior: 'auto' // This ensures the scroll is instant
     });
 }
+
+
+// Get User Time Zone and set it to a cookie
+
+// Use the Intl API to get the user's time zone
+const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+// Store the time zone in a cookie
+document.cookie = "user_time_zone=" + userTimeZone + "; path=/";
+
+
