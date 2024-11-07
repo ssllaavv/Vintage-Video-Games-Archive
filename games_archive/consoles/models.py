@@ -1,4 +1,4 @@
-
+from django.core import validators
 from django.core.files.storage import default_storage
 from django.db import models
 from django.db.models import functions
@@ -23,14 +23,22 @@ class Console(models.Model):
     manufacturer = models.CharField(
         max_length=100,
         blank=True,
-        null=True,)
+        null=True,
+    )
     release_year = models.IntegerField(
         validators=[
             validate_release_year,
         ],
         blank=True,
-        null=True,)
-    description = models.TextField(null=True, blank=True)
+        null=True,
+    )
+    description = models.TextField(
+        validators=[
+            validators.MaxLengthValidator(1000)
+        ],
+        null=True,
+        blank=True,
+    )
     cover_image = models.ImageField(
         validators=[
             validate_file_size,
@@ -69,12 +77,10 @@ class Console(models.Model):
 
     @property
     def default_image(self):
-        if self.cover_image.name and default_storage.exists(self.cover_image.name):
+        if self.cover_image and self.cover_image.name and default_storage.exists(self.cover_image.name):
             return self.cover_image.url
-        elif self.logo.name and default_storage.exists(self.logo.name):
+        elif self.logo and self.logo.name and default_storage.exists(self.logo.name):
             return self.logo.url
-        elif self.manufacturer_logo:
-            return self.manufacturer_logo.url
         else:
             return self.DEFAULT_IMAGE
 
@@ -86,7 +92,7 @@ class Console(models.Model):
         constraints = [
             models.UniqueConstraint(
                 functions.Lower('name'),
-                name='unique_console_name',
+                name='unique_console_name_ci',
                 violation_error_message=f"Console with this name already exists!"
             )
         ]

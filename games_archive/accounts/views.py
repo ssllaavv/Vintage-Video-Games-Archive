@@ -81,7 +81,7 @@ class UserDetailView(DetailView):
 
         # Paginate the games
         games = self.object.game_set.all()
-        paginator = Paginator(games, 1)  # Show 6 games per page
+        paginator = Paginator(games, 4)  # Show 4 games per page
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
 
@@ -92,7 +92,6 @@ class UserDetailView(DetailView):
             'games': page_obj,
             'is_paginated': paginator.num_pages > 1,
         })
-
         return context
 
 

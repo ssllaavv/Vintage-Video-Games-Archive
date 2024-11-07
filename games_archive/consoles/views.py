@@ -111,7 +111,6 @@ class ConsoleCreateView(LoginRequiredMixin, CreateView):
     template_name = 'console_form.html'
 
     def form_valid(self, form):
-        # Set the to_user field to the currently logged-in user
         form.instance.to_user = self.request.user
         return super().form_valid(form)
 
@@ -126,7 +125,6 @@ class ConsoleUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     template_name = 'console_form.html'
 
     def get_success_url(self):
-        # Redirect to the detail page of the created game
         return reverse_lazy('console_detail', kwargs={'pk': self.object.pk})
 
     def test_func(self):

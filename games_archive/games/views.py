@@ -171,7 +171,7 @@ class AddOrUpdateReviewView(LoginRequiredMixin, View):
 
     @method_decorator(csrf_exempt)
     def get(self, request, *args, **kwargs):
-        game = get_object_or_404(Game, pk=kwargs['game_id'], to_user=request.user)
+        game = get_object_or_404(Game, pk=kwargs['pk'], to_user=request.user)
         review, created = GameReview.objects.get_or_create(
             from_user=request.user,
             to_game=game,
@@ -182,7 +182,7 @@ class AddOrUpdateReviewView(LoginRequiredMixin, View):
 
     @method_decorator(csrf_exempt)
     def post(self, request, *args, **kwargs):
-        game = get_object_or_404(Game, pk=kwargs['game_id'], to_user=request.user)
+        game = get_object_or_404(Game, pk=kwargs['pk'], to_user=request.user)
         review, created = GameReview.objects.get_or_create(
             from_user=request.user,
             to_game=game
@@ -191,7 +191,7 @@ class AddOrUpdateReviewView(LoginRequiredMixin, View):
 
         if form.is_valid():
             form.save()
-            return redirect(reverse_lazy('game_detail', kwargs={'pk': game.id}))  # or any other page
+            return redirect(reverse_lazy('game_detail', kwargs={'pk': game.pk}))  # or any other page
 
         return render(request, self.template_name, {'form': form, 'game': game})
 
@@ -204,7 +204,7 @@ class DeleteReviewView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         # Get the review using game_id from URL
         return get_object_or_404(
             GameReview,
-            to_game__pk=self.kwargs['game_id'],
+            to_game__pk=self.kwargs['pk'],
             from_user=self.request.user
         )
 
@@ -215,12 +215,12 @@ class DeleteReviewView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def get_success_url(self):
         # Redirect to the game detail page after deletion
-        return reverse_lazy('game_detail', kwargs={'pk': self.kwargs['game_id']})
+        return reverse_lazy('game_detail', kwargs={'pk': self.kwargs['pk']})
 
 
 @login_required
-def add_game_screenshot(request, game_id):
-    game = get_object_or_404(Game, pk=game_id)
+def add_game_screenshot(request, pk):
+    game = get_object_or_404(Game, pk=pk)
 
     if request.method == 'POST':
         form = ScreenshotForm(request.POST, request.FILES)
