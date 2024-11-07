@@ -3,6 +3,8 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+import games_archive.accounts.signals
+
 urlpatterns = [
     path('admin', admin.site.urls),
     path('', include('games_archive.common.urls')),

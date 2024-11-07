@@ -52,15 +52,7 @@
                             </div>
 
                         {% endfor %}
-                        {% if form.non_field_errors %}
-                            <div class="error">
-                                <ul>
-                                    {% for error in form.non_field_errors %}
-                                        <li>{{ error }}</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        {% endif %}
+
                         <div class="col-12">
                             <ul class="actions">
                                 <li><input type="submit" value="Submit" class="primary"></li>
