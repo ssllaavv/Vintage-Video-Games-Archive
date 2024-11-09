@@ -40,17 +40,17 @@ services:
       - media_volume:/home/app/web/media
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./nginx/logs:/var/log/nginx
-    #      - ./certbot/www:/var/www/certbot/:ro
-    #      - ./certbot/conf/:/etc/nginx/ssl/:ro
+      - ./certbot/www:/var/www/certbot/:ro
+      - ./certbot/conf/:/etc/nginx/ssl/:ro
     depends_on:
       - web
     links:
       - web
-#  certbot:
-#    image: certbot/certbot
-#    volumes:
-#      - ./certbot/www/:/var/www/certbot/:rw
-#      - ./certbot/conf/:/etc/letsencrypt/:rw
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
+      - ./certbot/conf/:/etc/letsencrypt/:rw
 
   migration:
     build:
