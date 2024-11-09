@@ -6,3 +6,5 @@ services:
     volumes:
       - ./certbot/www/:/var/www/certbot/:rw
       - ./certbot/conf/:/etc/letsencrypt/:rw
+
+# docker-compose -f docker-compose-certbot.yml run --rm certbot certonly --webroot --webroot-path /var/www/certbot/ --dry-run -d slav-petstagram.westeurope.cloudapp.azure.com

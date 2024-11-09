@@ -84,13 +84,15 @@
                                 <h2>{{ game.title }}</h2>
                                 <div class="uploaded-by">
 
-                                    <div class="thumbnail-container">
-                                        <a href="{% url 'profile details' game.to_user.pk %}">
+
+                                    <a href="{% url 'profile details' game.to_user.pk %}">
+                                        <div class="thumbnail-container">
                                             <img class="thumbnail-profile"
                                                  src="{{ game.to_user.get_profile_picture_or_default }}"
                                                  alt="profile picture">
-                                        </a>
-                                    </div>
+                                        </div>
+                                    </a>
+
                                     <div class="username">
                                         <a href="{% url 'profile details' game.to_user.pk %}">
                                             {{ game.to_user.get_user_name }}
@@ -103,10 +105,10 @@
                                 <img src="{{ game.developer_logo.url }}" class="thumbnail small" alt="developer logo">
                             {% endif %}
                             {% if game.release_year != None %}
-                            <div class="release-year">{{ game.release_year }}</div>
+                                <div class="release-year">{{ game.release_year }}</div>
                             {% endif %}
                             {% if game.developer != None %}
-                            <div>By {{ game.developer }}&reg;</div>
+                                <div>By {{ game.developer }}&reg;</div>
                             {% endif %}
                             {% if user.is_authenticated %}
 
@@ -141,27 +143,29 @@
 
             </section>
 
-        {% if is_paginated %}
-            <ul class="pagination">
-                {% if games.has_previous %}
-                    <li><a href="?page={{ games.previous_page_number }}#profile_games" class="button small">Prev</a></li>
-                {% else %}
-                    <li><span class="button small disabled">Prev</span></li>
-                {% endif %}
-                {% for num in games.paginator.page_range %}
-                    {% if games.number == num %}
-                        <li><a href="?page={{ num }}#profile_games" class="page active">{{ num }}</a></li>
+            {% if is_paginated %}
+                <ul class="pagination">
+                    {% if games.has_previous %}
+                        <li><a href="?page={{ games.previous_page_number }}#profile_games" class="button small">Prev</a>
+                        </li>
                     {% else %}
-                        <li><a href="?page={{ num }}#profile_games" class="page">{{ num }}</a></li>
+                        <li><span class="button small disabled">Prev</span></li>
                     {% endif %}
-                {% endfor %}
-                {% if games.has_next %}
-                    <li><a href="?page={{ games.next_page_number }}#profile_games" class="button small">Next</a></li>
-                {% else %}
-                    <li><span class="button small disabled">Next</span></li>
-                {% endif %}
-            </ul>
-        {% endif %}
+                    {% for num in games.paginator.page_range %}
+                        {% if games.number == num %}
+                            <li><a href="?page={{ num }}#profile_games" class="page active">{{ num }}</a></li>
+                        {% else %}
+                            <li><a href="?page={{ num }}#profile_games" class="page">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if games.has_next %}
+                        <li><a href="?page={{ games.next_page_number }}#profile_games" class="button small">Next</a>
+                        </li>
+                    {% else %}
+                        <li><span class="button small disabled">Next</span></li>
+                    {% endif %}
+                </ul>
+            {% endif %}
 
         </div>
     </section>

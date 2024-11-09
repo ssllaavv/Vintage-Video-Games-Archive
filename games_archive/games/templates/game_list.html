@@ -52,13 +52,15 @@
                             <div class="game-header small">
                                 <h2>{{ game.title }}</h2>
                                 <div class="uploaded-by">
-                                    <div class="thumbnail-container">
-                                        <a href="{% url 'profile details' game.to_user.pk %}">
-                                        <img class="thumbnail-profile"
-                                             src="{{ game.to_user.get_profile_picture_or_default }}"
-                                             alt="profile picture">
-                                        </a>
-                                    </div>
+
+                                    <a href="{% url 'profile details' game.to_user.pk %}">
+                                        <div class="thumbnail-container">
+                                            <img class="thumbnail-profile"
+                                                 src="{{ game.to_user.get_profile_picture_or_default }}"
+                                                 alt="profile picture">
+                                        </div>
+                                    </a>
+
                                     <div class="username">
                                         <a href="{% url 'profile details' game.to_user.pk %}">
                                             {{ game.to_user.get_user_name }}
@@ -72,10 +74,10 @@
                             {% endif %}
 
                             {% if game.release_year != None %}
-                            <div class="release-year">{{ game.release_year }}</div>
+                                <div class="release-year">{{ game.release_year }}</div>
                             {% endif %}
                             {% if game.developer != None %}
-                            <div>By {{ game.developer }}&reg;</div>
+                                <div>By {{ game.developer }}&reg;</div>
                             {% endif %}
 
                             {% if user.is_authenticated %}
@@ -105,22 +107,23 @@
                             {% if user.is_authenticated %}
 
                                 <div>
-                                    <form method="POST" action="{% url 'comment_game' game.pk %}" id="comment-{{ game.pk }}">
+                                    <form method="POST" action="{% url 'comment_game' game.pk %}"
+                                          id="comment-{{ game.pk }}">
                                         {% csrf_token %}
-                                           <label>Comment</label>
+                                        <label>Comment</label>
                                         <p>
-                                            {{ game.comment_form.comment}}
+                                            {{ game.comment_form.comment }}
                                         </p>
                                         {% if game.comment_form.comment.errors %}
-                                        <div class="error">
-                                            {{ game.comment_form.comment.errors }}
-                                        </div>
+                                            <div class="error">
+                                                {{ game.comment_form.comment.errors }}
+                                            </div>
                                         {% endif %}
 
                                         {% if  game.comment_form.message %}
-                                        <p class="success_message">
-                                             {{ game.comment_form.message }}
-                                        </p>
+                                            <p class="success_message">
+                                                {{ game.comment_form.message }}
+                                            </p>
                                         {% endif %}
 
 

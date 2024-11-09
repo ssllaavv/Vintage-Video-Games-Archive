@@ -19,7 +19,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', None)
 DEBUG = bool(int(os.environ.get('DEBUG', 0)))
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(' ')
-CSRF_TRUSTED_ORIGINS = [f'http://{x}:80' for x in ALLOWED_HOSTS] + [f'https://{x}:443' for x in ALLOWED_HOSTS]
+CSRF_TRUSTED_ORIGINS = [f'http://{x}' for x in ALLOWED_HOSTS] + [f'https://{x}' for x in ALLOWED_HOSTS]
 
 # Application definition
 
@@ -150,4 +150,3 @@ EMAIL_USE_SSL = bool(int(os.environ.get('EMAIL_USE_SSL', 0)))
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', '')
-

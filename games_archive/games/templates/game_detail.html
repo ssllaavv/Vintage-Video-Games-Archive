@@ -15,12 +15,12 @@
                 <h2>{{ game.title }}</h2>
                 <div class="uploaded-by">
                     {#                    {% if game.to_user.profile_picture %}#}
-                    <div class="thumbnail-container">
-                        <a href="{% url 'profile details' game.to_user.pk %}">
-                        <img class="thumbnail-profile" src="{{ game.to_user.get_profile_picture_or_default }}"
-                             alt="profile picture">
-                        </a>
-                    </div>
+                    <a href="{% url 'profile details' game.to_user.pk %}">
+                        <div class="thumbnail-container">
+                            <img class="thumbnail-profile" src="{{ game.to_user.get_profile_picture_or_default }}"
+                                 alt="profile picture">
+                        </div>
+                    </a>
                     {#                    {% endif %}#}
                     <div class="username">
                         <a href="{% url 'profile details' game.to_user.pk %}">
@@ -38,7 +38,7 @@
 
                     <div class="game-details">
                         {% if game.release_year != None %}
-                        <div class="release-year big">{{ game.release_year }}</div>
+                            <div class="release-year big">{{ game.release_year }}</div>
                         {% endif %}
                         {% if game.developer_logo != None %}
                             <div>
@@ -46,67 +46,67 @@
                             </div>
                         {% endif %}
                         {% if game.developer != None %}
-                        <div>By: {{ game.developer }}&reg;</div>
+                            <div>By: {{ game.developer }}&reg;</div>
                         {% endif %}
 
                         {% if aame.genre != None %}
-                        <div class="genre">{{ game.genre }}</div>
-                        <div>
+                            <div class="genre">{{ game.genre }}</div>
+                            <div>
                         {% endif %}
-                            <ul class="consoles-list">
-                                {% for console in game.to_consoles.all %}
-                                    <li><a href="{% url 'console_detail' console.pk %}">
+                        <ul class="consoles-list">
+                            {% for console in game.to_consoles.all %}
+                                <li><a href="{% url 'console_detail' console.pk %}">
 
-                                        {% if console.logo %}
+                                    {% if console.logo %}
 
-                                            <img src="{{ console.logo.url }}" class="thumbnail" alt="console image">
+                                        <img src="{{ console.logo.url }}" class="thumbnail" alt="console image">
 
-                                        {% elif console.manufacturer_logo.url != None %}
-                                            <img src="{{ console.manufacturer_logo.url }}" class="thumbnail"
-                                                 alt="console image">
+                                    {% elif console.manufacturer_logo.url != None %}
+                                        <img src="{{ console.manufacturer_logo.url }}" class="thumbnail"
+                                             alt="console image">
 
 
-                                        {% elif console.cover_image  %}
-                                            <img src="{{ console.cover_image.url }}" class="thumbnail"
-                                                 alt="console image">
+                                    {% elif console.cover_image %}
+                                        <img src="{{ console.cover_image.url }}" class="thumbnail"
+                                             alt="console image">
 
-                                        {% endif %}
-                                        {{ console.name }}
-                                    </a></li>
-                                {% endfor %}
-                            </ul>
+                                    {% endif %}
+                                    {{ console.name }}
+                                </a></li>
+                            {% endfor %}
+                        </ul>
 
-                            {% if user.is_authenticated %}
+                        {% if user.is_authenticated %}
 
-                                <div class="rating-widget">
-                                    <div class="current-rating">
-                                        <a href="#"><span class="rating">{{ game.stars_rating_html|safe }}</span></a>
-                                    </div>
-                                    <div hidden="hidden" class="your-rating">
-                                        <div>Choose your rating:</div>
-                                        {% include 'partials/game_rating_stars.html' %}
-                                        <a class="button small" href="#">close</a>
-                                    </div>
+                            <div class="rating-widget">
+                                <div class="current-rating">
+                                    <a href="#"><span class="rating">{{ game.stars_rating_html|safe }}</span></a>
                                 </div>
+                                <div hidden="hidden" class="your-rating">
+                                    <div>Choose your rating:</div>
+                                    {% include 'partials/game_rating_stars.html' %}
+                                    <a class="button small" href="#">close</a>
+                                </div>
+                            </div>
 
-                            {% else %}
+                        {% else %}
 
-                                <span class="rating">{{ game.stars_rating_html|safe }}</span>
+                            <span class="rating">{{ game.stars_rating_html|safe }}</span>
 
-                            {% endif %}
+                        {% endif %}
 
 
-                            {% if game.to_user == request.user %}
-                                <ul class="actions">
-                                    <li><a href="{% url 'game_update' game.pk %}" class="button primary small">Edit
-                                        game</a>
-                                    </li>
-                                    <li><a href="{% url 'game_delete' game.pk %}" class="button small">Delete
-                                        game</a>
-                                    </li>
+                        {% if game.to_user == request.user %}
+                            <ul class="actions">
+                                <li><a href="{% url 'game_update' game.pk %}" class="button primary small">Edit
+                                    game</a>
+                                </li>
+                                <li><a href="{% url 'game_delete' game.pk %}" class="button small">Delete
+                                    game</a>
+                                </li>
 
-                                </ul>
-                            {% endif %}
+                            </ul>
+                        {% endif %}
 
 
                 </article>
@@ -227,12 +227,12 @@
                             {% csrf_token %}
                             <label>Comment</label>
                             <p>
-                                 {{ game_comment_form.comment }}
+                                {{ game_comment_form.comment }}
                             </p>
                             {% if game_comment_form.comment.errors %}
-                            <div class="error">
-                                {{ game_comment_form.comment.errors }}
-                            </div>
+                                <div class="error">
+                                    {{ game_comment_form.comment.errors }}
+                                </div>
                             {% endif %}
 
                             <button type="submit" class="button primary small">Comment</button>
@@ -248,9 +248,9 @@
                                 <div class="uploaded-by">
                                     <div class="thumbnail-container">
                                         <a href="{% url 'profile details' comment.from_user.pk %}">
-                                        <img class="thumbnail-profile"
-                                             src="{{ comment.from_user.get_profile_picture_or_default }}"
-                                             alt="profile picture">
+                                            <img class="thumbnail-profile"
+                                                 src="{{ comment.from_user.get_profile_picture_or_default }}"
+                                                 alt="profile picture">
                                         </a>
                                     </div>
                                     <div class="username">
@@ -258,8 +258,8 @@
                                     </div>
                                 </div>
                                 <blockquote>{{ comment.comment|linebreaksbr }}</blockquote>
-                                 {% with request.COOKIES.user_time_zone as user_time_zone %}
-                                <p class="date-of-publication">{{ comment.created_on|local_time:user_time_zone }}</p>
+                                {% with request.COOKIES.user_time_zone as user_time_zone %}
+                                    <p class="date-of-publication">{{ comment.created_on|local_time:user_time_zone }}</p>
                                 {% endwith %}
                             </div>
                         {% endfor %}
