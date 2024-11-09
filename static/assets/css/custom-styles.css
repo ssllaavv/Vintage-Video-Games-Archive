@@ -841,3 +841,10 @@ a#show-less-comments:not(.button):before {
 .success_message {
     color: green;
 }
+
+
+/*profile picture thumbnail for comments*/
+
+.no-underline {
+    border: none;
+}
