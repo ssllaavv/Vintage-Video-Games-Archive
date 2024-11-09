@@ -85,7 +85,7 @@ class Console(models.Model):
             return self.DEFAULT_IMAGE
 
     def __str__(self):
-        return f'Console {self.name} - {self.pk} from user {self.to_user.pk}'
+        return f'Console {self.name} - pk {self.pk} - {self.pk} from user {self.to_user.pk}'
 
     class Meta:
         ordering = ['-pk']

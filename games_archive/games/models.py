@@ -75,7 +75,7 @@ class Game(models.Model):
             return self.DEFAULT_IMAGE
 
     def __str__(self):
-        return self.title
+        return f'{self.title} - pk {self.pk} - form user {self.to_user.pk}'
 
     class Meta:
         ordering = ['-pk']

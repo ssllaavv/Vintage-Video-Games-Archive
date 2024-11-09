@@ -74,7 +74,7 @@ class GamesArchiveUser(AbstractUser):
         super(GamesArchiveUser, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f'{self.username}: {self.email} '
+        return f'{self.username}: {self.email} - pk {self.pk} '
 
     def get_user_name(self):
         if self.first_name and self.last_name:
