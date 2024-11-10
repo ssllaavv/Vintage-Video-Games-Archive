@@ -30,3 +30,5 @@ static-files
 
 */migrations/*.py
 !*/migrations/__init__.py
+
+
