@@ -15,5 +15,7 @@ class ConsoleAdmin(admin.ModelAdmin):
 @admin.register(Supplier)
 class SupplierAdmin(admin.ModelAdmin):
     list_display = ['pk', 'name', 'logo']
+    search_fields = ['name', 'pk']
+    search_help_text = 'Search by name or pk'
 
 

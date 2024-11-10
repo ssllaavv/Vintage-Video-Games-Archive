@@ -17,8 +17,8 @@ class GameRatingAdmin(admin.ModelAdmin):
 class ConsoleRatingAdmin(admin.ModelAdmin):
     list_display = ['from_user', 'to_console', 'rating']
     list_filter = ['rating']
-    search_fields = ['from_user__pk', 'to_console__pk', 'from_user__username', 'to_game__title']
-    search_help_text = 'Search by: user pk, console pk, username, game title'
+    search_fields = ['from_user__pk', 'to_console__pk', 'from_user__username', 'to_console__name']
+    search_help_text = 'Search by: user pk, console pk, username, console name'
     ordering = ['to_console__pk']
 
 

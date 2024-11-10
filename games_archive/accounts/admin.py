@@ -58,13 +58,59 @@ class GamesArchiveUserAdmin(admin.ModelAdmin):
         'gender',
         'age',
         'is_staff',
-        'is_active',
+        'is_superuser',
         wrapped_is_logged_in,  # Use the wrapped function
     ]
     search_fields = ['username', 'email', 'last_name']
     search_help_text = 'Search by: username, email, last name'
     list_filter = ['age', 'gender']
     ordering = ['-is_staff', 'pk']
+
+    limited_fieldsets = (
+        ('General', {'fields': (
+            'username',
+            'password',
+            'date_joined',
+            'last_login',
+            'is_superuser',
+            'is_staff',
+            'is_active',
+            'user_permissions',
+            'groups',
+
+        )}),
+        ('Personal info', {'classes': ('collapse',), 'fields': (
+            'first_name',
+            'last_name',
+            'email',
+            'gender',
+            'age',
+            'profile_picture'
+        )}),
+    )
+
+    # Keep the default UserAdmin fieldsets for superusers
+    def get_fieldsets(self, request, obj=None):
+        if request.user.is_superuser or request.user.groups.filter(name='GOD USER').exists():
+            return super().get_fieldsets(request, obj)
+        return self.limited_fieldsets
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        is_superuser = request.user.is_superuser or request.user.groups.filter(name='GOD USER').exists()
+
+        if not is_superuser:
+            # Disable certain fields for non-superusers
+            if 'is_superuser' in form.base_fields:
+                form.base_fields['is_superuser'].disabled = True
+            if 'is_staff' in form.base_fields:
+                form.base_fields['is_staff'].disabled = True
+            if 'user_permissions' in form.base_fields:
+                form.base_fields['user_permissions'].disabled = True
+            if 'groups' in form.base_fields:
+                form.base_fields['groups'].disabled = True
+
+        return form
 
     def get_list_display(self, request):
         """
@@ -116,3 +162,4 @@ class GamesArchiveUserAdmin(admin.ModelAdmin):
             messages.error(request, f'Error logging out user ID {user_id}: {e}')
 
         return HttpResponseRedirect(request. META.get('HTTP_REFERER', '/admin/'))
+
