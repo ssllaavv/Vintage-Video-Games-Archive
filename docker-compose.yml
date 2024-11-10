@@ -52,17 +52,18 @@ services:
       - ./certbot/www/:/var/www/certbot/:rw
       - ./certbot/conf/:/etc/letsencrypt/:rw
 
-  migration:
-    build:
-      context: .
-    command: python manage.py makemigrations  && python manage.py migrate
-    volumes:
-      - .:/app
-    env_file:
-      - ./envs/for_deploy/.env
-    depends_on:
-      - db
-      - web
+#  migration:
+#    build:
+#      context: .
+#    command: python manage.py makemigrations  && python manage.py migrate
+#    volumes:
+#      - .:/app
+#    env_file:
+#      - ./envs/for_deploy/.env
+#    depends_on:
+#      - db
+#      - web
+#      - nginx
 #  collectstatic:
 #    build:
 #      context: .
