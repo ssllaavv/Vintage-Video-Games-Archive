@@ -25,3 +25,7 @@ Thumbs.db
 
 # Ignore environment variable files (optional, depending on your setup)
 .env
+
+static-files
+
+migrations
