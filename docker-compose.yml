@@ -55,7 +55,7 @@ services:
   migration:
     build:
       context: .
-    command: python manage.py migrate
+    command: python manage.py makemigrations  && python manage.py migrate
     volumes:
       - .:/app
     env_file:
