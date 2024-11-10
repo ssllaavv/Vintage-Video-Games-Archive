@@ -75,8 +75,8 @@ class GamesArchiveUserAdmin(admin.ModelAdmin):
             'is_superuser',
             'is_staff',
             'is_active',
-            'user_permissions',
-            'groups',
+            # 'user_permissions',
+            # 'groups',
 
         )}),
         ('Personal info', {'classes': ('collapse',), 'fields': (
