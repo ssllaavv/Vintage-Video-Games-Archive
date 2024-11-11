@@ -11,7 +11,7 @@ class GameCommentForm(forms.ModelForm):
                 attrs={
                     'placeholder': 'Add comment...',
                     'class': 'comment-textarea',
-                    'maxlength': 500,
+                    'maxlength': 700,
                 }
             ),
         }
@@ -26,7 +26,7 @@ class ConsoleCommentForm(forms.ModelForm):
                 attrs={
                     'placeholder': 'Add comment...',
                     'class': 'comment-textarea',
-                    'maxlength': 500,
+                    'maxlength': 700,
                 }
             ),
         }

@@ -31,14 +31,6 @@ class ConsoleListView(ListView):
 
         return queryset
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context['console_comment_form'] = ConsoleCommentForm()
-    #     context['search_form'] = ConsoleSearchForm(self.request.GET)
-    #     context['search_query'] = self.search_query  # Use the instance variable instead of getting from request again
-    #
-    #     return context
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -130,9 +122,6 @@ class ConsoleUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def test_func(self):
         console = self.get_object()
         return self.request.user == console.to_user or self.request.user.is_staff
-
-    # def form_invalid(self, form):
-    #     return super().form_invalid(form)
 
 
 class ConsoleDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):

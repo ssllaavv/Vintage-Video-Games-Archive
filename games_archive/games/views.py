@@ -49,13 +49,6 @@ class GameListView(ListView):
 
         return queryset
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context['game_comment_form'] = GameCommentForm()
-    #     context['search_form'] = GameSearchForm(self.request.GET)
-    #     context['search_query'] = self.search_query
-    #     return context
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -92,15 +85,6 @@ class GameDetailView(DetailView):
     model = Game
     template_name = 'game_detail.html'
     context_object_name = 'game'
-
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context['screenshots'] = self.object.screenshot_set.all()
-    #     context['review'] = self.object.reviews.all().first()
-    #     context['comments'] = self.object.gamecomment_set.all()
-    #     context['game_comment_form'] = GameCommentForm()
-    #     context['add_screenshot_form'] = ScreenshotForm()
-    #     return context
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

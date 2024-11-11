@@ -48,7 +48,6 @@
                                     <img src="{{ console.default_image }}" alt="{{ console.name }}"/>
                                 </a>
                             {% else %}
-{#TODO add console default image#}
                             {% endif %}
                             <h3 class="major console-list">
                                 {{ console.name }}
@@ -93,10 +92,6 @@
                             {% if user.is_authenticated %}
                                 <div>
                                     <form method="POST" action="{% url 'comment_console' console.pk %}" id="comment-{{ console.pk }}">
-{#                                        {% csrf_token %}#}
-{#                                        {{ console_comment_form.as_p }}#}
-{#                                        <button type="submit" class="button primary small">Comment</button>#}
-
 
                                        {% csrf_token %}
                                            <label>Comment</label>

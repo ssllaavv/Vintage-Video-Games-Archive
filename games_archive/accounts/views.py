@@ -5,12 +5,10 @@ from django.views.generic import CreateView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views import generic as views
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from .forms import UserRegistrationForm, UserProfileForm, UserLoginForm
-
-
 from ..common.forms import GameCommentForm
-from django.utils.http import url_has_allowed_host_and_scheme
 
 
 class UserRegisterView(CreateView):

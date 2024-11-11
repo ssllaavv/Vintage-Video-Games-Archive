@@ -10,7 +10,7 @@ from games_archive import settings
 def send_greeting_email(sender, instance, created, **kwargs):
     if created:
 
-        print("Sending email.... ")
+        # print("Sending email.... ")
 
         subject = "Registration greetings"
         html_message = render_to_string('email-greeting.html', {'user': instance})

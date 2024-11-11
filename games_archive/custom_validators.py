@@ -20,18 +20,6 @@ def validate_name(value):
     validate_name_is_longer_than_2_characters(value)
 
 
-# def validate_unique_game_title_unique(value):
-#     match = Game.objects.filter(title__iexact=value).first()
-#     if match:
-#         raise ValidationError(f'Game with title {value} is already registered')
-#
-#
-# def validate_unique_console_name_unique(value):
-#     match = Console.objects.filtr(name__iexact=value).first()
-#     if match:
-#         raise ValidationError(f'Console {value} is already registered')
-
-
 def validate_file_size(value):
     if value.size >= 5 * 1024 * 1024:
         raise ValidationError('The maximum file size to upload is 5MB')
