@@ -20,7 +20,7 @@ class GamesArchiveUserModelTest(TestCase):
             'password': 'password',
         }
 
-    def test_create_valid_user(self):
+    def test_create_valid_user_should_pass(self):
 
         user = GamesArchiveUser.objects.create_user(**self.valid_user_data)
         try:

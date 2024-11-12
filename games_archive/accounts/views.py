@@ -28,8 +28,8 @@ class UserRegisterView(CreateView):
         return context
 
     def get_success_url(self):
-        result = self.request.POST.get('next', None)
-        if result == 'None' or result.includs('register'):
+        result = self.request.POST.get('next')
+        if not result or result == 'None' or 'register' in result:
             return self.success_url
         return result
 
@@ -96,7 +96,7 @@ class UserDetailView(DetailView):
 class UserDeleteView(LoginRequiredMixin, views.DeleteView):
     model = get_user_model()
     template_name = 'profile-delete.html'
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('home')
 
     def post(self, request, *args, **kwargs):
         user = self.get_object()
