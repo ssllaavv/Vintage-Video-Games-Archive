@@ -126,7 +126,7 @@ class UserLoginViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'login.html')
 
-    def test_successful_login(self):
+    def test_successful_login_and_session_created(self):
         """Test successful login with valid credentials"""
         response = self.client.post(self.login_url, {
             'username': 'testuser',
@@ -135,7 +135,7 @@ class UserLoginViewTests(TestCase):
         self.assertRedirects(response, self.home_url)
         self.assertTrue('_auth_user_id' in self.client.session)
 
-    def test_invalid_login(self):
+    def test_invalid_login_returns_form_with_errors_and_session_not_created(self):
         """Test login with invalid credentials"""
         response = self.client.post(self.login_url, {
             'username': 'testuser',
@@ -145,7 +145,7 @@ class UserLoginViewTests(TestCase):
         self.assertTrue(response.context['form'].errors)
         self.assertFalse('_auth_user_id' in self.client.session)
 
-    def test_next_parameter_redirect(self):
+    def test_next_parameter_redirect_correctly(self):
         """Test redirect to 'next' parameter after successful login"""
         next_url = '/some-valid-url/'
         response = self.client.post(
@@ -177,7 +177,7 @@ class UserLogoutViewTests(TestCase):
         self.assertRedirects(response, self.login_url)
         self.assertFalse('_auth_user_id' in self.client.session)
 
-    def test_get_request_logs_out(self):
+    def test_logs_out_and_remove_session(self):
         """Test that GET request to logout also works"""
         self.client.login(username='testuser', password='TestPass123!')
         response = self.client.get(self.logout_url)
@@ -202,7 +202,7 @@ class UserEditViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'profile_edit.html')
 
-    def test_successful_profile_update(self):
+    def test_successful_profile_update_and_redirect_to_profile_details(self):
         """Test successful profile update with valid data"""
         response = self.client.post(self.edit_url, {
             'first_name': 'John',
@@ -218,7 +218,7 @@ class UserEditViewTests(TestCase):
         self.assertRedirects(response,
                            reverse('profile details', kwargs={'pk': self.user.pk}))
 
-    def test_invalid_profile_update(self):
+    def test_invalid_profile_update_returns_form_with_errors(self):
         """Test profile update with invalid data"""
         response = self.client.post(self.edit_url, {
             'first_name': 'John123',  # Invalid name with numbers
@@ -247,7 +247,7 @@ class UserDetailViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'profile-details.html')
 
-    def test_context_data(self):
+    def test_context_data_includes_all_data(self):
         """Test that context contains required data"""
         response = self.client.get(self.detail_url)
         self.assertIn('comments_count', response.context)
@@ -255,7 +255,7 @@ class UserDetailViewTests(TestCase):
         self.assertIn('games', response.context)
         self.assertIn('is_paginated', response.context)
 
-    def test_user_details_displayed(self):
+    def test_user_details_displayed_correctly(self):
         """Test that user details are displayed correctly"""
         response = self.client.get(self.detail_url)
         self.assertEqual(response.context['object'], self.user)
