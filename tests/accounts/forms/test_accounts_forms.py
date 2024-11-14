@@ -11,8 +11,8 @@ class UserRegistrationFormTests(TestCase):
         self.valid_form_data = {
             'username': 'username',
             'email': 'email@email.com',
-            'password1': 'pass',
-            'password2': 'pass',
+            'password1': 'VeryStrongPass@!34',
+            'password2': 'VeryStrongPass@!34'
         }
 
     def test_register_valid_user_should_pass(self):
