@@ -1,5 +1,4 @@
 
-
 // Scripts fpr console select in games edit view
 
 class ConsoleSelector {
@@ -308,3 +307,59 @@ const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 document.cookie = "user_time_zone=" + userTimeZone + "; path=/";
 
 
+
+// script for delete confirm annoying image
+// Wait for the DOM to load
+window.addEventListener('DOMContentLoaded', () => {
+    // Select the delete button(s) by class or ID
+    const deleteButtons = document.querySelectorAll('.delete-confirm');
+
+    // Loop through each delete button and add an event listener
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', (event) => {
+            // Prevent the default behavior temporarily (to stop immediate deletion)
+            event.preventDefault();
+
+            // Get the image path from the data attribute
+            const imagePath = button.getAttribute('data-image-path');
+
+            // Create an image element
+            const overlayImage = document.createElement('img');
+            overlayImage.src = imagePath; // Use the dynamic path from the data attribute
+            overlayImage.style.position = 'fixed';
+            overlayImage.style.top = '0';
+            overlayImage.style.left = '0';
+            overlayImage.style.width = '100vw';
+            overlayImage.style.height = '100vh';
+            overlayImage.style.zIndex = '9999';
+            overlayImage.style.opacity = '1';
+            overlayImage.style.transform = 'scale(1)';
+            overlayImage.style.transition = 'transform 1s ease, opacity 1s ease';
+            overlayImage.style.willChange = 'transform, opacity';
+
+            // Append the image to the body
+            document.body.appendChild(overlayImage);
+
+            // Use requestAnimationFrame to ensure the browser has time to render changes
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    overlayImage.style.transform = 'scale(0)';
+                    overlayImage.style.opacity = '0';
+                });
+            });
+
+            // Set a timer to remove the image after the animation (1 second in this case)
+            setTimeout(() => {
+                if (overlayImage.parentElement) {
+                    document.body.removeChild(overlayImage);
+                }
+            }, 1000); // Remove the image after 1 second of animation
+
+            // Allow the default button behavior (Django delete workflow) after a 2-second delay
+            setTimeout(() => {
+                // Manually trigger the form submission or action
+                button.closest('form').submit();  // This will submit the form that contains the delete button
+            }, 500); // 0.5 second delay before the deletion action proceeds
+        });
+    });
+});

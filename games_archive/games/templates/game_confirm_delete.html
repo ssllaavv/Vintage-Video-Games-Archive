@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
 
     <section id="banner" class="small-banner">
@@ -12,7 +14,7 @@
 
                 <div class="sure-buttons">
                     <!-- Yes (Delete Profile) Button -->
-                    <button class="button primary">Yes</button>
+                    <button class="delete-confirm button primary" data-image-path="{% static 'images/added/gameover.gif' %}">Yes</button>
                     <!-- Go Back Button -->
                     <a class="button" href="javascript:history.back()">Go Back</a>
                 </div>

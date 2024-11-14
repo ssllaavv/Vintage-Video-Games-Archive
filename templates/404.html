@@ -2,8 +2,27 @@
 {% load static %}
 
 {% block content %}
-    <div>
-        <img src="{% static 'images/added/404.gif' %}">
-    </div>
+
+    <section id="banner" class="fake">
+        <a class="button " href="javascript:history.back()">Go Back</a>
+    </section>
+
+    <section id="one" class="wrapper spotlight style3">
+        <div class="inner">
+            <div class="not-found content">
+                <div id="404-container"></div>
+                <h2 style="font-size: 3em">404</h2>
+                <h3>Resource not found</h3>
+
+            </div>
+            <div class="not-found-image-container">
+                <img class="not-found-image" src="{% static 'images/added/404-space-invadors-2.gif' %}" alt="404 - not found">
+            </div>
+        </div>
+
+    </section>
+
 
 {% endblock %}
+
+

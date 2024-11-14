@@ -848,3 +848,28 @@ a#show-less-comments:not(.button):before {
 .no-underline {
     border: none;
 }
+
+
+/*404 page */
+
+.not-found-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    margin: 2em 0 2em 0;
+}
+
+.not-found-image {
+    border: 4px solid rgba(40, 43, 54, 0.9);
+    border-radius: 50px;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.not-found.content h2{
+    margin-bottom: 10pt;
+}
