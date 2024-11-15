@@ -32,5 +32,3 @@ static-files
 !*/migrations/__init__.py
 
 media
-
-.pytest_cache
