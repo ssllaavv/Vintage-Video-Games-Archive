@@ -155,11 +155,11 @@ jobs:
           docker-compose exec -T web python manage.py makemigrations && \
           docker-compose exec -T web python manage.py migrate'"
 
-    - name: Verify Container Deployment
-      env:
-        SSH_PASS: ${{ secrets.SSH_PASSWORD }}
-
-      run: |
+#    - name: Verify Container Deployment
+#      env:
+#        SSH_PASS: ${{ secrets.SSH_PASSWORD }}
+#
+#      run: |
 #        TIMEOUT=300
 #        INTERVAL=10
 #        time_passed=0
@@ -199,6 +199,12 @@ jobs:
 #          cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
 #          docker-compose logs'"
 #        exit 1
+
+
+    - name: Verify Container Deployment
+      env:
+        SSH_PASS: ${{ secrets.SSH_PASSWORD }}
+      run: |
         TIMEOUT=300
         INTERVAL=10
         time_passed=0
@@ -206,18 +212,18 @@ jobs:
         # Loop to check container statuses until timeout
         while [ $time_passed -lt $TIMEOUT ]; do
           # Fetch the container status from the remote server
-          container_status=$(sshpass -p "$SSH_PASS" ssh ***@*** "sudo bash -c '\
-            cd /home/***/games-archive && \
+          container_status=$(sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
+            cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
             docker-compose ps'")
-        
+
           # Count total containers, running containers, and restarting containers
           total_containers=$(echo "$container_status" | wc -l)
           running_containers=$(echo "$container_status" | grep -c "Up")
           restarting_containers=$(echo "$container_status" | grep -c "Restarting")
-        
+
           # Output the current status of containers
           echo "Found $running_containers running, $restarting_containers restarting out of $total_containers total containers"
-        
+
           # If all containers are running
           if [ "$running_containers" -eq 3 ] && [ "$restarting_containers" -eq 0 ]; then
             echo "All containers are up and running!"
@@ -225,27 +231,69 @@ jobs:
             echo "$container_status"
             exit 0
           fi
-        
+
           # If some containers are restarting, fetch and display logs
           if [ "$restarting_containers" -gt 0 ]; then
             echo "Some containers are restarting. Container logs:"
-            sshpass -p "$SSH_PASS" ssh ***@*** "sudo bash -c '\
-              cd /home/***/games-archive && \
+            sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
+              cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
               docker-compose logs --tail=50'"
           fi
-        
+
           # Wait for the next check
           echo "Waiting for all containers to be up..."
           sleep $INTERVAL
           time_passed=$((time_passed + INTERVAL))
         done
-        
+
         # If the loop times out, dump the container logs
         echo "Deployment verification failed! Dumping container logs..."
-        sshpass -p "$SSH_PASS" ssh ***@*** "sudo bash -c '\
-          cd /home/***/games-archive && \
+        sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
+          cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
           docker-compose logs'"
         exit 1
+
+    - name: Verify Website Accessibility
+      run: |
+        MAX_RETRIES=30
+        RETRY_INTERVAL=10
+        
+        for ((i=1; i<=MAX_RETRIES; i++)); do
+          echo "Attempt $i of $MAX_RETRIES..."
+          
+          if curl -s -f -k https://games-archive.westeurope.cloudapp.azure.com > /dev/null; then
+            echo "Website is accessible!"
+            exit 0
+          fi
+          
+          echo "Website not yet accessible, waiting ${RETRY_INTERVAL} seconds..."
+          sleep $RETRY_INTERVAL
+        done
+        
+        echo "Website verification failed after $MAX_RETRIES attempts"
+        exit 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     - name: Verify Website Accessibility
