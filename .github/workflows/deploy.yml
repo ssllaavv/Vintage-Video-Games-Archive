@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  build-and-test:
     runs-on: ubuntu-latest
 
     services:
@@ -70,32 +70,28 @@ jobs:
       run: |
         python manage.py test --verbosity=2
 
-# build-and-push and deploy jobs are commented out for now
 
-# build-and-push and deploy jobs are commented out for now
+  build-image-and-push-to-DockerHub:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
 
-# build-and-push and deploy jobs are commented out for now
-#  build-and-push:
-#    needs: test
-#    runs-on: ubuntu-latest
-#    if: github.ref == 'refs/heads/main'
-#
-#    steps:
-#    - uses: actions/checkout@v2
-#
-#    - name: Login to DockerHub
-#      uses: docker/login-action@v1
-#      with:
-#        username: ${{ secrets.DOCKER_USERNAME }}
-#        password: ${{ secrets.DOCKER_PASSWORD }}
-#
-#    - name: Build and push Docker image
-#      uses: docker/build-push-action@v2
-#      with:
-#        context: .
-#        push: true
-#        tags: ${{ secrets.DOCKER_USERNAME }}/games-archive:latest
-#
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/games-archive:latest
+
 #  deploy:
 #    needs: build-and-push
 #    runs-on: ubuntu-latest
