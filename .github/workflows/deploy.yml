@@ -223,7 +223,6 @@ jobs:
 #          echo \"=== Docker PS ===\" && \
 #          docker ps -a'"
 #        exit 1
-
     - name: Verify Container Deployment
       env:
         SSH_PASS: ${{ secrets.SSH_PASSWORD }}
@@ -234,22 +233,28 @@ jobs:
         EXPECTED_CONTAINERS=3
         
         while [ $time_passed -lt $TIMEOUT ]; do
-          # Get container status and explicitly remove header
+          # Get container status and clean the output
           container_status=$(sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
             cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
-            docker-compose ps | tail -n +2'" | grep -v '^$')
+            docker-compose ps'" | tail -n +2 | grep -v '^$')
           
-          # Count containers (excluding header)
-          total_containers=$(echo "$container_status" | grep -v '^$' | wc -l)
-          running_containers=$(echo "$container_status" | grep -v '^$' | grep -c "Up" || echo "0")
-          restarting_containers=$(echo "$container_status" | grep -v '^$' | grep -c "Restarting" || echo "0")
+          # Count containers using cleaned output
+          total_containers=$(echo "$container_status" | wc -l)
+          running_containers=$(echo "$container_status" | grep -c "Up" || echo "0")
+          restarting_containers=$(echo "$container_status" | grep -c "Restarting" || echo "0")
+          
+          # Clean up the numbers to ensure they're integers
+          total_containers=$(echo "$total_containers" | tr -d ' \n\r')
+          running_containers=$(echo "$running_containers" | tr -d ' \n\r')
+          restarting_containers=$(echo "$restarting_containers" | tr -d ' \n\r')
           
           echo "Current containers:"
           echo "$container_status"
           echo "-------------------------"
           echo "Found $running_containers running, $restarting_containers restarting out of $total_containers total containers"
           
-          if [ "$running_containers" -eq $EXPECTED_CONTAINERS ] && [ "$restarting_containers" -eq 0 ]; then
+          # Compare the cleaned integer values
+          if [ "$running_containers" -eq "$EXPECTED_CONTAINERS" ] && [ "$restarting_containers" -eq 0 ]; then
             echo "All $EXPECTED_CONTAINERS containers are up and running!"
             exit 0
           fi
@@ -277,7 +282,6 @@ jobs:
           docker-compose ps && \
           docker-compose logs --tail=50'"
         exit 1
-
 
     - name: Verify Website Accessibility
       run: |
