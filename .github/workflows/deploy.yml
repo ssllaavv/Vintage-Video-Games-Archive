@@ -125,7 +125,6 @@ jobs:
 #          docker-compose pull && \
 #          docker-compose up -d"
 
-
   deploy:
     needs: build-and-push-to-DockerHub
     runs-on: ubuntu-latest
@@ -143,23 +142,27 @@ jobs:
         cp docker-compose.yml deploy/
         cp -r nginx deploy/
 
+    - name: Setup SSH
+      run: |
+        mkdir -p ~/.ssh
+        touch ~/.ssh/config
+        echo "StrictHostKeyChecking no" >> ~/.ssh/config
+        chmod 600 ~/.ssh/config
+
     - name: Clean and Deploy to Azure VM
       env:
         SSH_PASS: ${{ secrets.SSH_PASSWORD }}
       run: |
-        # Disable strict host key checking
-        echo "StrictHostKeyChecking no" >> ~/.ssh/config
-        
         # Execute cleanup commands
         sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "\
           cd /home/${{ secrets.SSH_USERNAME }} && \
-          sudo -S <<< "$SSH_PASS" docker-compose -f games-archive/docker-compose.yml down || true && \
-          sudo -S <<< "$SSH_PASS" docker rm -f \$(sudo docker ps -a -q) || true && \
-          sudo -S <<< "$SSH_PASS" docker rmi \$(sudo docker images | grep 'games-archive' | awk '{print \$3}') || true && \
-          sudo -S <<< "$SSH_PASS" rm -f games-archive/docker-compose.yml && \
-          sudo -S <<< "$SSH_PASS" rm -rf games-archive/nginx && \
-          sudo -S <<< "$SSH_PASS" mkdir -p games-archive/nginx && \
-          sudo -S <<< "$SSH_PASS" chown -R ${{ secrets.SSH_USERNAME }}:${{ secrets.SSH_USERNAME }} games-archive"
+          sudo -S <<< \"$SSH_PASS\" docker-compose -f games-archive/docker-compose.yml down || true && \
+          sudo -S <<< \"$SSH_PASS\" docker rm -f \$(sudo docker ps -a -q) || true && \
+          sudo -S <<< \"$SSH_PASS\" docker rmi \$(sudo docker images | grep 'games-archive' | awk '{print \$3}') || true && \
+          sudo -S <<< \"$SSH_PASS\" rm -f games-archive/docker-compose.yml && \
+          sudo -S <<< \"$SSH_PASS\" rm -rf games-archive/nginx && \
+          sudo -S <<< \"$SSH_PASS\" mkdir -p games-archive/nginx && \
+          sudo -S <<< \"$SSH_PASS\" chown -R ${{ secrets.SSH_USERNAME }}:${{ secrets.SSH_USERNAME }} games-archive"
 
         # Copy new deployment files
         sshpass -p "$SSH_PASS" scp -r deploy/* ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }}:/home/${{ secrets.SSH_USERNAME }}/games-archive/
@@ -167,10 +170,10 @@ jobs:
         # Set proper permissions and deploy using Docker Compose
         sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "\
           cd /home/${{ secrets.SSH_USERNAME }} && \
-          sudo -S <<< "$SSH_PASS" chown -R ${{ secrets.SSH_USERNAME }}:${{ secrets.SSH_USERNAME }} games-archive && \
+          sudo -S <<< \"$SSH_PASS\" chown -R ${{ secrets.SSH_USERNAME }}:${{ secrets.SSH_USERNAME }} games-archive && \
           cd games-archive && \
-          sudo -S <<< "$SSH_PASS" docker-compose pull && \
-          sudo -S <<< "$SSH_PASS" docker-compose up -d"
+          sudo -S <<< \"$SSH_PASS\" docker-compose pull && \
+          sudo -S <<< \"$SSH_PASS\" docker-compose up -d"
 
     - name: Verify Container Deployment
       env:
