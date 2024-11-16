@@ -71,7 +71,7 @@ jobs:
         python manage.py test --verbosity=2
 
 
-  build-image-and-push-to-DockerHub:
+  build-and-push-to-DockerHub:
     needs:  build-and-test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
@@ -93,12 +93,12 @@ jobs:
         tags: ${{ secrets.DOCKER_USERNAME }}/games-archive:latest
 
 #  deploy:
-#    needs: build-and-push
+#    needs: build-and-push-to-DockerHub
 #    runs-on: ubuntu-latest
 #    if: github.ref == 'refs/heads/main'
 #
 #    steps:
-#    - uses: actions/checkout@v2
+#    - uses: actions/checkout@v4
 #
 #    - name: Install sshpass
 #      run: sudo apt-get install -y sshpass
@@ -124,3 +124,108 @@ jobs:
 #          cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
 #          docker-compose pull && \
 #          docker-compose up -d"
+
+
+  deploy:
+    needs: build-and-push-to-DockerHub
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install sshpass and curl
+      run: sudo apt-get install -y sshpass curl
+
+    - name: Copy deployment files
+      run: |
+        mkdir -p deploy
+        cp docker-compose.yml deploy/
+        cp -r nginx deploy/
+
+    - name: Clean and Deploy to Azure VM
+      env:
+        SSH_PASS: ${{ secrets.SSH_PASSWORD }}
+      run: |
+        # Disable strict host key checking
+        echo "StrictHostKeyChecking no" >> ~/.ssh/config
+        
+        # Execute cleanup commands
+        sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "\
+          cd /home/${{ secrets.SSH_USERNAME }} && \
+          sudo -S <<< "$SSH_PASS" docker-compose -f games-archive/docker-compose.yml down || true && \
+          sudo -S <<< "$SSH_PASS" docker rm -f \$(sudo docker ps -a -q) || true && \
+          sudo -S <<< "$SSH_PASS" docker rmi \$(sudo docker images | grep 'games-archive' | awk '{print \$3}') || true && \
+          sudo -S <<< "$SSH_PASS" rm -f games-archive/docker-compose.yml && \
+          sudo -S <<< "$SSH_PASS" rm -rf games-archive/nginx && \
+          sudo -S <<< "$SSH_PASS" mkdir -p games-archive/nginx && \
+          sudo -S <<< "$SSH_PASS" chown -R ${{ secrets.SSH_USERNAME }}:${{ secrets.SSH_USERNAME }} games-archive"
+
+        # Copy new deployment files
+        sshpass -p "$SSH_PASS" scp -r deploy/* ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }}:/home/${{ secrets.SSH_USERNAME }}/games-archive/
+
+        # Set proper permissions and deploy using Docker Compose
+        sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "\
+          cd /home/${{ secrets.SSH_USERNAME }} && \
+          sudo -S <<< "$SSH_PASS" chown -R ${{ secrets.SSH_USERNAME }}:${{ secrets.SSH_USERNAME }} games-archive && \
+          cd games-archive && \
+          sudo -S <<< "$SSH_PASS" docker-compose pull && \
+          sudo -S <<< "$SSH_PASS" docker-compose up -d"
+
+    - name: Verify Container Deployment
+      env:
+        SSH_PASS: ${{ secrets.SSH_PASSWORD }}
+      run: |
+        # Wait for services to start
+        sleep 30
+        
+        # Check if containers are running
+        CONTAINERS_STATUS=$(sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "\
+          cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
+          sudo -S <<< \"$SSH_PASS\" docker-compose ps --status running | grep -c 'Up' || echo '0'")
+        
+        # Expected number of containers (web, db, nginx)
+        EXPECTED_CONTAINERS=3
+        
+        if [ "$CONTAINERS_STATUS" -eq "$EXPECTED_CONTAINERS" ]; then
+          echo "Container deployment verified successfully! All containers are running."
+        else
+          echo "Container deployment verification failed! Expected $EXPECTED_CONTAINERS containers, but found $CONTAINERS_STATUS running."
+          # Get logs from containers for debugging
+          sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "\
+            cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
+            sudo -S <<< \"$SSH_PASS\" docker-compose logs"
+          exit 1
+        fi
+
+    - name: Verify Website Accessibility
+      run: |
+        echo "Waiting for website to become available..."
+        MAX_RETRIES=10
+        RETRY_COUNTER=0
+        
+        while [ $RETRY_COUNTER -lt $MAX_RETRIES ]
+        do
+          # Attempt to fetch the website
+          RESPONSE=$(curl -s -w "\n%{http_code}" https://games-archive.westeurope.cloudapp.azure.com)
+          HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
+          HTML_CONTENT=$(echo "$RESPONSE" | head -n-1)
+          
+          # Check for successful HTTP status and HTML content
+          if [ "$HTTP_STATUS" -eq 200 ] && echo "$HTML_CONTENT" | grep -q "<html"; then
+            echo "Website verification successful!"
+            echo "HTTP Status: $HTTP_STATUS"
+            echo "HTML content found and validated"
+            exit 0
+          fi
+          
+          echo "Attempt $((RETRY_COUNTER + 1)) of $MAX_RETRIES failed. Waiting 30 seconds before retry..."
+          RETRY_COUNTER=$((RETRY_COUNTER + 1))
+          sleep 30
+        done
+        
+        echo "Website verification failed after $MAX_RETRIES attempts!"
+        echo "Last HTTP Status: $HTTP_STATUS"
+        echo "Last Response Content:"
+        echo "$HTML_CONTENT"
+        exit 1
