@@ -72,7 +72,7 @@ jobs:
 
 
   build-image-and-push-to-DockerHub:
-    needs: test
+    needs:  build-and-test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
 
