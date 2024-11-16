@@ -93,7 +93,7 @@ jobs:
 #        tags: ${{ secrets.DOCKER_USERNAME }}/games-archive:latest
 
   deploy:
-    needs: build-and-push-to-DockerHub
+#    needs: build-and-push-to-DockerHub
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
 
