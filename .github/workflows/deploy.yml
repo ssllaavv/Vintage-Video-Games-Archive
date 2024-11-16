@@ -124,7 +124,6 @@ jobs:
 #          cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
 #          docker-compose pull && \
 #          docker-compose up -d"
-
   deploy:
     needs: build-and-push-to-DockerHub
     runs-on: ubuntu-latest
@@ -149,14 +148,17 @@ jobs:
         echo "StrictHostKeyChecking no" >> ~/.ssh/config
         chmod 600 ~/.ssh/config
 
-    - name: Prepare Remote Environment
+    - name: Backup SSL Certificates and Configurations
       env:
         SSH_PASS: ${{ secrets.SSH_PASSWORD }}
       run: |
-        # Create necessary directories with proper permissions
         sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
-          mkdir -p /home/${{ secrets.SSH_USERNAME }}/games-archive/nginx/conf.d && \
-          chown -R ${{ secrets.SSH_USERNAME }}:${{ secrets.SSH_USERNAME }} /home/${{ secrets.SSH_USERNAME }}/games-archive'"
+          cd /home/${{ secrets.SSH_USERNAME }} && \
+          if [ -d games-archive/certbot ]; then \
+            rm -rf certbot_backup || true && \
+            cp -rp games-archive/certbot certbot_backup && \
+            chown -R root:root certbot_backup \
+          fi'"
 
     - name: Clean Previous Deployment
       env:
@@ -166,19 +168,38 @@ jobs:
           cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
           docker-compose down || true && \
           docker system prune -af || true && \
-          rm -rf /home/${{ secrets.SSH_USERNAME }}/games-archive/* && \
-          mkdir -p /home/${{ secrets.SSH_USERNAME }}/games-archive/nginx/conf.d && \
-          chown -R ${{ secrets.SSH_USERNAME }}:${{ secrets.SSH_USERNAME }} /home/${{ secrets.SSH_USERNAME }}/games-archive'"
+          cd /home/${{ secrets.SSH_USERNAME }} && \
+          rm -rf games-archive/* && \
+          mkdir -p games-archive/nginx/conf.d && \
+          mkdir -p games-archive/certbot/conf && \
+          mkdir -p games-archive/certbot/www && \
+          chown -R root:root games-archive'"
+
+    - name: Restore SSL Certificates
+      env:
+        SSH_PASS: ${{ secrets.SSH_PASSWORD }}
+      run: |
+        sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
+          cd /home/${{ secrets.SSH_USERNAME }} && \
+          if [ -d certbot_backup ]; then \
+            cp -rp certbot_backup/* games-archive/certbot/ && \
+            chown -R root:root games-archive/certbot && \
+            chmod -R 755 games-archive/certbot && \
+            rm -rf certbot_backup \
+          fi'"
 
     - name: Copy New Files
       env:
         SSH_PASS: ${{ secrets.SSH_PASSWORD }}
       run: |
-        sshpass -p "$SSH_PASS" scp -r deploy/* ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }}:/home/${{ secrets.SSH_USERNAME }}/games-archive/
+        # First, copy files to a temporary location
+        sshpass -p "$SSH_PASS" scp -r deploy/* ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }}:/home/${{ secrets.SSH_USERNAME }}/deploy_temp/
         
-        # Set permissions after copy
+        # Then, move them with proper permissions using sudo
         sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
-          chown -R ${{ secrets.SSH_USERNAME }}:${{ secrets.SSH_USERNAME }} /home/${{ secrets.SSH_USERNAME }}/games-archive && \
+          cp -r /home/${{ secrets.SSH_USERNAME }}/deploy_temp/* /home/${{ secrets.SSH_USERNAME }}/games-archive/ && \
+          rm -rf /home/${{ secrets.SSH_USERNAME }}/deploy_temp && \
+          chown -R root:root /home/${{ secrets.SSH_USERNAME }}/games-archive && \
           chmod -R 755 /home/${{ secrets.SSH_USERNAME }}/games-archive'"
 
     - name: Start Containers
@@ -197,21 +218,9 @@ jobs:
       run: |
         sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
           cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
-          echo \"Running collectstatic...\" && \
           docker-compose exec -T web python manage.py collectstatic --noinput && \
-          echo \"Running makemigrations...\" && \
           docker-compose exec -T web python manage.py makemigrations && \
-          echo \"Running migrate...\" && \
-          docker-compose exec -T web python manage.py migrate && \
-          echo \"All Django commands completed successfully\"'"
-
-    - name: Restart Containers
-      env:
-        SSH_PASS: ${{ secrets.SSH_PASSWORD }}
-      run: |
-        sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
-          cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
-          docker-compose restart'"
+          docker-compose exec -T web python manage.py migrate'"
 
     - name: Verify Container Deployment
       env:
@@ -222,16 +231,33 @@ jobs:
         time_passed=0
         
         while [ $time_passed -lt $TIMEOUT ]; do
-          running_containers=$(sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
+          # Check both container count and status with sudo
+          container_status=$(sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
             cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
-            docker-compose ps -q | wc -l'")
+            docker-compose ps --format \"{{.Name}} {{.Status}}\"'")
           
-          if [ "$running_containers" -eq 3 ]; then
-            echo "All containers are running!"
+          # Count total and running containers
+          total_containers=$(echo "$container_status" | wc -l)
+          running_containers=$(echo "$container_status" | grep -c "Up")
+          restarting_containers=$(echo "$container_status" | grep -c "Restarting")
+          
+          echo "Found $running_containers running, $restarting_containers restarting out of $total_containers total containers"
+          
+          if [ "$running_containers" -eq 3 ] && [ "$restarting_containers" -eq 0 ]; then
+            echo "All containers are up and running!"
+            echo "Container status:"
+            echo "$container_status"
             exit 0
           fi
           
-          echo "Found $running_containers running containers. Waiting for 3 containers..."
+          if [ "$restarting_containers" -gt 0 ]; then
+            echo "Some containers are restarting. Container logs:"
+            sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
+              cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
+              docker-compose logs --tail=50'"
+          fi
+          
+          echo "Waiting for all containers to be up..."
           sleep $INTERVAL
           time_passed=$((time_passed + INTERVAL))
         done
