@@ -158,6 +158,7 @@ jobs:
     - name: Verify Container Deployment
       env:
         SSH_PASS: ${{ secrets.SSH_PASSWORD }}
+
       run: |
 #        TIMEOUT=300
 #        INTERVAL=10
@@ -202,8 +203,9 @@ jobs:
         INTERVAL=10
         time_passed=0
         
+        # Loop to check container statuses until timeout
         while [ $time_passed -lt $TIMEOUT ]; do
-          # Fetch the container status
+          # Fetch the container status from the remote server
           container_status=$(sshpass -p "$SSH_PASS" ssh ***@*** "sudo bash -c '\
             cd /home/***/games-archive && \
             docker-compose ps'")
@@ -213,9 +215,10 @@ jobs:
           running_containers=$(echo "$container_status" | grep -c "Up")
           restarting_containers=$(echo "$container_status" | grep -c "Restarting")
         
+          # Output the current status of containers
           echo "Found $running_containers running, $restarting_containers restarting out of $total_containers total containers"
         
-          # Check if all containers are running
+          # If all containers are running
           if [ "$running_containers" -eq 3 ] && [ "$restarting_containers" -eq 0 ]; then
             echo "All containers are up and running!"
             echo "Container status:"
@@ -231,6 +234,7 @@ jobs:
               docker-compose logs --tail=50'"
           fi
         
+          # Wait for the next check
           echo "Waiting for all containers to be up..."
           sleep $INTERVAL
           time_passed=$((time_passed + INTERVAL))
