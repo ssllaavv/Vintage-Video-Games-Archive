@@ -123,7 +123,8 @@ jobs:
         sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
           cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
           rm -f docker-compose.yml || true && \
-          rm -rf nginx || true'"
+          rm -rf nginx || true && \
+          chmod -R 777 /home/${{ secrets.SSH_USERNAME }}/games-archive/'"
 
     - name: Copy deployment files
       env:
