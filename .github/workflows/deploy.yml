@@ -38,10 +38,30 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Set up environment variables
+      run: |
+        echo "DJANGO_ENV_FILE=$(cat ./envs/tests/.test.env | grep -v '^#' | tr '\n' ' ')" >> $GITHUB_ENV
+
+    - name: Create Migrations
+      run: |
+        python manage.py makemigrations accounts
+        python manage.py makemigrations
+      env:
+        ${{ env.DJANGO_ENV_FILE }}
+
+    - name: Apply Migrations
+      run: |
+        python manage.py migrate
+      env:
+        ${{ env.DJANGO_ENV_FILE }}
+
     - name: Run Tests
       run: |
-        export $(cat ./envs/tests/.test.env | grep -v '^#' | xargs)
         python manage.py test --verbosity=2
+      env:
+        ${{ env.DJANGO_ENV_FILE }}
+
+# build-and-push and deploy jobs are commented out for now
 
 # build-and-push and deploy jobs are commented out for now
 #  build-and-push:
