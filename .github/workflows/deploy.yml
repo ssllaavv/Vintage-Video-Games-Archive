@@ -7,93 +7,93 @@ on:
     branches: [ main ]
 
 jobs:
-#  build-and-test:
-#    runs-on: ubuntu-latest
-#
-#    services:
-#      postgres:
-#        image: postgres:14
-#        env:
-#          POSTGRES_PASSWORD: postgres
-#          POSTGRES_USER: postgres
-#          POSTGRES_DB: postgres
-#        ports:
-#          - 5432:5432
-#        options: >-
-#          --health-cmd pg_isready
-#          --health-interval 10s
-#          --health-timeout 5s
-#          --health-retries 5
-#
-#    env:
-#      DEBUG: 1
-#      ALLOWED_HOSTS: "127.0.0.1 localhost"
-#      POSTGRES_DB: postgres
-#      POSTGRES_USER: postgres
-#      POSTGRES_PASSWORD: postgres
-#      DB_HOST: 127.0.0.1
-#      DB_PORT: 5432
-#      POSTGRES_HOST: 127.0.0.1
-#      POSTGRES_PORT: 5432
-#      SECRET_KEY: "django-insecure-test-key-123"
-#      EMAIL_BACKEND: "django.core.mail.backends.smtp.EmailBackend"
-#      EMAIL_HOST: "smtp-relay.brevo.com"
-#      EMAIL_PORT: 587
-#      EMAIL_USE_TLS: 1
-#      EMAIL_HOST_USER: "7df4dc001@smtp-brevo.com"
-#      EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
-#      DEFAULT_FROM_EMAIL: "marulevsvetoslav@gmail.com"
-#
-#    steps:
-#    - uses: actions/checkout@v4
-#
-#    - name: Set up Python
-#      uses: actions/setup-python@v5
-#      with:
-#        python-version: '3.11'
-#
-#    - name: Install Dependencies
-#      run: |
-#        python -m pip install --upgrade pip
-#        pip install -r requirements.txt
-#
-#    - name: Create Migrations
-#      run: |
-#        python manage.py makemigrations accounts
-#        python manage.py makemigrations
-#
-#    - name: Apply Migrations
-#      run: |
-#        python manage.py migrate
-#
-#    - name: Run Tests
-#      run: |
-#        python manage.py test --verbosity=2
-#
-#
-#  push-to-DockerHub:
-#    needs:  build-and-test
-#    runs-on: ubuntu-latest
-#    if: github.ref == 'refs/heads/main'
-#
-#    steps:
-#    - uses: actions/checkout@v2
-#
-#    - name: Login to DockerHub
-#      uses: docker/login-action@v1
-#      with:
-#        username: ${{ secrets.DOCKER_USERNAME }}
-#        password: ${{ secrets.DOCKER_PASSWORD }}
-#
-#    - name: Build and push Docker image
-#      uses: docker/build-push-action@v2
-#      with:
-#        context: .
-#        push: true
-#        tags: ${{ secrets.DOCKER_USERNAME }}/games-archive:latest
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DEBUG: 1
+      ALLOWED_HOSTS: "127.0.0.1 localhost"
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      POSTGRES_HOST: 127.0.0.1
+      POSTGRES_PORT: 5432
+      SECRET_KEY: "django-insecure-test-key-123"
+      EMAIL_BACKEND: "django.core.mail.backends.smtp.EmailBackend"
+      EMAIL_HOST: "smtp-relay.brevo.com"
+      EMAIL_PORT: 587
+      EMAIL_USE_TLS: 1
+      EMAIL_HOST_USER: "7df4dc001@smtp-brevo.com"
+      EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+      DEFAULT_FROM_EMAIL: "marulevsvetoslav@gmail.com"
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Create Migrations
+      run: |
+        python manage.py makemigrations accounts
+        python manage.py makemigrations
+
+    - name: Apply Migrations
+      run: |
+        python manage.py migrate
+
+    - name: Run Tests
+      run: |
+        python manage.py test --verbosity=2
+
+
+  push-to-DockerHub:
+    needs:  build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/games-archive:latest
 
   deploy:
-#    needs: push-to-DockerHub
+    needs: push-to-DockerHub
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
 
@@ -156,73 +156,6 @@ jobs:
           docker-compose exec -T web python manage.py makemigrations && \
           docker-compose exec -T web python manage.py migrate'"
 
-
-#    - name: Verify Container Deployment
-#      env:
-#        SSH_PASS: ${{ secrets.SSH_PASSWORD }}
-#      run: |
-#        TIMEOUT=300
-#        INTERVAL=10
-#        time_passed=0
-#
-#        while [ $time_passed -lt $TIMEOUT ]; do
-#          # Use --format to get cleaner output
-#          container_status=$(sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
-#            cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
-#            docker-compose ps -a'")
-#
-#          # Skip the header line and empty lines when counting
-#          total_containers=$(echo "$container_status" | tail -n +2 | grep -v '^$' | wc -l)
-#          running_containers=$(echo "$container_status" | tail -n +2 | grep -v '^$' | grep -c "Up" || echo "0")
-#          restarting_containers=$(echo "$container_status" | tail -n +2 | grep -v '^$' | grep -c "Restarting" || echo "0")
-#
-#          echo "Container Status Output:"
-#          echo "$container_status"
-#          echo "-------------------------"
-#          echo "Found $running_containers running, $restarting_containers restarting out of $total_containers total containers"
-#
-#          if [ "$running_containers" -eq 3 ] && [ "$restarting_containers" -eq 0 ]; then
-#            echo "All containers are up and running!"
-#            echo "Final Container Status:"
-#            sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
-#              cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
-#              docker-compose ps'"
-#            exit 0
-#          fi
-#
-#          if [ "$restarting_containers" -gt 0 ]; then
-#            echo "Some containers are restarting. Container logs:"
-#            sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
-#              cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
-#              echo \"=== nginx logs ===\" && \
-#              docker-compose logs --tail=50 nginx && \
-#              echo \"=== web logs ===\" && \
-#              docker-compose logs --tail=50 web && \
-#              echo \"=== db logs ===\" && \
-#              docker-compose logs --tail=50 db'"
-#          fi
-#
-#          echo "Waiting for all containers to be up... (${time_passed}s/${TIMEOUT}s)"
-#          sleep $INTERVAL
-#          time_passed=$((time_passed + INTERVAL))
-#        done
-#
-#        echo "Deployment verification failed! Full container logs:"
-#        sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
-#          cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
-#          docker-compose ps && \
-#          echo \"=== CONTAINER LOGS ===\" && \
-#          docker-compose logs'"
-#
-#        # Check container states one last time
-#        echo "Final container states:"
-#        sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
-#          cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
-#          echo \"=== Container Status ===\" && \
-#          docker-compose ps && \
-#          echo \"=== Docker PS ===\" && \
-#          docker ps -a'"
-#        exit 1
     - name: Verify Container Deployment
       env:
         SSH_PASS: ${{ secrets.SSH_PASSWORD }}
@@ -302,29 +235,6 @@ jobs:
         
         echo "Website verification failed after $MAX_RETRIES attempts"
         exit 1
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     - name: Verify Website Accessibility
       run: |
