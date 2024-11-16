@@ -26,10 +26,10 @@ jobs:
           --health-retries 5
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
 
@@ -39,11 +39,11 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run Tests
-      env:
-        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
       run: |
-        python manage.py test
+        export $(cat ./envs/tests/.test.env | grep -v '^#' | xargs)
+        python manage.py test --verbosity=2
 
+# build-and-push and deploy jobs are commented out for now
 #  build-and-push:
 #    needs: test
 #    runs-on: ubuntu-latest
