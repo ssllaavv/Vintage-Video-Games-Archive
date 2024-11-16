@@ -25,6 +25,25 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
+    env:
+      DEBUG: 1
+      ALLOWED_HOSTS: "127.0.0.1 localhost"
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      POSTGRES_HOST: 127.0.0.1
+      POSTGRES_PORT: 5432
+      SECRET_KEY: "django-insecure-test-key-123"
+      EMAIL_BACKEND: "django.core.mail.backends.smtp.EmailBackend"
+      EMAIL_HOST: "smtp-relay.brevo.com"
+      EMAIL_PORT: 587
+      EMAIL_USE_TLS: 1
+      EMAIL_HOST_USER: "7df4dc001@smtp-brevo.com"
+      EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+      DEFAULT_FROM_EMAIL: "marulevsvetoslav@gmail.com"
+
     steps:
     - uses: actions/checkout@v4
 
@@ -38,28 +57,20 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Set up environment variables
-      run: |
-        echo "DJANGO_ENV_FILE=$(cat ./envs/tests/.test.env | grep -v '^#' | tr '\n' ' ')" >> $GITHUB_ENV
-
     - name: Create Migrations
       run: |
         python manage.py makemigrations accounts
         python manage.py makemigrations
-      env:
-        ${{ env.DJANGO_ENV_FILE }}
 
     - name: Apply Migrations
       run: |
         python manage.py migrate
-      env:
-        ${{ env.DJANGO_ENV_FILE }}
 
     - name: Run Tests
       run: |
         python manage.py test --verbosity=2
-      env:
-        ${{ env.DJANGO_ENV_FILE }}
+
+# build-and-push and deploy jobs are commented out for now
 
 # build-and-push and deploy jobs are commented out for now
 
