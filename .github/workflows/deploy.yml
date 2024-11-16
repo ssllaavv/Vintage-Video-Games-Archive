@@ -201,7 +201,6 @@ jobs:
 #          docker-compose logs'"
 #        exit 1
 
-
     - name: Verify Container Deployment
       env:
         SSH_PASS: ${{ secrets.SSH_PASSWORD }}
@@ -210,49 +209,65 @@ jobs:
         INTERVAL=10
         time_passed=0
         
-        # Loop to check container statuses until timeout
         while [ $time_passed -lt $TIMEOUT ]; do
-          # Fetch the container status from the remote server
+          # Use --format to get cleaner output
           container_status=$(sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
             cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
-            docker-compose ps'")
-
-          # Count total containers, running containers, and restarting containers
-          total_containers=$(echo "$container_status" | wc -l)
-          running_containers=$(echo "$container_status" | grep -c "Up")
-          restarting_containers=$(echo "$container_status" | grep -c "Restarting")
-
-          # Output the current status of containers
+            docker-compose ps -a'")
+          
+          # Skip the header line and empty lines when counting
+          total_containers=$(echo "$container_status" | tail -n +2 | grep -v '^$' | wc -l)
+          running_containers=$(echo "$container_status" | tail -n +2 | grep -v '^$' | grep -c "Up" || echo "0")
+          restarting_containers=$(echo "$container_status" | tail -n +2 | grep -v '^$' | grep -c "Restarting" || echo "0")
+          
+          echo "Container Status Output:"
+          echo "$container_status"
+          echo "-------------------------"
           echo "Found $running_containers running, $restarting_containers restarting out of $total_containers total containers"
-
-          # If all containers are running
+          
           if [ "$running_containers" -eq 3 ] && [ "$restarting_containers" -eq 0 ]; then
             echo "All containers are up and running!"
-            echo "Container status:"
-            echo "$container_status"
+            echo "Final Container Status:"
+            sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
+              cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
+              docker-compose ps'"
             exit 0
           fi
-
-          # If some containers are restarting, fetch and display logs
+          
           if [ "$restarting_containers" -gt 0 ]; then
             echo "Some containers are restarting. Container logs:"
             sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
               cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
-              docker-compose logs --tail=50'"
+              echo \"=== nginx logs ===\" && \
+              docker-compose logs --tail=50 nginx && \
+              echo \"=== web logs ===\" && \
+              docker-compose logs --tail=50 web && \
+              echo \"=== db logs ===\" && \
+              docker-compose logs --tail=50 db'"
           fi
-
-          # Wait for the next check
-          echo "Waiting for all containers to be up..."
+          
+          echo "Waiting for all containers to be up... (${time_passed}s/${TIMEOUT}s)"
           sleep $INTERVAL
           time_passed=$((time_passed + INTERVAL))
         done
-
-        # If the loop times out, dump the container logs
-        echo "Deployment verification failed! Dumping container logs..."
+        
+        echo "Deployment verification failed! Full container logs:"
         sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
           cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
+          docker-compose ps && \
+          echo \"=== CONTAINER LOGS ===\" && \
           docker-compose logs'"
+        
+        # Check container states one last time
+        echo "Final container states:"
+        sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
+          cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
+          echo \"=== Container Status ===\" && \
+          docker-compose ps && \
+          echo \"=== Docker PS ===\" && \
+          docker ps -a'"
         exit 1
+
 
     - name: Verify Website Accessibility
       run: |
