@@ -396,7 +396,7 @@ jobs:
 #          docker-compose exec -T web python manage.py migrate'"
 
   verify-deploy:
-    needs: deploy
+#    needs: deploy
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
 
