@@ -93,7 +93,7 @@ jobs:
 #        tags: ${{ secrets.DOCKER_USERNAME }}/games-archive:latest
 
   deploy:
-#    needs: build-and-push-to-DockerHub
+#    needs: push-to-DockerHub
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
 
@@ -120,7 +120,7 @@ jobs:
       env:
         SSH_PASS: ${{ secrets.SSH_PASSWORD }}
       run: |
-        sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c 'cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
+        sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo su -c 'cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
           rm -f docker-compose.yml || true && \
           rm -rf nginx || true'"
         sshpass -p "$SSH_PASS" scp -r deploy/* ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }}:/home/${{ secrets.SSH_USERNAME }}/games-archive/
@@ -129,7 +129,7 @@ jobs:
       env:
         SSH_PASS: ${{ secrets.SSH_PASSWORD }}
       run: |
-        sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c 'cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
+        sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo su -c 'cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
           chown -R root:root . && \
           chmod -R 755 . && \
           docker-compose down || true && \
@@ -142,7 +142,7 @@ jobs:
       env:
         SSH_PASS: ${{ secrets.SSH_PASSWORD }}
       run: |
-        sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c 'cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
+        sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo su -c 'cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
           docker-compose exec -T web python manage.py collectstatic --noinput && \
           docker-compose exec -T web python manage.py makemigrations && \
           docker-compose exec -T web python manage.py migrate'"
@@ -156,7 +156,7 @@ jobs:
         time_passed=0
         
         while [ $time_passed -lt $TIMEOUT ]; do
-          container_status=$(sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c 'cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
+          container_status=$(sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo su -c 'cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
             docker-compose ps --format \"{{.Name}} {{.Status}}\"'")
           
           total_containers=$(echo "$container_status" | wc -l)
@@ -174,7 +174,7 @@ jobs:
           
           if [ "$restarting_containers" -gt 0 ]; then
             echo "Some containers are restarting. Container logs:"
-            sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c 'cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
+            sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo su -c 'cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
               docker-compose logs --tail=50'"
           fi
           
@@ -184,7 +184,7 @@ jobs:
         done
         
         echo "Deployment verification failed! Dumping container logs..."
-        sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c 'cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
+        sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo su -c 'cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
           docker-compose logs'"
         exit 1
 
