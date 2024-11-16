@@ -130,8 +130,8 @@ jobs:
         SSH_PASS: ${{ secrets.SSH_PASSWORD }}
       run: |
 #        sshpass -p "$SSH_PASS" scp -r deploy/* ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }}:/home/${{ secrets.SSH_USERNAME }}/games-archive/
-        sshpass -p "$SSH_PASS" scp -r deploy/* ***@***:/tmp/deploy-temp/
-        sshpass -p "$SSH_PASS" ssh ***@*** "sudo mv /tmp/deploy-temp/* /home/***/games-archive/ && sudo rm -rf /tmp/deploy-temp/"
+        sshpass -p "$SSH_PASS" scp -r deploy/* ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }}:/tmp/deploy-temp/
+        sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo mv /tmp/deploy-temp/* /home/***/games-archive/ && sudo rm -rf /tmp/deploy-temp/"
 
     - name: Set permissions and restart containers
       env:
