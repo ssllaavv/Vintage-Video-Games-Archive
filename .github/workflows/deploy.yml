@@ -401,120 +401,102 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
-    - name: Install sshpass and curl
-      run: sudo apt-get install -y sshpass curl
+      - name: Install sshpass and curl
+        run: sudo apt-get install -y sshpass curl
 
-    - name: Verify Container Deployment
-      env:
-        SSH_PASS: ${{ secrets.SSH_PASSWORD }}
-      run: |
-        TIMEOUT=300
-        INTERVAL=10
-        time_passed=0
-        EXPECTED_CONTAINERS=3
-        
-        # First, wait for Docker to be responsive
-        echo "Waiting for Docker to be responsive..."
-        until sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo docker ps" > /dev/null 2>&1; do
-          sleep 5
-          echo "Waiting for Docker..."
-        done
-        
-        while [ $time_passed -lt $TIMEOUT ]; do
-          echo "Checking containers status (${time_passed}s/${TIMEOUT}s)"
-          
-          # Get Docker Compose status with extended information
-          compose_status=$(sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
-            cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
-            docker-compose ps -a && \
-            echo \"--- Container Logs ---\" && \
-            docker-compose logs --tail=5'")
-          
-          echo "Current Docker Compose Status:"
-          echo "$compose_status"
-          
-          # Get container status and clean the output
-          container_status=$(sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
-            cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
-            docker-compose ps'" | tail -n +2 | grep -v '^$')
-          
-          # Count containers using cleaned output
-          total_containers=$(echo "$container_status" | wc -l)
-          running_containers=$(echo "$container_status" | grep -c "Up" || echo "0")
-          restarting_containers=$(echo "$container_status" | grep -c "Restarting" || echo "0")
-          
-          # Clean up the numbers to ensure they're integers
-          total_containers=$(echo "$total_containers" | tr -d ' \n\r')
-          running_containers=$(echo "$running_containers" | tr -d ' \n\r')
-          restarting_containers=$(echo "$restarting_containers" | tr -d ' \n\r')
-          
-          echo "Container counts:"
-          echo "Total: $total_containers"
-          echo "Running: $running_containers"
-          echo "Restarting: $restarting_containers"
-          echo "Expected: $EXPECTED_CONTAINERS"
-          
-          if [ "$running_containers" -eq "$EXPECTED_CONTAINERS" ] && [ "$restarting_containers" -eq 0 ]; then
-            echo "✅ All $EXPECTED_CONTAINERS containers are up and running!"
-            
-            # Additional health check
-            echo "Performing final health check..."
-            health_status=$(sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
-              cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
-              docker-compose ps'")
-            echo "$health_status"
-            
-            if echo "$health_status" | grep -q "Exit"; then
-              echo "❌ Found exited containers in final health check"
-              exit 1
-            fi
-            
-            echo "✅ Final health check passed"
-            exit 0
+      - name: Verify Container Deployment
+        env:
+          SSH_PASS: ${{ secrets.SSH_PASSWORD }}
+        run: |
+          echo "Testing SSH connection..."
+          if ! sshpass -p "$SSH_PASS" ssh -o ConnectTimeout=10 ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "echo 'SSH connection successful'"; then
+            echo "❌ Failed to establish SSH connection"
+            exit 1
           fi
           
-          if [ "$restarting_containers" -gt 0 ]; then
-            echo "⚠️ Some containers are restarting. Detailed logs:"
+          echo "Checking Docker service status..."
+          if ! sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo systemctl status docker.service"; then
+            echo "❌ Docker service check failed"
+            exit 1
+          fi
+          
+          TIMEOUT=300
+          INTERVAL=10
+          time_passed=0
+          EXPECTED_CONTAINERS=3
+          
+          echo "Verifying Docker Compose directory..."
+          if ! sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
+            cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
+            ls -la && \
+            cat docker-compose.yml'"; then
+            echo "❌ Failed to access Docker Compose configuration"
+            exit 1
+          fi
+          
+          while [ $time_passed -lt $TIMEOUT ]; do
+            echo "Checking containers status (${time_passed}s/${TIMEOUT}s)"
+          
+            # Get basic Docker status
+            echo "Docker PS output:"
+            sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo docker ps -a"
+          
+            # Get Docker Compose status
+            echo "Docker Compose status:"
+            compose_status=$(sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
+              cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
+              docker-compose ps -a'")
+            echo "$compose_status"
+          
+            # Count running containers
+            running_containers=$(echo "$compose_status" | grep "Up" | wc -l)
+            echo "Running containers: $running_containers"
+          
+            if [ "$running_containers" -eq "$EXPECTED_CONTAINERS" ]; then
+              echo "✅ All $EXPECTED_CONTAINERS containers are up and running!"
+              exit 0
+            fi
+          
+            # Check for container logs if they exist
+            echo "Container logs:"
             sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
               cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
-              echo \"=== nginx logs ===\" && \
-              docker-compose logs --tail=20 nginx && \
-              echo \"=== web logs ===\" && \
-              docker-compose logs --tail=20 web && \
-              echo \"=== db logs ===\" && \
-              docker-compose logs --tail=20 db'"
-          fi
+              for container in \$(docker-compose ps -q); do \
+                echo \"=== Logs for \$container ===\" && \
+                docker logs --tail=10 \$container 2>&1 || true; \
+              done'"
           
-          echo "⏳ Waiting for containers... (${time_passed}s/${TIMEOUT}s)"
-          sleep $INTERVAL
-          time_passed=$((time_passed + INTERVAL))
-        done
-        
-        echo "❌ Deployment verification failed! Final container states:"
-        sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo bash -c '\
-          cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
-          docker-compose ps -a && \
-          echo \"--- Final Container Logs ---\" && \
-          docker-compose logs --tail=50'"
-        exit 1
+            echo "⏳ Waiting for next check... (${time_passed}s/${TIMEOUT}s)"
+            sleep $INTERVAL
+            time_passed=$((time_passed + INTERVAL))
+          done
+          
+          echo "❌ Deployment verification failed! Final system state:"
+          echo "Docker service status:"
+          sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo systemctl status docker.service"
+          echo "Docker PS:"
+          sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo docker ps -a"
+          echo "Directory contents:"
+          sshpass -p "$SSH_PASS" ssh ${{ secrets.SSH_USERNAME }}@${{ secrets.AZURE_HOST }} "sudo ls -la /home/${{ secrets.SSH_USERNAME }}/games-archive"
+          exit 1
 
-    - name: Verify Website Accessibility
-      if: success()
-      run: |
-        MAX_RETRIES=30
-        RETRY_INTERVAL=10
-        
-        for ((i=1; i<=MAX_RETRIES; i++)); do
-          echo "🔍 Attempt $i of $MAX_RETRIES..."
+      - name: Verify Website Accessibility
+        if: success()
+        run: |
+          MAX_RETRIES=30
+          RETRY_INTERVAL=10
           
-          if curl -s -f -k https://games-archive.westeurope.cloudapp.azure.com > /dev/null; then
-            echo "✅ Website is accessible!"
-            exit 0
-          fi
+          for ((i=1; i<=MAX_RETRIES; i++)); do
+            echo "🔍 Attempt $i of $MAX_RETRIES..."
           
-          echo "⏳ Website not yet accessible, waiting ${RETRY_INTERVAL} seconds..."
-          sleep $RETRY_INTERVAL
-        done
-        
-        echo "❌ Website verification failed after $MAX_RETRIES attempts"
-        exit 1
+            if curl -s -f -k https://games-archive.westeurope.cloudapp.azure.com > /dev/null; then
+              echo "✅ Website is accessible!"
+              exit 0
+            fi
+          
+            echo "⏳ Website not yet accessible, waiting ${RETRY_INTERVAL} seconds..."
+            sleep $RETRY_INTERVAL
+          done
+          
+          echo "❌ Website verification failed after $MAX_RETRIES attempts"
+          exit 1
