@@ -5,17 +5,23 @@ services:
     image: postgres:14
     restart: always
     env_file:
-      - .env
+      - ./envs/for_deploy/.env
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+#    healthcheck:
+#      test: [ "CMD-SHELL", "pg_isready -U postgres-user" ]
+#      interval: 5s
+#      timeout: 5s
+#      retries: 5
 
   web:
-    image: ssllaavv/games-archive:latest  # Replace with your Docker Hub username
-    restart: always
+    build:
+      context: .
     command: gunicorn games_archive.wsgi:application --bind 0.0.0.0:8000
     volumes:
+      - .:/app
       - static_volume:/app/static-files
       - media_volume:/app/media
     ports:
@@ -23,13 +29,14 @@ services:
     expose:
       - 8000
     env_file:
-      - .env
+      - ./envs/for_deploy/.env
     depends_on:
+      - db
+    links:
       - db
 
   nginx:
     image: nginx
-    restart: always
     ports:
       - 80:80
       - 443:443
@@ -42,18 +49,40 @@ services:
       - ./certbot/conf/:/etc/nginx/ssl/:ro
     depends_on:
       - web
+    links:
+      - web
+#  certbot:
+#    image: certbot/certbot
+#    volumes:
+#      - ./certbot/www/:/var/www/certbot/:rw
+#      - ./certbot/conf/:/etc/letsencrypt/:rw
 
   migration:
-    image: ssllaavv/games-archive:latest  # Replace with your Docker Hub username
+    build:
+      context: .
     command: bash -c "python manage.py makemigrations && python manage.py migrate"
     volumes:
-      - static_volume:/app/static-files
-      - media_volume:/app/media
+      - .:/app
     env_file:
-      - .env
+      - ./envs/for_deploy/.env
     depends_on:
-      - db
-      - web
+      db:
+        condition: service_started
+      web:
+        condition: service_started
+
+#  collectstatic:
+#    build:
+#      context: .
+#    command: python manage.py collectstatic --noinput
+#    volumes:
+#      - .:/app
+#      - staticfiles:/app/static-files
+#    env_file:
+#      - ./envs/development/.env
+#    depends_on:
+#      - db
+#      - web
 
 volumes:
   postgres_data:

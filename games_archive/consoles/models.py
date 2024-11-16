@@ -12,7 +12,7 @@ from games_archive.custom_widgets import get_star_rating_html
 
 class Console(models.Model):
 
-    DEFAULT_IMAGE = static('/images/added/no-image-default.avif')
+    DEFAULT_IMAGE = static('/images/added/no-image2.jpg')
 
     name = models.CharField(
         validators=[
