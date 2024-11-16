@@ -310,7 +310,7 @@ jobs:
         python manage.py test --verbosity=2
 
 
-  push-to-DockehHub:
+  push-to-Dockerhub:
     needs: build-and-test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
@@ -332,7 +332,7 @@ jobs:
         tags: ${{ secrets.DOCKER_USERNAME }}/games-archive:latest
 
   deploy:
-    needs: push-to-DockerHub
+    needs:  push-to-Dockerhub
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
 
