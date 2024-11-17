@@ -102,3 +102,14 @@ class UserDeleteView(LoginRequiredMixin, views.DeleteView):
         user = self.get_object()
         user.delete()
         return redirect(self.success_url)
+
+
+class CustomPasswordChangeView(auth_views.PasswordChangeView):
+    template_name = 'password_change.html'
+
+    def get_success_url(self):
+        return reverse_lazy('password_change_done', kwargs={'pk': self.request.user.pk})
+
+
+class CustomPasswordChangeDoneView(auth_views.PasswordChangeDoneView):
+    template_name = 'password_change_done.html'

@@ -54,7 +54,13 @@
                 {% if user.is_authenticated %}
                     {% if object.pk == request.user.pk %}
                         <ul class="actions">
+
+                            <li><a href="{% url 'password_change' object.pk  %}" class="button small">Change password</a>
+                            </li>
+                        </ul>
+                        <ul class="actions">
                             <li><a href="{% url 'logout' %}" class="button primary small">Logout</a>
+                            </li>
                             <li><a href="{% url 'profile_edit' request.user.pk %}" class="button small">Edit</a>
                             </li>
                             <li><a href="{% url 'profile delete' request.user.pk %}" class="button small">Delete</a>

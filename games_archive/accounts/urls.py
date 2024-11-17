@@ -1,5 +1,5 @@
-import django.contrib.auth.forms
-from django.urls import path, include
+
+from django.urls import path, include, reverse_lazy
 from . import views
 from django.contrib.auth import views as auth_views
 
@@ -12,9 +12,8 @@ urlpatterns = [
         path('edit/', views.UserEditView.as_view(), name='profile_edit'),
         path('edit/', views.UserEditView.as_view(), name='profile edit'),
         path('delete/', views.UserDeleteView.as_view(), name='profile delete'),
-        # TODO: password change & password changed
-        # path('password_change/', auth_views.PasswordChangeView.as_view(), name='password_change'),
-        # path('password_change/done/', auth_views.PasswordChangeDoneView.as_view(), name='password_change_done'),
+        path('password_change/', views.CustomPasswordChangeView.as_view(), name='password_change'),
+        path('password_change/done/', views.CustomPasswordChangeDoneView.as_view(), name='password_change_done'),
     ])),
 ]
 
