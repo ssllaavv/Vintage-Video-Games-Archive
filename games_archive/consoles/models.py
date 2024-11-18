@@ -7,7 +7,7 @@ from django.templatetags.static import static
 from games_archive.accounts.models import GamesArchiveUser
 from games_archive.custom_validators import validate_file_size, validate_name_is_longer_than_2_characters, \
     validate_release_year
-from games_archive.custom_widgets import get_star_rating_html
+from games_archive.custom_widgets import get_star_rating_html, get_default_superuser
 
 
 class Console(models.Model):
@@ -55,7 +55,11 @@ class Console(models.Model):
         null=True,
         blank=True,
     )
-    to_user = models.ForeignKey(GamesArchiveUser, on_delete=models.DO_NOTHING)
+    to_user = models.ForeignKey(
+        GamesArchiveUser,
+        on_delete=models.SET_DEFAULT,
+        default=get_default_superuser
+    )
 
     @property
     def rating(self):

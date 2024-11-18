@@ -25,7 +25,7 @@ class GameRating(models.Model):
         null=True
     )
 
-    from_user = models.ForeignKey(GamesArchiveUser, on_delete=models.DO_NOTHING)
+    from_user = models.ForeignKey(GamesArchiveUser, on_delete=models.CASCADE)
     to_game = models.ForeignKey(Game, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -46,7 +46,7 @@ class ConsoleRating(models.Model):
         null=True
     )
 
-    from_user = models.ForeignKey(GamesArchiveUser, on_delete=models.DO_NOTHING)
+    from_user = models.ForeignKey(GamesArchiveUser, on_delete=models.CASCADE)
     to_console = models.ForeignKey(Console, on_delete=models.CASCADE)
 
     def __str__(self):

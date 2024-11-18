@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.forms.widgets import SelectMultiple
 from django.forms.widgets import ClearableFileInput
 from django.template.loader import render_to_string
@@ -59,4 +60,17 @@ def get_star_rating_html(rating):
     stars_html += '<i class="far fa-star"></i>' * empty_stars
 
     return stars_html
+
+
+# auxiliary function to set default to_user in Games and Consoles models if user profile is deleted
+def get_default_superuser():
+    User = get_user_model()
+    # Get the first superuser, if none exists return None
+    superuser = User.objects.filter(is_superuser=True).first()
+    staff = User.objects.filter(is_staff=True).first()
+    if superuser:
+        return superuser.pk
+    elif staff:
+        return staff.pk
+    return User.objects.first().pk
 
