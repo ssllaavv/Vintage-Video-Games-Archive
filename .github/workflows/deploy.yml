@@ -154,7 +154,8 @@ jobs:
           cd /home/${{ secrets.SSH_USERNAME }}/games-archive && \
           docker-compose exec -T web python manage.py collectstatic --noinput && \
           docker-compose exec -T web python manage.py makemigrations && \
-          docker-compose exec -T web python manage.py migrate'"
+          docker-compose exec -T web python manage.py migrate && \
+          docker-compose exec -T web python manage.py import_groups'"
 
     - name: Verify Container Deployment
       env:
