@@ -37,10 +37,10 @@ def is_logged_in(user, request=None):
 
 # Make the function work with the request context
 def make_is_logged_in(request):
-    def wrapped(user):
+    def login_status(user):
         return is_logged_in(user, request)
 
-    return wrapped
+    return login_status
 
 
 wrapped_is_logged_in = make_is_logged_in(None)  # Default wrapper with no request
