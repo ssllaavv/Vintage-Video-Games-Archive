@@ -57,6 +57,46 @@ document.addEventListener('DOMContentLoaded', () => {
     new ConsoleSelector();
 });
 
+// add search input for too_console in game create/update view
+document.addEventListener('DOMContentLoaded', function() {
+    // Find all console select containers
+    const consoleSelectContainers = document.querySelectorAll('.console-select-container');
+
+    consoleSelectContainers.forEach(container => {
+        // Create search input
+        const searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.placeholder = 'Search consoles...';
+        searchInput.classList.add('console-search-input');
+        searchInput.setAttribute('aria-label', 'Search consoles');
+
+        // Style the search input to match option spacing
+        searchInput.style.marginBottom = '20px';  // Same margin as between options
+
+        // Insert search input at the top of the container
+        container.insertBefore(searchInput, container.firstChild);
+
+        const consoleOptions = container.querySelectorAll('.console-option');
+
+        // Add event listener for search input
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+
+            consoleOptions.forEach(option => {
+                const consoleName = option.querySelector('.console-name').textContent.toLowerCase();
+                const isSelected = option.classList.contains('selected');
+
+                // Always show selected options
+                if (isSelected || searchTerm === '' || consoleName.includes(searchTerm)) {
+                    option.style.display = 'block';
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+        });
+    });
+});
+
 
 // Scripts for Custom file upload input
 // Enhanced image upload handling

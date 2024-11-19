@@ -25,7 +25,7 @@ class ConsoleListView(ListView):
             # Apply all filters at once
             queryset = queryset.filter(
                 Q(name__icontains=self.search_query) |
-                Q(description__icontains=self.search_query) |
+                # Q(description__icontains=self.search_query) |
                 Q(manufacturer__icontains=self.search_query)
             ).distinct().order_by('-id')  # Add explicit ordering to ensure consistent pagination
 
