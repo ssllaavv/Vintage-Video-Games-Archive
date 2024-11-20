@@ -879,3 +879,11 @@ a#show-less-comments:not(.button):before {
 .not-found.content h2{
     margin-bottom: 10pt;
 }
+
+
+/*home html - form wikipedia*/
+
+.wikipedia {
+    text-align: right;
+    font-style: italic;
+}
