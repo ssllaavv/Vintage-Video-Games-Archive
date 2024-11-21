@@ -34,7 +34,7 @@
                     {% for game in latest_games %}
                         <div>
                             <a href="{% url 'game_detail' game.id %}">
-                                <div class="thumbnail-text">{{ game.title }}</div>
+                                <div class="thumbnail-text">{{ game.title|truncatechars:10 }}</div>
                                 {% if game.default_image %}
                                 <img class="thumbnail-home" src="{{ game.default_image }}" alt="game">
                                 {% endif %}
@@ -67,7 +67,7 @@
                     {% for console in latest_consoles %}
                         <div>
                             <a href="{% url 'console_detail' console.id %}">
-                                <div class="thumbnail-text">{{ console.name }}</div>
+                                <div class="thumbnail-text">{{ console.name|truncatechars:10 }}</div>
                                 {% if console.default_image != None %}
                                 <img class="thumbnail-home" src="{{ console.default_image }}" alt="console">
                                 {% endif %}

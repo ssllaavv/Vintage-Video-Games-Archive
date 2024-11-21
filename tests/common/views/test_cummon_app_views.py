@@ -64,9 +64,9 @@ class HomeViewTests(BaseViewTest):
         self.assertTrue('latest_games' in response.context)
         self.assertTrue('latest_consoles' in response.context)
 
-    def test_home_view_returns_only_5_consoles_and_5_games(self):
+    def test_home_view_returns_only_10_consoles_and_10_games(self):
 
-        for i in range(7):
+        for i in range(15):
             console = Console.objects.create(name=f'console{i}', to_user=self.user)
             game = Game.objects.create(title=f'game{i}', to_user=self.user)
             console.full_clean()
@@ -75,8 +75,8 @@ class HomeViewTests(BaseViewTest):
             game.save()
 
         response = self.client.get(reverse('home'))
-        self.assertEqual(len(response.context['latest_games']), 5)
-        self.assertEqual(len(response.context['latest_consoles']), 5)
+        self.assertEqual(len(response.context['latest_games']), 10)
+        self.assertEqual(len(response.context['latest_consoles']), 10)
 
 
 class GameRatingViewTests(BaseViewTest):

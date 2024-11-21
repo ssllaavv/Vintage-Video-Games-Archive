@@ -471,9 +471,29 @@ input[type="file"] {
 .home-thumbnails-container {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     width: 100%;
+    text-align: center;
+}
+
+
+.home-thumbnails-container>div>a>div.thumbnail-text {
+    width: 100%; /* Ensures it takes up the same width as the image */
+    text-align: center; /* Centers the text */
+    word-wrap: break-word; /* Breaks long words onto the next line */
+    overflow-wrap: break-word; /* Ensures proper word breaking */
+    white-space: normal; /* Allows wrapping instead of keeping everything on one line */
+    margin-bottom: 10px; /* Adds some space between the text and the image */
+    font-size: 14px; /* Adjust the size for better readability */
+    line-height: 1.4; /* Adds spacing between lines */
+}
+
+
+.home-thumbnails-container > div {
+    flex: 1 1 calc(20% - 20px); /* Adjust percentage as needed for responsiveness */
+    margin: 10px; /* Add spacing */
+    max-width: 80px; /* Limit child container width */
     text-align: center;
 }
 
