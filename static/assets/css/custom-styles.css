@@ -887,3 +887,22 @@ a#show-less-comments:not(.button):before {
     text-align: right;
     font-style: italic;
 }
+
+
+/*nome page floating images*/
+
+@media screen and (max-width: 480px) {
+    .image.left, .image.right {
+        width: 100%;
+        max-width: 100%;
+    }
+    .image.left {
+        float: left;
+        padding: 0 0 1em 0;
+    }
+    .image.right {
+        float: left;
+        padding: 0 0 1em 0;
+    }
+}
+
