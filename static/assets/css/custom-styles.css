@@ -906,3 +906,18 @@ a#show-less-comments:not(.button):before {
     }
 }
 
+/*footer contact icons*/
+ul.contact {
+    display: flex;
+    gap: 5px;
+}
+
+ul.contact li {
+    margin: 0 0 0 0;
+}
+
+@media screen and (max-width: 736px) {
+    ul.contact li {
+        margin: 0 0 0 0;
+    }
+}
