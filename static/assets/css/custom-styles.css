@@ -908,6 +908,12 @@ a#show-less-comments:not(.button):before {
     font-style: italic;
 }
 
+.image.left.background-color  {
+    background: #555867;
+    padding: 1em;
+    margin: 0 1.5em 1em 0;
+}
+
 
 /*nome page floating images*/
 
