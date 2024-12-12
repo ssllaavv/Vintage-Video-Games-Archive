@@ -1,3 +1,1 @@
-from django.test import TestCase
-
-# Create your tests here.
+# All tests are in 'tests' package on the level of 'games_archive' app package.

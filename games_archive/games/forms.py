@@ -43,3 +43,5 @@ class GameSearchForm(forms.Form):
             'placeholder': 'Search games...'
         })
     )
+
+

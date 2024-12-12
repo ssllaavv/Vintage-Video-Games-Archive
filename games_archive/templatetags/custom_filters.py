@@ -16,5 +16,5 @@ def local_time(value, user_time_zone='UTC'):
         user_tz = ZoneInfo(user_time_zone)
         localized_time = value.astimezone(user_tz)
         return localized_time.strftime('%b. %d, %Y, %I:%M %p')
-    except Exception :
+    except Exception:
         return value

@@ -114,7 +114,7 @@ class GamesArchiveUserAdmin(admin.ModelAdmin):
 
     def get_list_display(self, request):
         """
-        Override get_list_display to inject the request into our is_logged_in function
+        Override get_list_display to inject the request into is_logged_in function
         """
         list_display = super().get_list_display(request)
         # Replace the wrapped_is_logged_in with a version that has access to request

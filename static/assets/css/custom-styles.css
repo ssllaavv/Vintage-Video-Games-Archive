@@ -470,13 +470,21 @@ input[type="file"] {
 
 .home-thumbnails-container {
     display: flex;
+    gap: 20pt;
+    align-items: flex-end;
     flex-wrap: wrap;
     justify-content: center;
-    align-items: center;
+    /*align-items: center;*/
     width: 100%;
     text-align: center;
 }
 
+
+@media screen and (max-width: 1680px) {
+    .home-thumbnails-container {
+         gap: unset;
+    }
+}
 
 .home-thumbnails-container>div>a>div.thumbnail-text {
     width: 100%; /* Ensures it takes up the same width as the image */

@@ -20,8 +20,11 @@ def validate_name(value):
     validate_name_is_longer_than_2_characters(value)
 
 
+IMAGE_MAX_SIZE_MB = 5
+
+
 def validate_file_size(value):
-    if value.size >= 5 * 1024 * 1024:
+    if value.size >= IMAGE_MAX_SIZE_MB * 1024 * 1024:
         raise ValidationError('The maximum file size to upload is 5MB')
 
 

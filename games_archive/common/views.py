@@ -18,8 +18,8 @@ class HomeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['latest_games'] = Game.objects.order_by('-id')[:10]
-        context['latest_consoles'] = Console.objects.order_by('-id')[:10]
+        context['latest_games'] = Game.objects.order_by('-id')[: 4]
+        context['latest_consoles'] = Console.objects.order_by('-id')[: 4]
         return context
 
 
