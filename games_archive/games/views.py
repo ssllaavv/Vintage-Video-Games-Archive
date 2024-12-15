@@ -175,8 +175,7 @@ class AddOrUpdateReviewView(LoginRequiredMixin, View):
 
         if form.is_valid():
             form.save()
-            return redirect(reverse_lazy('game_detail', kwargs={'pk': game.pk}))  # or any other page
-
+            return redirect(reverse_lazy('game_detail', kwargs={'pk': game.pk}))
         return render(request, self.template_name, {'form': form, 'game': game})
 
 

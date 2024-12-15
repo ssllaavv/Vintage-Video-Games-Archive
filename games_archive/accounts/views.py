@@ -1,5 +1,6 @@
 from django.contrib.auth import views as auth_views, login, get_user_model
 from django.core.paginator import Paginator
+from django.db.models import Prefetch, Count, Avg
 from django.shortcuts import redirect
 from django.views.generic import CreateView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -9,6 +10,8 @@ from django.utils.http import url_has_allowed_host_and_scheme
 
 from .forms import UserRegistrationForm, UserProfileForm, UserLoginForm
 from ..common.forms import GameCommentForm
+from ..common.models import GameComment, ConsoleComment, GameRating, ConsoleRating
+from ..games.models import Game
 
 
 class UserRegisterView(CreateView):
@@ -68,28 +71,104 @@ class UserEditView(LoginRequiredMixin, UpdateView):
         return reverse_lazy('profile details', kwargs={'pk': self.object.pk})
 
 
+# class UserDetailView(DetailView):
+#     model = get_user_model()
+#     template_name = 'profile-details.html'
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         comments_count = self.object.gamecomment_set.count() + self.object.consolecomment_set.count()
+#         rates = self.object.gamerating_set.count() + self.object.consolerating_set.count()
+#
+#         # Paginate the games
+#         games = self.object.game_set.all()
+#         paginator = Paginator(games, 4)  # Show 4 games per page
+#         page_number = self.request.GET.get('page')
+#         page_obj = paginator.get_page(page_number)
+#
+#         context.update({
+#             'comments_count': comments_count,
+#             'game_comment_form': GameCommentForm(),
+#             'rates': rates,
+#             'games': page_obj,
+#             'is_paginated': paginator.num_pages > 1,
+#         })
+#         return context
+
+
 class UserDetailView(DetailView):
     model = get_user_model()
     template_name = 'profile-details.html'
 
+    def get_queryset(self):
+        # Optimize the base queryset with prefetch_related and annotations
+        return super().get_queryset().prefetch_related(
+            # Prefetch games with related information
+            Prefetch('game_set',
+                     queryset=Game.objects.select_related('to_user')
+                     .prefetch_related('gamerating_set', 'gamecomment_set', 'reviews')
+                     .annotate(
+                         total_ratings=Count('gamerating', distinct=True),
+                         total_comments=Count('gamecomment', distinct=True),
+                         avg_rating=Avg('gamerating__rating')
+                     )
+                     ),
+            # Prefetch comments
+            Prefetch('gamecomment_set',
+                     queryset=GameComment.objects.select_related('to_game', 'from_user')
+                     ),
+            Prefetch('consolecomment_set',
+                     queryset=ConsoleComment.objects.select_related('to_console', 'from_user')
+                     ),
+            # Prefetch ratings
+            Prefetch('gamerating_set',
+                     queryset=GameRating.objects.select_related('to_game')
+                     ),
+            Prefetch('consolerating_set',
+                     queryset=ConsoleRating.objects.select_related('to_console')
+                     ),
+            # Prefetch screenshots
+            'screenshot_set',
+            # Prefetch reviews
+            'gamereview_set'
+        ).annotate(
+            # Annotation to reduce additional queries
+            games_count=Count('game', distinct=True),
+            screenshots_count=Count('screenshot', distinct=True),
+            reviews_count=Count('gamereview', distinct=True),
+            game_comments_count=Count('gamecomment', distinct=True),
+            console_comments_count=Count('consolecomment', distinct=True),
+            game_ratings_count=Count('gamerating', distinct=True),
+            console_ratings_count=Count('consolerating', distinct=True)
+        )
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        comments_count = self.object.gamecomment_set.count() + self.object.consolecomment_set.count()
-        rates = self.object.gamerating_set.count() + self.object.consolerating_set.count()
 
-        # Paginate the games
+        # Calculate total comments and ratings
+        comments_count = (
+                self.object.game_comments_count +
+                self.object.console_comments_count
+        )
+        rates_count = (
+                self.object.game_ratings_count +
+                self.object.console_ratings_count
+        )
+
+        # Optimize games pagination
         games = self.object.game_set.all()
-        paginator = Paginator(games, 4)  # Show 4 games per page
+        paginator = Paginator(games, 4)
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
 
         context.update({
             'comments_count': comments_count,
             'game_comment_form': GameCommentForm(),
-            'rates': rates,
+            'rates': rates_count,
             'games': page_obj,
             'is_paginated': paginator.num_pages > 1,
         })
+
         return context
 
 
