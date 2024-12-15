@@ -1,7 +1,7 @@
 from django.core import validators
 from django.core.files.storage import default_storage
 from django.db import models
-from django.db.models import functions
+from django.db.models import functions, Avg
 from django.templatetags.static import static
 
 from games_archive.accounts.models import GamesArchiveUser
@@ -63,10 +63,8 @@ class Console(models.Model):
 
     @property
     def rating(self):
-        if self.consolerating_set.count() > 0:
-            return sum(rating.rating for rating in self.consolerating_set.all()) / self.consolerating_set.count()
-        else:
-            return 0
+        avg_rating = self.consolerating_set.aggregate(average=Avg('rating'))['average']
+        return avg_rating or 0
 
     @property
     def stars_rating_html(self):
